@@ -312,33 +312,34 @@
       overflow: visible;
       isolation: isolate;
     }
-    /* Pulse ring: follows the SAME border-radius as the card (no SVG stretch) */
+    /* Soft rounded rail */
     .use-chip::before {
       content: "";
       position: absolute;
       inset: -2px;
-      border-radius: 16px; /* 14px card + 2px inset */
-      padding: 2px;
-      background: conic-gradient(
-        from var(--abadis-pulse, 0deg),
-        #2ec4c6 0deg,
-        #2ec4c6 28deg,
-        rgba(46, 196, 198, 0.15) 42deg,
-        transparent 55deg,
-        transparent 360deg
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      mask-composite: exclude;
+      border-radius: 16px;
+      border: 1.5px solid rgba(46, 196, 198, 0.2);
       pointer-events: none;
       z-index: 1;
       opacity: 0;
       box-sizing: border-box;
+    }
+    .use-chip-ecg {
+      position: absolute;
+      width: 40px;
+      height: 16px;
+      left: 0;
+      top: 0;
+      color: #2ec4c6;
+      filter: drop-shadow(0 0 4px rgba(46, 196, 198, 0.75));
+      offset-path: border-box;
+      offset-anchor: center;
+      offset-rotate: auto 90deg;
+      offset-distance: 0%;
+      opacity: 0;
+      z-index: 3;
+      pointer-events: none;
+      overflow: visible;
     }
     .use-chip.is-inview {
       opacity: 1;
@@ -347,20 +348,18 @@
     }
     .use-chip.is-inview::before {
       opacity: 1;
+    }
+    .use-chip.is-inview .use-chip-ecg {
+      opacity: 1;
       animation: abadis-ecg-orbit 9.5s linear infinite;
     }
-    .use-chip:nth-child(2).is-inview::before { animation-delay: -1.2s; }
-    .use-chip:nth-child(3).is-inview::before { animation-delay: -2.4s; }
-    .use-chip:nth-child(4).is-inview::before { animation-delay: -3.6s; }
-    .use-chip:nth-child(5).is-inview::before { animation-delay: -4.8s; }
-    .use-chip:nth-child(6).is-inview::before { animation-delay: -6s; }
-    @property --abadis-pulse {
-      syntax: "<angle>";
-      inherits: false;
-      initial-value: 0deg;
-    }
+    .use-chip:nth-child(2).is-inview .use-chip-ecg { animation-delay: -1.2s; }
+    .use-chip:nth-child(3).is-inview .use-chip-ecg { animation-delay: -2.4s; }
+    .use-chip:nth-child(4).is-inview .use-chip-ecg { animation-delay: -3.6s; }
+    .use-chip:nth-child(5).is-inview .use-chip-ecg { animation-delay: -4.8s; }
+    .use-chip:nth-child(6).is-inview .use-chip-ecg { animation-delay: -6s; }
     @keyframes abadis-ecg-orbit {
-      to { --abadis-pulse: 360deg; }
+      to { offset-distance: 100%; }
     }
     .use-chip-icon-wrap,
     .use-chip > span {
@@ -654,6 +653,7 @@
       <h2>موارد مصرف</h2>
       <div class="use-grid">
         <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-ecg" viewBox="0 0 48 20" aria-hidden="true" focusable="false"><path d="M1 10 H10 L13 10 L16 3 L19 17 L22 7 L25 10 H47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 16.8h5.6v2.4H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
@@ -664,6 +664,7 @@
           <span>ریه و آندوسکوپی</span>
         </div>
         <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-ecg" viewBox="0 0 48 20" aria-hidden="true" focusable="false"><path d="M1 10 H10 L13 10 L16 3 L19 17 L22 7 L25 10 H47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 14.2h5.6v5H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
@@ -674,6 +675,7 @@
           <span>گوارش</span>
         </div>
         <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-ecg" viewBox="0 0 48 20" aria-hidden="true" focusable="false"><path d="M1 10 H10 L13 10 L16 3 L19 17 L22 7 L25 10 H47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13h5.6v6.2H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
@@ -684,6 +686,7 @@
           <span>CCU/ICU</span>
         </div>
         <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-ecg" viewBox="0 0 48 20" aria-hidden="true" focusable="false"><path d="M1 10 H10 L13 10 L16 3 L19 17 L22 7 L25 10 H47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 12.2h5.6v7H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
@@ -694,6 +697,7 @@
           <span>عفونی</span>
         </div>
         <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-ecg" viewBox="0 0 48 20" aria-hidden="true" focusable="false"><path d="M1 10 H10 L13 10 L16 3 L19 17 L22 7 L25 10 H47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
@@ -704,6 +708,7 @@
           <span>بخش مردان</span>
         </div>
         <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-ecg" viewBox="0 0 48 20" aria-hidden="true" focusable="false"><path d="M1 10 H10 L13 10 L16 3 L19 17 L22 7 L25 10 H47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
