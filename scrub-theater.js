@@ -1,6 +1,6 @@
 /**
  * Abadis Product Theater — clinical stream + sealed capacity
- * Dark mint stage, Poly Haven surgery HDR; continuous suction tube → bag fill.
+ * Dark mint stage (default) or light whist skin via data-theme="light"; continuous suction tube → bag fill.
  * No particles / sparks / helix vortex.
  * Narrative beats: intro → explode → rejoin → stream → fill.
  */
@@ -61,6 +61,9 @@ if (!canvas || !stageEl) {
 }
 
 function boot() {
+  const lightTheme = stageEl.dataset.theme === 'light';
+  const softScrub = stageEl.dataset.scrub === 'soft' || lightTheme;
+
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
@@ -70,30 +73,46 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.92;
+  renderer.toneMappingExposure = lightTheme ? 1.08 : 0.92;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x061416);
+  scene.background = new THREE.Color(lightTheme ? 0xf5f5f7 : 0x061416);
 
-  const camera = new THREE.PerspectiveCamera(28, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 26 : 28, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
 
-  scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
-  const key = new THREE.DirectionalLight(0xf4faff, 0.85);
-  key.position.set(0.55, 1.55, 1.05);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(0x7ab8b8, 0.22);
-  fill.position.set(-1.0, 0.45, 0.35);
-  scene.add(fill);
-  const rim = new THREE.DirectionalLight(0x2ec4c6, 0.85);
-  rim.position.set(0.15, 0.55, -1.15);
-  scene.add(rim);
-  const rimBrand = new THREE.DirectionalLight(0x066163, 0.45);
-  rimBrand.position.set(-0.55, 0.4, -0.9);
-  scene.add(rimBrand);
+  if (lightTheme) {
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xd8dde3, 0.78));
+    var key = new THREE.DirectionalLight(0xffffff, 1.05);
+    key.position.set(0.45, 1.8, 1.15);
+    scene.add(key);
+    var fill = new THREE.DirectionalLight(0xc5d0d8, 0.42);
+    fill.position.set(-1.1, 0.55, 0.45);
+    scene.add(fill);
+    var rim = new THREE.DirectionalLight(0x8fd4d5, 0.38);
+    rim.position.set(0.2, 0.7, -1.1);
+    scene.add(rim);
+    var rimBrand = new THREE.DirectionalLight(0x066163, 0.22);
+    rimBrand.position.set(-0.55, 0.45, -0.85);
+    scene.add(rimBrand);
+  } else {
+    scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
+    var key = new THREE.DirectionalLight(0xf4faff, 0.85);
+    key.position.set(0.55, 1.55, 1.05);
+    scene.add(key);
+    var fill = new THREE.DirectionalLight(0x7ab8b8, 0.22);
+    fill.position.set(-1.0, 0.45, 0.35);
+    scene.add(fill);
+    var rim = new THREE.DirectionalLight(0x2ec4c6, 0.85);
+    rim.position.set(0.15, 0.55, -1.15);
+    scene.add(rim);
+    var rimBrand = new THREE.DirectionalLight(0x066163, 0.45);
+    rimBrand.position.set(-0.55, 0.4, -0.9);
+    scene.add(rimBrand);
+  }
 
   const product = new THREE.Group();
   scene.add(product);
@@ -177,7 +196,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * 1.08;
+    state.fitDist = dist * (lightTheme ? 0.92 : 1.08);
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -656,12 +675,18 @@ function boot() {
 
     /* Light drama: key + rim ramp with flow/fill */
     if (state.keyLight) {
-      state.keyLight.intensity = 0.85 + flowE * 0.35 + fillE * 0.45;
+      state.keyLight.intensity = lightTheme
+        ? 1.05 + flowE * 0.12 + fillE * 0.18
+        : 0.85 + flowE * 0.35 + fillE * 0.45;
     }
     if (state.rimLight) {
-      state.rimLight.intensity = 0.85 + flowE * 0.4 + fillE * 0.25;
+      state.rimLight.intensity = lightTheme
+        ? 0.38 + flowE * 0.12 + fillE * 0.1
+        : 0.85 + flowE * 0.4 + fillE * 0.25;
     }
-    renderer.toneMappingExposure = 0.9 + flowE * 0.06 + fillE * 0.08;
+    renderer.toneMappingExposure = lightTheme
+      ? 1.05 + flowE * 0.03 + fillE * 0.04
+      : 0.9 + flowE * 0.06 + fillE * 0.08;
 
     if (progressFill) progressFill.style.width = Math.round(t * 100) + '%';
     applyCaptions(t);
@@ -714,7 +739,10 @@ function boot() {
   function applyFrame() {
     state.targetT = scrubProgress();
     /* Heavy scrub lerp — keep smooth, avoid jitter */
-    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.1 : 0.05;
+    const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
+    const k = softScrub
+      ? (fast ? 0.055 : 0.028)
+      : (fast ? 0.1 : 0.05);
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);

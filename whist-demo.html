@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="abadis-demo-build" content="WHIST-SCRUB-V1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>دمو اسکراب آبادیس — حس whist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --abadis: #066163;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --bg: #f5f5f7;
+      --font: "Vazirmatn", Tahoma, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245, 245, 247, 0.86);
+      backdrop-filter: saturate(180%) blur(16px);
+      -webkit-backdrop-filter: saturate(180%) blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .site-header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-logo {
+      display: block;
+      height: 40px;
+      width: auto;
+      max-width: min(180px, 50vw);
+      object-fit: contain;
+    }
+    .brand-logo-link { line-height: 0; text-decoration: none; }
+    .header-meta {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: -0.01em;
+    }
+    @media (max-width: 640px) {
+      .brand-logo { height: 30px; }
+      .header-meta { display: none; }
+    }
+
+    /* Long whist-like runway */
+    .abadis-theater {
+      position: relative;
+      height: 920vh;
+      width: 100%;
+      background: var(--bg);
+    }
+    .abadis-theater-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    #abadis-scrub-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: pan-y;
+    }
+    .abadis-theater-captions {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 38%;
+      pointer-events: none;
+      z-index: 4;
+      direction: rtl;
+      background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0.72) 45%, rgba(245,245,247,0.96) 100%);
+    }
+    .abadis-theater-caption {
+      position: absolute;
+      left: 50%;
+      bottom: 78px;
+      width: min(720px, 90vw);
+      margin: 0;
+      padding: 0 12px;
+      box-sizing: border-box;
+      text-align: center;
+      opacity: 0;
+      transform: translate(-50%, 12px);
+      will-change: opacity, transform;
+      pointer-events: none;
+    }
+    .abadis-theater-caption-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.45rem, 3.4vw, 2.55rem);
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+    }
+    .abadis-theater-caption-sub {
+      margin: 0;
+      font-size: clamp(0.95rem, 1.5vw, 1.12rem);
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 500;
+      text-wrap: balance;
+    }
+    .abadis-theater-loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg); color: var(--muted);
+      font-size: 0.9rem; z-index: 2;
+      transition: opacity 0.45s ease;
+    }
+    .abadis-theater-loading.hide { opacity: 0; pointer-events: none; }
+    .abadis-theater-err {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      background: var(--bg); color: #b00020; padding: 24px; text-align: center;
+      z-index: 3; font-size: 0.9rem;
+    }
+    .abadis-theater-hud {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      width: min(88px, 26vw); pointer-events: none; opacity: 0.45; z-index: 2;
+    }
+    .abadis-theater-track {
+      height: 1.5px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden;
+    }
+    .abadis-theater-fill {
+      height: 100%; width: 0%; background: var(--abadis); border-radius: 2px;
+    }
+    @media (max-width: 700px) {
+      .abadis-theater { height: 860vh; }
+      .abadis-theater-caption { bottom: 68px; }
+    }
+
+    .after {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 72px 24px 96px;
+      text-align: center;
+    }
+    .after h2 {
+      font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .after p {
+      color: var(--muted);
+      font-size: 0.98rem;
+      margin-bottom: 28px;
+    }
+    .after a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 980px;
+      background: var(--abadis);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .after a:hover { filter: brightness(1.08); }
+
+    .demo-badge {
+      position: fixed; z-index: 99999; bottom: 16px; left: 16px;
+      background: rgba(29,29,31,0.88); color: #f5f5f7;
+      font-size: 11px; padding: 7px 12px; border-radius: 980px;
+      text-decoration: none; direction: rtl;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-logo-link" href="https://abadis-med.com/" rel="noopener" target="_blank" aria-label="مخازن طبی آبادیس">
+        <img class="brand-logo" src="./brand/abadis-site-logo.png" width="220" height="103" alt="مخازن طبی آبادیس" onerror="this.src='./brand/abadis-logo-on-teal.png'" />
+      </a>
+      <span class="header-meta">دمو اسکراب · حس whist</span>
+    </div>
+  </header>
+
+  <section class="abadis-theater" id="abadis-scrub" data-theme="light" data-scrub="soft" aria-label="Product Theater">
+    <div class="abadis-theater-sticky">
+      <canvas id="abadis-scrub-canvas"></canvas>
+      <div class="abadis-theater-loading" id="abadisScrubLoading">در حال آماده‌سازی محصول…</div>
+      <div class="abadis-theater-err" id="abadisScrubErr"></div>
+      <div class="abadis-theater-captions" aria-hidden="true">
+        <div class="abadis-theater-caption" data-caption="0">
+          <p class="abadis-theater-caption-title">کیسه ساکشن ۲ لیتری</p>
+          <p class="abadis-theater-caption-sub">مخازن طبی آبادیس</p>
+        </div>
+        <div class="abadis-theater-caption" data-caption="1">
+          <p class="abadis-theater-caption-title">جدا شدن قطعات</p>
+          <p class="abadis-theater-caption-sub">در، مخزن و اتصالات — با اسکرول آروم باز می‌شوند</p>
+        </div>
+        <div class="abadis-theater-caption" data-caption="2">
+          <p class="abadis-theater-caption-title">جریان مکش</p>
+          <p class="abadis-theater-caption-sub">مسیر بالینی از پورت تا داخل کیسه</p>
+        </div>
+        <div class="abadis-theater-caption" data-caption="3">
+          <p class="abadis-theater-caption-title">پر شدن تا ظرفیت ۲ لیتر</p>
+          <p class="abadis-theater-caption-sub">فیلتر هیدروفوبیک · پودر ژل‌کننده</p>
+        </div>
+      </div>
+      <div class="abadis-theater-hud" aria-hidden="true">
+        <div class="abadis-theater-track"><div class="abadis-theater-fill" id="abadisProgressFill"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="after">
+    <h2>اسکرول را دوباره امتحان کنید</h2>
+    <p>این صفحه فقط دموی هیرو است — ریتم بلند و تم روشن، مثل حس whist، روی مدل واقعی آبادیس.</p>
+    <a href="./product-2l.html">نسخهٔ کامل صفحه محصول</a>
+  </section>
+
+  <a class="demo-badge" href="./product-2l.html">WHIST-SCRUB-V1</a>
+  <script type="module" src="./scrub-theater.js"></script>
+</body>
+</html>
