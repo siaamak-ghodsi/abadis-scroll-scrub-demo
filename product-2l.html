@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>کیسه ساکشن ۲ لیتری — مخازن طبی آبادیس (دمو بازطراحی)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --abadis: #066163;
+      --abadis-soft: #0e7475;
+      --mint: #e8f3f3;
+      --mint-light: #f5faf9;
+      --ink: #0d3a3f;
+      --muted: #5a7a80;
+      --card: #ffffff;
+      --line: rgba(6, 97, 99, 0.12);
+      --shadow: 0 12px 40px rgba(6, 97, 99, 0.08);
+      --radius: 18px;
+      --font: "Vazirmatn", Tahoma, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body {
+      font-family: var(--font);
+      background: var(--mint-light);
+      color: var(--ink);
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: var(--abadis-soft); text-decoration: none; }
+    a:hover { color: var(--abadis); text-decoration: underline; }
+
+    /* —— Sticky header —— */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245, 250, 249, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .site-header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .wordmark {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--abadis);
+      letter-spacing: -0.01em;
+    }
+    .header-link {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--abadis);
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 7px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .header-link:hover {
+      background: var(--abadis);
+      color: #fff;
+      text-decoration: none;
+      border-color: var(--abadis);
+    }
+
+    /* —— Product Theater —— */
+    .abadis-theater {
+      position: relative;
+      height: 260vh;
+      width: 100%;
+      background: var(--mint);
+    }
+    .abadis-theater-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f3fafa 0%, #e7f2f2 55%, #d9ecec 100%);
+    }
+    #abadis-scrub-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: pan-y;
+    }
+    .abadis-theater-captions {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 42%;
+      pointer-events: none;
+      z-index: 4;
+      direction: rtl;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 24px 72px;
+      box-sizing: border-box;
+      background: linear-gradient(180deg, rgba(232,243,243,0) 0%, rgba(232,243,243,0.75) 45%, rgba(232,243,243,0.95) 100%);
+    }
+    .abadis-theater-caption {
+      position: absolute;
+      left: 50%;
+      bottom: 72px;
+      width: min(920px, 92vw);
+      margin: 0;
+      padding: 0 12px;
+      box-sizing: border-box;
+      text-align: center;
+      opacity: 0;
+      transform: translate(-50%, 12px);
+      will-change: opacity, transform;
+      pointer-events: none;
+    }
+    .abadis-theater-caption-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.2rem, 2.6vw, 2rem);
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--abadis);
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+    .abadis-theater-caption-sub {
+      margin: 0;
+      font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+      line-height: 1.65;
+      color: var(--abadis-soft);
+      font-weight: 500;
+      text-wrap: balance;
+    }
+    .abadis-theater-loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--mint); color: var(--abadis);
+      font-size: 0.85rem; z-index: 2;
+      transition: opacity 0.45s ease;
+    }
+    .abadis-theater-loading.hide { opacity: 0; pointer-events: none; }
+    .abadis-theater-err {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      background: var(--mint); color: #a33; padding: 24px; text-align: center;
+      z-index: 3; font-size: 0.85rem;
+    }
+    .abadis-theater-hud {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      width: min(96px, 28vw); pointer-events: none; opacity: 0.45; z-index: 2;
+    }
+    .abadis-theater-track {
+      height: 2px; background: rgba(6,97,99,0.18); border-radius: 1px; overflow: hidden;
+    }
+    .abadis-theater-fill {
+      height: 100%; width: 0%; background: var(--abadis); border-radius: 1px;
+    }
+    @media (max-width: 700px) {
+      .abadis-theater { height: 240vh; }
+      .abadis-theater-captions { height: 46%; padding-bottom: 64px; }
+      .abadis-theater-caption { bottom: 64px; width: 94vw; }
+    }
+
+    /* —— Content —— */
+    .content {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 56px 22px 80px;
+    }
+    .section {
+      margin-bottom: 36px;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--abadis);
+      background: var(--mint);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    .section h2 {
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      font-weight: 700;
+      color: var(--abadis);
+      margin-bottom: 18px;
+      letter-spacing: -0.015em;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 3vw, 32px);
+    }
+    .card p {
+      color: var(--ink);
+      font-size: 1.02rem;
+      margin-bottom: 12px;
+    }
+    .card p:last-child { margin-bottom: 0; }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 720px) {
+      .specs-grid { grid-template-columns: 1.2fr 0.8fr; }
+    }
+    .spec-block strong {
+      color: var(--abadis);
+      font-weight: 700;
+    }
+    .dim-list {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .dim-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--mint-light);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+    .dim-list span:first-child { color: var(--muted); font-weight: 500; }
+    .dim-list span:last-child { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    .filter-note {
+      font-size: 1.02rem;
+      margin-bottom: 0;
+    }
+
+    .use-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    .use-chip {
+      text-align: center;
+      padding: 14px 10px;
+      background: var(--mint-light);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--abadis);
+    }
+
+    /* —— Codes table —— */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    table.codes {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      font-size: 0.92rem;
+    }
+    table.codes th {
+      background: var(--abadis);
+      color: #f5faf9;
+      font-weight: 700;
+      padding: 14px 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    table.codes td {
+      padding: 13px 12px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+    table.codes tr:nth-child(even) td { background: var(--mint-light); }
+    table.codes tr:last-child td { border-bottom: none; }
+    table.codes td.code { font-weight: 700; color: var(--abadis); direction: ltr; }
+    table.codes td.irc { direction: ltr; font-size: 0.85rem; color: var(--muted); }
+    .lid-swatch {
+      display: inline-block;
+      width: 48px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.08);
+      vertical-align: middle;
+    }
+    .lid-teal { background: #2a9a8f; }
+    .lid-yellow { background: #e8c84a; }
+    .lid-red { background: #c0392b; }
+
+    .pack-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    @media (min-width: 600px) {
+      .pack-row { grid-template-columns: 1fr 1fr; }
+    }
+    .pack-item {
+      background: var(--mint);
+      border-radius: 14px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+    }
+    .pack-item .k { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    .pack-item .v { font-weight: 700; color: var(--abadis); font-size: 1.05rem; }
+
+    .howto {
+      font-size: 0.98rem;
+      color: var(--muted);
+    }
+
+    /* —— Footer —— */
+    .site-footer {
+      border-top: 1px solid var(--line);
+      background: #fff;
+      padding: 28px 22px 40px;
+      text-align: center;
+    }
+    .site-footer p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 10px;
+      line-height: 1.7;
+    }
+    .demo-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: var(--abadis);
+      color: #f5faf9;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .abadis-demo-chip {
+      position: fixed; z-index: 99999; bottom: 16px; left: 16px;
+      background: rgba(6, 97, 99, 0.92); color: #f3fafa;
+      font-family: var(--font);
+      font-size: 11px; line-height: 1.4; padding: 7px 11px;
+      border-radius: 980px; text-decoration: none; direction: rtl;
+      max-width: min(90vw, 280px);
+    }
+    .abadis-demo-chip:hover { background: #066163; color: #fff; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="wordmark">مخازن طبی آبادیس</div>
+      <a class="header-link" href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">صفحه محصول زنده</a>
+    </div>
+  </header>
+
+  <section class="abadis-theater" id="abadis-scrub" aria-label="Product Theater">
+    <div class="abadis-theater-sticky">
+      <canvas id="abadis-scrub-canvas"></canvas>
+      <div class="abadis-theater-loading" id="abadisScrubLoading">در حال بارگذاری مدل…</div>
+      <div class="abadis-theater-err" id="abadisScrubErr"></div>
+      <div class="abadis-theater-captions" aria-hidden="true">
+        <div class="abadis-theater-caption" data-caption="0">
+          <p class="abadis-theater-caption-title">کیسه ساکشن ۲ لیتری</p>
+          <p class="abadis-theater-caption-sub">مخازن طبی آبادیس</p>
+        </div>
+        <div class="abadis-theater-caption" data-caption="1">
+          <p class="abadis-theater-caption-title">حجم ساکشن: ۲ لیتر در حالت تکی، تا ۸ لیتر در حالت سری یک ردیفه بر روی پایه</p>
+        </div>
+        <div class="abadis-theater-caption" data-caption="2">
+          <p class="abadis-theater-caption-title">دارای پودر ژل‌کننده، فیلتر هیدروفوبیک(جلوگیری از سر ریز مایعات)</p>
+        </div>
+        <div class="abadis-theater-caption" data-caption="3">
+          <p class="abadis-theater-caption-title">انواع فیلترهای کیسه‌های نهایی</p>
+          <p class="abadis-theater-caption-sub">فیلتر های استفاده شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد</p>
+        </div>
+      </div>
+      <div class="abadis-theater-hud" aria-hidden="true">
+        <div class="abadis-theater-track"><div class="abadis-theater-fill" id="abadisProgressFill"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="content">
+
+    <section class="section">
+      <span class="section-label">محصول</span>
+      <h2>کیسه ساکشن ۲ لیتری</h2>
+      <div class="specs-grid">
+        <div class="card">
+          <p><strong>حجم ساکشن:</strong> ۲ لیتر در حالت تکی، تا ۸ لیتر در حالت سری یک ردیفه بر روی پایه</p>
+          <p><strong>مشخصات:</strong> دارای پودر ژل‌کننده، فیلتر هیدروفوبیک(جلوگیری از سر ریز مایعات)، سازگار با کلیه دستگاه‌های ساکشن، دارای سیستم حفاظت از ساکشن مرکزی</p>
+          <p class="filter-note" style="margin-top:16px"><strong>انواع فیلترهای کیسه‌های نهایی:</strong> فیلتر های استفاده شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد:</p>
+          <p class="howto" style="margin-top:14px">برای مشاهده نحوه استفاده از کیسه ساکشن ها به این <a href="https://abadis-med.com/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%a7%d8%b3%d8%aa%d9%81%d8%a7%d8%af%d9%87-%da%a9%d8%a7%d8%b1%d8%a8%d8%b1-%d9%86%d9%87%d8%a7%db%8c%db%8c/" rel="noopener" target="_blank">صفحه</a> مراجعه نمایید .</p>
+        </div>
+        <div class="card spec-block">
+          <p><strong>ابعاد محصول:</strong></p>
+          <ul class="dim-list">
+            <li><span>قطر</span><span>11 سانتی متر</span></li>
+            <li><span>ارتفاع</span><span>24/5 سانتی متر</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-label">کدها</span>
+      <h2>کد محصول</h2>
+      <div class="table-wrap">
+        <table class="codes">
+          <thead>
+            <tr>
+              <th>کد محصول</th>
+              <th>IRC</th>
+              <th>سایز</th>
+              <th>نوع فیلتر</th>
+              <th>پودر</th>
+              <th>رنگ درب</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="code">۰۴۰۱۱۱۲</td>
+              <td class="irc">9647935197253589</td>
+              <td>دو لیتری</td>
+              <td>هیدروفوبیک</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-teal" title="رنگ درب"></span></td>
+            </tr>
+            <tr>
+              <td class="code">۰۴۰۱۱۰۲</td>
+              <td class="irc">5826314295044204</td>
+              <td>دو لیتری</td>
+              <td>×</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-yellow" title="رنگ درب"></span></td>
+            </tr>
+            <tr>
+              <td class="code">۰۴۰۱۰۱۲</td>
+              <td class="irc">4383099410749165</td>
+              <td>دو لیتری</td>
+              <td>هیدروفوبیک</td>
+              <td>×</td>
+              <td><span class="lid-swatch lid-teal" title="رنگ درب"></span></td>
+            </tr>
+            <tr>
+              <td class="code">0401132</td>
+              <td class="irc">4111380328256244</td>
+              <td>دو لیتری</td>
+              <td>مکانیکی</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-red" title="رنگ درب"></span></td>
+            </tr>
+            <tr>
+              <td class="code">0401112</td>
+              <td class="irc">9647935197253589</td>
+              <td>دو لیتری</td>
+              <td>CIF</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-yellow" title="رنگ درب"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pack-row">
+        <div class="pack-item">
+          <span class="k">تعداد در هر کارتن</span>
+          <span class="v">۴۵ عدد</span>
+        </div>
+        <div class="pack-item">
+          <span class="k">ابعاد کارتن</span>
+          <span class="v">۵۷/۵ * ۴۲/۵ *۴۴</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-label">کاربرد</span>
+      <h2>موارد مصرف</h2>
+      <div class="use-grid">
+        <div class="use-chip">ریه و آندوسکوپی</div>
+        <div class="use-chip">گوارش</div>
+        <div class="use-chip">CCU/ICU</div>
+        <div class="use-chip">عفونی</div>
+        <div class="use-chip">بخش مردان</div>
+        <div class="use-chip">بخش زنان</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="demo-badge">DEMO</div>
+    <p>پیش‌نمایش بازطراحی صفحه محصول ۲ لیتری — متن از صفحه زنده آبادیس؛ بدون ادعاهای بالینی جدید.</p>
+    <p><a href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">abadis-med.com/محصولات/کیسه-ساکشن</a></p>
+  </footer>
+
+  <a class="abadis-demo-chip" href="./site-demo.html" title="بازگشت به دمو سایت">DEMO — نسخه پروداکت ۲L</a>
+
+  <script type="module" src="./scrub-theater.js"></script>
+</body>
+</html>
