@@ -706,10 +706,11 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 		<style id="abadis-theater-css">
 			.abadis-theater {
 				position: relative;
-				height: 200vh;
+				height: 280vh;
 				width: 100%;
 				margin: 0;
 				padding: 0;
+				background: #f5f5f7;
 			}
 			.abadis-theater-sticky {
 				position: sticky;
@@ -717,7 +718,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				height: 100vh;
 				width: 100%;
 				overflow: hidden;
-				background: linear-gradient(165deg, #ffffff 0%, #f4fafb 42%, #e6f3f4 78%, #d4ecee 100%);
+				background: #f5f5f7;
 			}
 			#abadis-scrub-canvas {
 				display: block;
@@ -733,81 +734,79 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				z-index: 3;
-				pointer-events: none;
-				color: #5a7a80;
-				font-size: 0.9rem;
-				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				background: rgba(247, 251, 251, 0.72);
-				transition: opacity 0.35s ease;
+				background: #f5f5f7;
+				color: #86868b;
+				font-size: 0.8rem;
+				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Tahoma, sans-serif;
+				letter-spacing: 0.02em;
+				z-index: 2;
+				transition: opacity 0.45s ease;
 			}
-			.abadis-theater-loading.hide { opacity: 0; }
+			.abadis-theater-loading.hide { opacity: 0; pointer-events: none; }
 			.abadis-theater-err {
 				position: absolute;
 				inset: 0;
 				display: none;
 				align-items: center;
 				justify-content: center;
-				z-index: 4;
+				background: #f5f5f7;
 				color: #a33;
-				font-size: 0.9rem;
-				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				background: #f7fbfb;
 				padding: 24px;
 				text-align: center;
+				z-index: 3;
+				font-size: 0.85rem;
+				font-family: Tahoma, sans-serif;
 			}
 			.abadis-theater-hud {
 				position: absolute;
 				bottom: 28px;
 				left: 50%;
 				transform: translateX(-50%);
-				z-index: 5;
+				width: min(96px, 28vw);
 				pointer-events: none;
-				direction: ltr;
-				width: min(160px, 40vw);
+				opacity: 0.35;
+				z-index: 2;
 			}
 			.abadis-theater-track {
-				height: 3px;
-				background: rgba(13, 92, 99, 0.14);
-				border-radius: 2px;
+				height: 2px;
+				background: rgba(0,0,0,0.08);
+				border-radius: 1px;
 				overflow: hidden;
 			}
 			.abadis-theater-fill {
 				height: 100%;
 				width: 0%;
-				background: linear-gradient(90deg, #0d5c63, #7ec8cf);
-				border-radius: 2px;
-				transition: width 0.05s linear;
+				background: #1d1d1f;
+				border-radius: 1px;
 			}
 			.abadis-demo-chip {
 				position: fixed;
 				z-index: 99999;
 				bottom: 16px;
 				left: 16px;
-				background: rgba(6, 97, 99, 0.94);
-				color: #fff;
+				background: rgba(29, 29, 31, 0.78);
+				color: #f5f5f7;
 				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				font-size: 12px;
+				font-size: 11px;
 				line-height: 1.4;
-				padding: 8px 12px;
-				border-radius: 999px;
-				box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+				padding: 7px 11px;
+				border-radius: 980px;
 				text-decoration: none;
 				direction: rtl;
-				max-width: min(90vw, 320px);
+				max-width: min(90vw, 280px);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
 			}
-			.abadis-demo-chip:hover { background: #066163; color: #fff; }
-			@media (max-width: 600px) {
-				.abadis-theater { height: 220vh; }
-				.abadis-demo-chip { font-size: 11px; bottom: 10px; left: 10px; padding: 7px 10px; }
-				.abadis-theater-hud { bottom: 20px; width: min(120px, 50vw); }
+			.abadis-demo-chip:hover { background: rgba(29, 29, 31, 0.92); color: #fff; }
+			@media (max-width: 700px) {
+				.abadis-theater { height: 240vh; }
 			}
 		</style>
 		<div class="wp-block-themepunch-revslider">
 			<section class="abadis-theater" id="abadis-scrub" aria-label="Product Theater">
 				<div class="abadis-theater-sticky">
 					<canvas id="abadis-scrub-canvas"></canvas>
-					<div class="abadis-theater-loading" id="abadisScrubLoading">…</div>
+					<div class="abadis-theater-loading" id="abadisScrubLoading"></div>
 					<div class="abadis-theater-err" id="abadisScrubErr"></div>
 					<div class="abadis-theater-hud" aria-hidden="true">
 						<div class="abadis-theater-track"><div class="abadis-theater-fill" id="abadisProgressFill"></div></div>

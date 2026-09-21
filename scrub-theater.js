@@ -1,8 +1,6 @@
 /**
- * Abadis Product Theater — vivid scroll-scrub explode
- * Stage-local progress 0→1 over ~200vh sticky section.
- * ES module — load via <script type="module" src="./scrub-theater.js">
- * so it does not collide with WordPress emoji type=module scripts.
+ * Abadis Product Theater — Apple-like scroll scrub
+ * Clean stage, subtle camera, elegant part separation.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -10,17 +8,15 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const PARTS_URL = './abadis-scrub-parts.glb';
 
-/* Strong explode amplitudes (meters) */
-const LID_UP = 0.12;
-const BODY_DOWN = 0.16;
-const X_SPLIT = 0.04;
-const YAW_LID = 0.12;   // rad ~7°
-const YAW_BODY = -0.1;
+/* Elegant separation — clear but not exaggerated */
+const LID_UP = 0.085;
+const BODY_DOWN = 0.11;
+const X_SPLIT = 0.018;
 
-/* Camera arc: start yaw 35° → end -15°, with dolly-in */
-const CAM_YAW0 = THREE.MathUtils.degToRad(35);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-15);
-const DOLLY_IN = 0.28; // fraction closer at full explode
+/* Subtle camera: almost frontal → slight orbit, gentle dolly */
+const CAM_YAW0 = THREE.MathUtils.degToRad(18);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-8);
+const DOLLY_IN = 0.12;
 
 const canvas = document.getElementById('abadis-scrub-canvas');
 const stageEl = document.getElementById('abadis-scrub');
@@ -29,7 +25,7 @@ const loadingEl = document.getElementById('abadisScrubLoading');
 const progressFill = document.getElementById('abadisProgressFill');
 
 if (!canvas || !stageEl) {
-  console.error('[scrub-theater] missing #abadis-scrub-canvas or #abadis-scrub');
+  console.error('[scrub-theater] missing canvas/stage');
 } else {
   boot();
 }
@@ -44,62 +40,38 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  /* Soft clinical white → teal mist (set as clear color; mild gradient via CSS behind canvas) */
-  scene.background = new THREE.Color(0xf7fbfb);
+  /* Apple-like cool gray-white */
+  scene.background = new THREE.Color(0xf5f5f7);
 
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.035).texture;
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xd8e8ea, 0.9));
-  const key = new THREE.DirectionalLight(0xffffff, 1.05);
-  key.position.set(0.55, 1.25, 0.85);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xe8e8ed, 0.85));
+  const key = new THREE.DirectionalLight(0xffffff, 0.95);
+  key.position.set(0.4, 1.4, 0.9);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xb8d4da, 0.4);
-  fill.position.set(-0.9, 0.45, -0.4);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+  fill.position.set(-0.8, 0.5, 0.2);
   scene.add(fill);
-  /* Soft teal rim */
-  const rim = new THREE.DirectionalLight(0x7ec8cf, 0.55);
-  rim.position.set(0.1, 0.35, -1.1);
+  const rim = new THREE.DirectionalLight(0xffffff, 0.28);
+  rim.position.set(0.2, 0.4, -1.0);
   scene.add(rim);
-  const rim2 = new THREE.DirectionalLight(0x0d5c63, 0.18);
-  rim2.position.set(-0.4, 0.2, -0.8);
-  scene.add(rim2);
 
   const product = new THREE.Group();
   scene.add(product);
 
-  /* Dashed connector line between lid/body centroids */
-  const connPositions = new Float32Array(6);
-  const connGeo = new THREE.BufferGeometry();
-  connGeo.setAttribute('position', new THREE.BufferAttribute(connPositions, 3));
-  const connMat = new THREE.LineDashedMaterial({
-    color: 0x0d5c63,
-    dashSize: 0.012,
-    gapSize: 0.008,
-    transparent: true,
-    opacity: 0.35,
-    depthTest: true,
-  });
-  const connector = new THREE.Line(connGeo, connMat);
-  connector.visible = false;
-  scene.add(connector);
-
-  const _lidWorld = new THREE.Vector3();
-  const _bodyWorld = new THREE.Vector3();
-  const _tmpBox = new THREE.Box3();
   const _tmpSize = new THREE.Vector3();
 
   const state = {
     ready: false,
     smoothT: 0,
     targetT: 0,
-    idle: 0,
     lid: null,
     body: null,
     lidBase: new THREE.Vector3(),
@@ -111,9 +83,9 @@ function boot() {
     fitDist: 0.5,
   };
 
-  function smoothstep(t) {
+  function easeInOutCubic(t) {
     t = THREE.MathUtils.clamp(t, 0, 1);
-    return t * t * (3 - 2 * t);
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
   function sizeCanvas() {
@@ -130,11 +102,11 @@ function boot() {
     box.getSize(_tmpSize);
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist = state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * 1.45;
+    /* Closer / larger in frame like Apple hero */
+    state.fitDist = dist * 1.22;
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
-    state._lookHome = state.center.clone();
   }
 
   function prepareMaterials(root) {
@@ -146,8 +118,7 @@ function boot() {
       for (const m of mats) {
         if (!m) continue;
         m.side = THREE.DoubleSide;
-        if ('envMapIntensity' in m) m.envMapIntensity = 0.95;
-        /* Ensure fully opaque / visible */
+        if ('envMapIntensity' in m) m.envMapIntensity = 0.75;
         if ('transparent' in m && m.opacity < 1) {
           m.transparent = false;
           m.opacity = 1;
@@ -159,36 +130,24 @@ function boot() {
   function findNamed(root, name) {
     let found = null;
     root.traverse((o) => {
-      if (found) return;
-      if (o.name === name) found = o;
+      if (!found && o.name === name) found = o;
     });
     return found;
   }
 
-  /** Progress only over the theater stage (~200vh), not whole page */
   function scrubProgress() {
-    const el = stageEl;
-    const rect = el.getBoundingClientRect();
-    const total = el.offsetHeight - window.innerHeight;
+    const total = stageEl.offsetHeight - window.innerHeight;
     if (total <= 0) return 0;
-    return THREE.MathUtils.clamp((-rect.top) / total, 0, 1);
-  }
-
-  function syncFromScroll() {
-    state.targetT = scrubProgress();
-  }
-
-  function updateHud(t) {
-    const e = smoothstep(t);
-    if (progressFill) progressFill.style.width = Math.round(e * 100) + '%';
+    const rect = stageEl.getBoundingClientRect();
+    return THREE.MathUtils.clamp(-rect.top / total, 0, 1);
   }
 
   function placeCamera(e) {
     const yaw = THREE.MathUtils.lerp(CAM_YAW0, CAM_YAW1, e);
     const dolly = state.fitDist * (1 - DOLLY_IN * e);
-    const elev = state.radius * (0.18 - 0.06 * e);
+    const elev = state.radius * (0.12 - 0.02 * e);
     const cx = state.center.x;
-    const cy = state.center.y + state.radius * 0.05;
+    const cy = state.center.y + state.radius * 0.02;
     const cz = state.center.z;
     camera.position.set(
       cx + Math.sin(yaw) * dolly,
@@ -198,42 +157,15 @@ function boot() {
     camera.lookAt(cx, cy, cz);
   }
 
-  function updateConnector() {
-    if (!state.lid || !state.body) return;
-    state.lid.getWorldPosition(_lidWorld);
-    /* Prefer mesh centroids if possible */
-    try {
-      _tmpBox.setFromObject(state.lid);
-      _tmpBox.getCenter(_lidWorld);
-      _tmpBox.setFromObject(state.body);
-      _tmpBox.getCenter(_bodyWorld);
-    } catch (_) {
-      state.body.getWorldPosition(_bodyWorld);
-    }
-    const pos = connector.geometry.attributes.position.array;
-    pos[0] = _lidWorld.x; pos[1] = _lidWorld.y; pos[2] = _lidWorld.z;
-    pos[3] = _bodyWorld.x; pos[4] = _bodyWorld.y; pos[5] = _bodyWorld.z;
-    connector.geometry.attributes.position.needsUpdate = true;
-    connector.computeLineDistances();
-    const gap = _lidWorld.distanceTo(_bodyWorld);
-    const e = smoothstep(state.smoothT);
-    connector.visible = e > 0.08 && gap > 0.02;
-    connMat.opacity = 0.15 + 0.35 * e;
-  }
-
   function applyExplode(t) {
-    const e = smoothstep(t);
+    const e = easeInOutCubic(t);
     if (state.lid) {
       state.lid.position.set(
         state.lidBase.x - X_SPLIT * e,
         state.lidBase.y + LID_UP * e,
         state.lidBase.z
       );
-      state.lid.rotation.set(
-        state.lidBaseRot.x,
-        state.lidBaseRot.y + YAW_LID * e,
-        state.lidBaseRot.z
-      );
+      state.lid.rotation.copy(state.lidBaseRot);
     }
     if (state.body) {
       state.body.position.set(
@@ -241,22 +173,17 @@ function boot() {
         state.bodyBase.y - BODY_DOWN * e,
         state.bodyBase.z
       );
-      state.body.rotation.set(
-        state.bodyBaseRot.x,
-        state.bodyBaseRot.y + YAW_BODY * e,
-        state.bodyBaseRot.z
-      );
+      state.body.rotation.copy(state.bodyBaseRot);
     }
     placeCamera(e);
-    updateConnector();
-    updateHud(t);
+    if (progressFill) progressFill.style.width = Math.round(e * 100) + '%';
   }
 
   function showError(msg) {
     if (loadingEl) loadingEl.classList.add('hide');
     if (errEl) {
       errEl.style.display = 'flex';
-      errEl.innerHTML = msg;
+      errEl.textContent = msg;
     }
   }
 
@@ -269,11 +196,9 @@ function boot() {
       const lid = findNamed(root, 'lid');
       const body = findNamed(root, 'body');
       if (!lid || !body) {
-        console.error('[scrub-theater] missing lid/body', { lid, body });
         showError('مدل فاقد گره‌های lid/body است.');
         return;
       }
-      console.info('[scrub-theater] found lid + body');
       product.add(root);
       state.lid = lid;
       state.body = body;
@@ -287,41 +212,34 @@ function boot() {
       state.ready = true;
       if (loadingEl) loadingEl.classList.add('hide');
       applyExplode(0);
-      syncFromScroll();
     } catch (err) {
       console.error(err);
       showError('بارگذاری مدل ناموفق بود.');
     }
   })();
 
-  window.addEventListener('resize', () => {
-    sizeCanvas();
-  });
+  window.addEventListener('resize', sizeCanvas);
 
   function applyFrame() {
-    syncFromScroll();
-    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.34 : 0.2;
+    state.targetT = scrubProgress();
+    /* Heavier smoothing = more Apple "inertia" feel */
+    const k = Math.abs(state.targetT - state.smoothT) > 0.12 ? 0.22 : 0.12;
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyExplode(state.smoothT);
-    /* Idle micro-float stronger at ends */
-    state.idle += 0.012;
-    const endW = 1 - Math.min(state.smoothT, 1 - state.smoothT) * 2; // 1 at ends, 0 mid
-    const amp = 0.012 + 0.02 * Math.max(0, endW);
-    product.position.y = Math.sin(state.idle) * amp;
-    product.rotation.y = Math.sin(state.idle * 0.55) * (0.035 + 0.025 * Math.max(0, endW));
+    /* No idle bobbing — Apple products sit still */
+    product.position.set(0, 0, 0);
+    product.rotation.set(0, 0, 0);
   }
 
-  window.addEventListener('scroll', () => { syncFromScroll(); }, { passive: true });
-  window.addEventListener('touchmove', () => { syncFromScroll(); }, { passive: true });
+  window.addEventListener('scroll', applyFrame, { passive: true });
+  window.addEventListener('touchmove', applyFrame, { passive: true });
 
   sizeCanvas();
-
   function tick() {
     applyFrame();
     renderer.render(scene, camera);
     requestAnimationFrame(tick);
   }
-  setInterval(() => { applyFrame(); }, 50);
   tick();
 }
