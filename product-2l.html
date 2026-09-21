@@ -50,14 +50,14 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(6, 20, 22, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(46, 196, 198, 0.18);
+      background: #ffffff;
+      border-bottom: 1px solid rgba(6, 97, 99, 0.12);
+      box-shadow: 0 1px 0 rgba(6, 97, 99, 0.04);
     }
     .site-header-inner {
       max-width: 1120px;
       margin: 0 auto;
-      padding: 14px 22px;
+      padding: 10px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -67,9 +67,9 @@
 
     .brand-logo {
       display: block;
-      height: 40px;
+      height: 52px;
       width: auto;
-      max-width: min(240px, 58vw);
+      max-width: min(200px, 55vw);
       object-fit: contain;
     }
     .brand-logo-link {
@@ -78,20 +78,8 @@
       text-decoration: none;
       line-height: 0;
     }
-    .theater-brand {
-      position: absolute;
-      top: 18px;
-      inset-inline-start: 18px;
-      z-index: 6;
-      height: 44px;
-      width: auto;
-      opacity: 0.92;
-      pointer-events: none;
-      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.35));
-    }
     @media (max-width: 640px) {
       .brand-logo { height: 32px; }
-      .theater-brand { height: 34px; top: 12px; inset-inline-start: 12px; }
     }
 
     .wordmark {
@@ -103,9 +91,9 @@
     .header-link {
       font-size: 0.82rem;
       font-weight: 600;
-      color: #d8f0f0;
-      border: 1px solid rgba(46, 196, 198, 0.35);
-      background: rgba(6, 97, 99, 0.35);
+      color: #066163;
+      border: 1px solid rgba(6, 97, 99, 0.28);
+      background: #eef6f6;
       padding: 7px 14px;
       border-radius: 999px;
       text-decoration: none;
@@ -115,7 +103,7 @@
       background: #066163;
       color: #fff;
       text-decoration: none;
-      border-color: #2ec4c6;
+      border-color: #066163;
     }
 
     /* —— Product Theater (dark cinematic stage) —— */
@@ -516,7 +504,7 @@
   <header class="site-header">
     <div class="site-header-inner">
       <a class="brand-logo-link" href="https://abadis-med.com/" rel="noopener" target="_blank" aria-label="مخازن طبی آبادیس">
-        <img class="brand-logo" src="./brand/abadis-logo-light.png" width="220" height="103" alt="مخازن طبی آبادیس — Abadis Med" />
+        <img class="brand-logo" src="./brand/abadis-site-logo.png" width="220" height="103" alt="مخازن طبی آبادیس — Abadis Med" />
       </a>
       <a class="header-link" href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">صفحه محصول زنده</a>
     </div>
@@ -737,7 +725,7 @@
 
   <footer class="site-footer">
     <div class="demo-badge">DEMO</div>
-    <img class="footer-brand" src="./brand/abadis-logo.png" alt="Abadis Med" width="160" height="75" style="display:block;margin:12px auto 8px;height:36px;width:auto;opacity:0.9;" />
+    <img class="footer-brand" src="./brand/abadis-site-logo.png" alt="Abadis Med" width="160" height="75" style="display:block;margin:12px auto 8px;height:36px;width:auto;opacity:0.9;" />
     <p>پیش‌نمایش بازطراحی صفحه محصول ۲ لیتری — متن از صفحه زنده آبادیس؛ بدون ادعاهای بالینی جدید.</p>
     <p><a href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">abadis-med.com/محصولات/کیسه-ساکشن</a></p>
   </footer>
