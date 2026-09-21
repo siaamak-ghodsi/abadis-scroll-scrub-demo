@@ -302,33 +302,35 @@
     .use-chip-pulse .track {
       fill: none;
       stroke: none;
-      stroke-width: 0;
       opacity: 0;
-      vector-effect: non-scaling-stroke;
+      pointer-events: none;
     }
     .use-chip-pulse .ecg {
       fill: none;
       stroke: #2ec4c6;
-      stroke-width: 2.8;
+      stroke-width: 2.4;
       stroke-linecap: round;
       stroke-linejoin: round;
       vector-effect: non-scaling-stroke;
-      stroke-dasharray: 48 200;
+      /* pathLength=100 → dash+gap must sum to 100 for seamless loop */
+      stroke-dasharray: 14 86;
       stroke-dashoffset: 0;
-      opacity: 0.95;
-      filter: drop-shadow(0 0 6px rgba(46, 196, 198, 0.85));
+      opacity: 0;
+      filter: drop-shadow(0 0 5px rgba(46, 196, 198, 0.75));
     }
     .use-chip.is-inview .use-chip-pulse .ecg {
       opacity: 1;
-      animation: abadis-ecg-orbit 9.5s linear infinite;
+      animation: abadis-ecg-orbit 10s linear infinite;
     }
-    .use-chip:nth-child(2).is-inview .use-chip-pulse .ecg { animation-delay: -1.2s; }
-    .use-chip:nth-child(3).is-inview .use-chip-pulse .ecg { animation-delay: -2.4s; }
-    .use-chip:nth-child(4).is-inview .use-chip-pulse .ecg { animation-delay: -3.6s; }
-    .use-chip:nth-child(5).is-inview .use-chip-pulse .ecg { animation-delay: -4.8s; }
-    .use-chip:nth-child(6).is-inview .use-chip-pulse .ecg { animation-delay: -6.0s; }
+    .use-chip:nth-child(2).is-inview .use-chip-pulse .ecg { animation-delay: -1.6s; }
+    .use-chip:nth-child(3).is-inview .use-chip-pulse .ecg { animation-delay: -3.2s; }
+    .use-chip:nth-child(4).is-inview .use-chip-pulse .ecg { animation-delay: -4.8s; }
+    .use-chip:nth-child(5).is-inview .use-chip-pulse .ecg { animation-delay: -6.4s; }
+    .use-chip:nth-child(6).is-inview .use-chip-pulse .ecg { animation-delay: -8s; }
     @keyframes abadis-ecg-orbit {
-      to { stroke-dashoffset: -296; }
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -100; }
+    }
     }
     .use-chip-icon-wrap {
       width: 34px;
@@ -614,8 +616,8 @@
       <div class="use-grid">
         <div class="use-chip" data-animate="icon">
           <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 16.8h5.6v2.4H9.2z"/>
@@ -628,8 +630,8 @@
         </div>
         <div class="use-chip" data-animate="icon">
           <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 14.2h5.6v5H9.2z"/>
@@ -642,8 +644,8 @@
         </div>
         <div class="use-chip" data-animate="icon">
           <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13h5.6v6.2H9.2z"/>
@@ -656,8 +658,8 @@
         </div>
         <div class="use-chip" data-animate="icon">
           <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 12.2h5.6v7H9.2z"/>
@@ -670,8 +672,8 @@
         </div>
         <div class="use-chip" data-animate="icon">
           <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
@@ -684,8 +686,8 @@
         </div>
         <div class="use-chip" data-animate="icon">
           <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
