@@ -2,6 +2,7 @@
  * Abadis Product Theater — clinical stream + sealed capacity
  * Dark mint stage, Poly Haven surgery HDR; continuous suction tube → bag fill.
  * No particles / sparks / helix vortex.
+ * Narrative beats: intro → explode → rejoin → stream → fill.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -13,19 +14,21 @@ const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
 
 /* Dramatic separation — Apple film + OR theater */
-const LID_UP = 0.16;
-const BODY_DOWN = 0.2;
-const X_SPLIT = 0.06;
-const LID_TILT_X = THREE.MathUtils.degToRad(6);
-const LID_TILT_Z = THREE.MathUtils.degToRad(-4);
+const LID_UP = 0.2;
+const BODY_DOWN = 0.24;
+const X_SPLIT = 0.085;
+const LID_TILT_X = THREE.MathUtils.degToRad(10);
+const LID_TILT_Z = THREE.MathUtils.degToRad(-6);
 
-/* Camera: wider yaw arc, stronger dolly during flow */
-const CAM_YAW0 = THREE.MathUtils.degToRad(35);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-25);
-const DOLLY_IN = 0.22;
-const FLOW_DOLLY = 0.14;
-const FLOW_TILT = 0.07;
-const DUTCH_MAX = THREE.MathUtils.degToRad(2.2);
+/* Camera: wider yaw during explode; port-drop on stream; push-in on fill */
+const CAM_YAW0 = THREE.MathUtils.degToRad(38);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-32);
+const DOLLY_IN = 0.18;
+const FLOW_DOLLY = 0.16;
+const FLOW_TILT = 0.11;
+const FILL_PUSH = 0.1;
+const DUTCH_MAX = THREE.MathUtils.degToRad(1.6);
+const INTRO_FAR = 0.14; /* start farther for subtle dolly-in */
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
@@ -43,11 +46,12 @@ const captionEls = Array.from(
     Number(b.getAttribute('data-caption'))
 );
 
+/* Longer exclusive bands — less frantic caption swapping */
 const CAPTION_RANGES = [
-  { start: 0.0, end: 0.28 },
-  { start: 0.22, end: 0.48 },
-  { start: 0.42, end: 0.72 },
-  { start: 0.66, end: 1.0 },
+  { start: 0.0, end: 0.24 },
+  { start: 0.22, end: 0.5 },
+  { start: 0.48, end: 0.74 },
+  { start: 0.72, end: 1.0 },
 ];
 
 if (!canvas || !stageEl) {
@@ -78,13 +82,13 @@ function boot() {
   pmrem.compileEquirectangularShader();
 
   scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
-  const key = new THREE.DirectionalLight(0xf4faff, 0.95);
+  const key = new THREE.DirectionalLight(0xf4faff, 0.85);
   key.position.set(0.55, 1.55, 1.05);
   scene.add(key);
   const fill = new THREE.DirectionalLight(0x7ab8b8, 0.22);
   fill.position.set(-1.0, 0.45, 0.35);
   scene.add(fill);
-  const rim = new THREE.DirectionalLight(0x2ec4c6, 0.9);
+  const rim = new THREE.DirectionalLight(0x2ec4c6, 0.85);
   rim.position.set(0.15, 0.55, -1.15);
   scene.add(rim);
   const rimBrand = new THREE.DirectionalLight(0x066163, 0.45);
@@ -119,11 +123,18 @@ function boot() {
     liquid: null,
     liquidBaseY: 0,
     liquidFullH: 0.1,
+    keyLight: key,
+    rimLight: rim,
   };
 
   function easeInOutCubic(t) {
     t = THREE.MathUtils.clamp(t, 0, 1);
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function easeOutCubic(t) {
+    t = THREE.MathUtils.clamp(t, 0, 1);
+    return 1 - Math.pow(1 - t, 3);
   }
 
   function smoothstep(edge0, edge1, x) {
@@ -133,7 +144,7 @@ function boot() {
 
   function captionOpacity(t, start, end) {
     const span = Math.max(0.0001, end - start);
-    const fade = Math.min(0.18, span * 0.55);
+    const fade = Math.min(0.12, span * 0.4);
     const enter = smoothstep(start, start + fade, t);
     const leave = 1 - smoothstep(end - fade, end, t);
     return THREE.MathUtils.clamp(enter * leave, 0, 1);
@@ -146,7 +157,7 @@ function boot() {
       const o = captionOpacity(t, range.start, range.end);
       const el = captionEls[i];
       el.style.opacity = o.toFixed(3);
-      el.style.transform = `translate(-50%, ${(1 - o) * 16}px)`;
+      el.style.transform = `translate(-50%, ${(1 - o) * 14}px)`;
       el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
     }
   }
@@ -205,28 +216,56 @@ function boot() {
     return THREE.MathUtils.clamp(-rect.top / total, 0, 1);
   }
 
-  function placeCamera(e, flowE, fillE) {
-    const lookBias = flowE * 0.45 + fillE * 0.7;
-    const yaw = THREE.MathUtils.lerp(
-      CAM_YAW0,
-      CAM_YAW1,
-      easeInOutCubic(e + flowE * 0.35)
+  /**
+   * Phase-aware camera:
+   * intro — almost locked, dolly from farther
+   * explode — stronger yaw swing
+   * stream — drop elevation toward port
+   * fill — slight push-in
+   */
+  function placeCamera(t, sep, flowE, fillE, introE) {
+    const lookBias = flowE * 0.55 + fillE * 0.75;
+    /* Explode owns most of the yaw arc; hold through rejoin */
+    const yawDrive = easeInOutCubic(
+      smoothstep(0.12, 0.38, t) * (1 - 0.35 * smoothstep(0.38, 0.55, t))
     );
-    const dolly = state.fitDist * (1 - DOLLY_IN * e - FLOW_DOLLY * lookBias);
+    const yaw = THREE.MathUtils.lerp(CAM_YAW0, CAM_YAW1, yawDrive);
+
+    const introFar = INTRO_FAR * (1 - introE);
+    const dolly =
+      state.fitDist *
+      (1 +
+        introFar -
+        DOLLY_IN * sep * 0.35 -
+        FLOW_DOLLY * lookBias -
+        FILL_PUSH * fillE);
+
     const elev =
       state.radius *
-      (0.18 - 0.04 * e - FLOW_TILT * lookBias - 0.12 * fillE);
+      (0.2 -
+        0.03 * sep -
+        FLOW_TILT * lookBias -
+        0.14 * fillE -
+        0.04 * (1 - introE));
+
     const cx = state.center.x;
     const cy =
-      state.center.y + state.radius * (0.06 - 0.1 * lookBias - 0.08 * fillE);
+      state.center.y +
+      state.radius * (0.07 - 0.12 * lookBias - 0.1 * fillE);
     const cz = state.center.z;
+
     camera.position.set(
       cx + Math.sin(yaw) * dolly,
       cy + elev,
       cz + Math.cos(yaw) * dolly
     );
-    camera.lookAt(cx, cy - state.radius * (0.04 + 0.12 * fillE), cz);
-    const dutchAmp = flowE * (1 - fillE * 0.85);
+    /* Stream/fill: look down into the port / liquid */
+    camera.lookAt(
+      cx,
+      cy - state.radius * (0.03 + 0.16 * flowE + 0.14 * fillE),
+      cz
+    );
+    const dutchAmp = flowE * (1 - fillE * 0.9) * 0.7;
     camera.rotation.z += DUTCH_MAX * dutchAmp * Math.sin(flowE * Math.PI);
   }
 
@@ -304,7 +343,8 @@ function boot() {
     curve.curveType = 'catmullrom';
     curve.tension = 0.35;
 
-    const tubeRadius = Math.max(0.0045, r * 0.038);
+    /* Thicker tube for more dramatic stream silhouette */
+    const tubeRadius = Math.max(0.006, r * 0.052);
     const geo = new THREE.TubeGeometry(
       curve,
       STREAM_TUBULAR_SEGS,
@@ -320,7 +360,7 @@ function boot() {
       const tubular = STREAM_TUBULAR_SEGS;
       for (let i = 0; i <= tubular; i++) {
         const u = i / tubular;
-        const taper = 1.15 - u * 0.72; /* wide at port → thin inside bag */
+        const taper = 1.2 - u * 0.7; /* wide at port → thin inside bag */
         for (let j = 0; j <= radial; j++) {
           const idx = i * (radial + 1) + j;
           const px = pos.getX(idx);
@@ -340,18 +380,18 @@ function boot() {
     }
 
     const mat = new THREE.MeshPhysicalMaterial({
-      color: 0x066163,
+      color: 0x0a8a8c,
       emissive: 0x2ec4c6,
-      emissiveIntensity: 0.18,
+      emissiveIntensity: 0.32,
       transparent: true,
       opacity: 0,
-      roughness: 0.22,
-      metalness: 0.08,
-      transmission: 0.35,
-      thickness: 0.02,
+      roughness: 0.18,
+      metalness: 0.06,
+      transmission: 0.28,
+      thickness: 0.025,
       ior: 1.33,
-      clearcoat: 0.4,
-      clearcoatRoughness: 0.25,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.2,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
@@ -361,16 +401,16 @@ function boot() {
     mesh.visible = false;
     product.add(mesh);
 
-    /* Thinner highlight core */
+    /* Thinner highlight core — brighter teal */
     const hiGeo = new THREE.TubeGeometry(
       curve,
       STREAM_TUBULAR_SEGS,
-      tubeRadius * 0.38,
+      tubeRadius * 0.42,
       6,
       false
     );
     const hiMat = new THREE.MeshBasicMaterial({
-      color: 0x2ec4c6,
+      color: 0x5ee8ea,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -381,8 +421,12 @@ function boot() {
     hi.visible = false;
     product.add(hi);
 
-    const indexCount = geo.index ? geo.index.count : geo.getAttribute('position').count;
-    const hiIndexCount = hiGeo.index ? hiGeo.index.count : hiGeo.getAttribute('position').count;
+    const indexCount = geo.index
+      ? geo.index.count
+      : geo.getAttribute('position').count;
+    const hiIndexCount = hiGeo.index
+      ? hiGeo.index.count
+      : hiGeo.getAttribute('position').count;
     geo.setDrawRange(0, 0);
     hiGeo.setDrawRange(0, 0);
 
@@ -392,7 +436,7 @@ function boot() {
     state.streamIndexCount = indexCount;
     state.streamHiIndexCount = hiIndexCount;
 
-    /* Port ring on lid — brief emissive pulse when flow starts */
+    /* Port ring on lid — softer brief emissive pulse when flow starts */
     const portR = Math.max(0.008, r * 0.055);
     const ringGeo = new THREE.TorusGeometry(portR, portR * 0.18, 10, 32);
     const ringMat = new THREE.MeshStandardMaterial({
@@ -407,7 +451,6 @@ function boot() {
     });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = Math.PI / 2;
-    /* Local to lid: near top center of lid bbox */
     lid.updateWorldMatrix(true, false);
     const invLid = new THREE.Matrix4().copy(lid.matrixWorld).invert();
     const portWorld = new THREE.Vector3(
@@ -506,24 +549,22 @@ function boot() {
     }
 
     mesh.visible = true;
-    /* Marching reveal along tube length */
-    const reveal = easeInOutCubic(THREE.MathUtils.clamp(flowE * 1.15, 0, 1));
+    /* Marching reveal — more dramatic curve via easeOut */
+    const reveal = easeOutCubic(THREE.MathUtils.clamp(flowE * 1.2, 0, 1));
     const count = Math.max(
       STREAM_RADIAL_SEGS * 3,
       Math.floor(state.streamIndexCount * reveal)
     );
-    /* Snap to triangle multiples so end cap stays clean */
     const tri = Math.floor(count / 3) * 3;
     mesh.geometry.setDrawRange(0, tri);
 
-    /* Opacity: soft fade-in, solid mid-flow (liquid column feel) */
     const midBoost = Math.sin(Math.PI * THREE.MathUtils.clamp(flowE, 0, 1));
     mesh.material.opacity = THREE.MathUtils.clamp(
-      0.22 + flowE * 0.55 + midBoost * 0.18,
+      0.28 + flowE * 0.58 + midBoost * 0.2,
       0,
-      0.88
+      0.92
     );
-    mesh.material.emissiveIntensity = 0.12 + midBoost * 0.22;
+    mesh.material.emissiveIntensity = 0.22 + midBoost * 0.38;
 
     if (hi) {
       hi.visible = true;
@@ -533,20 +574,21 @@ function boot() {
       );
       hi.geometry.setDrawRange(0, Math.floor(hiCount / 3) * 3);
       hi.material.opacity = THREE.MathUtils.clamp(
-        0.08 + flowE * 0.35 + midBoost * 0.2,
+        0.12 + flowE * 0.42 + midBoost * 0.28,
         0,
-        0.55
+        0.7
       );
     }
 
-    /* Brief port-ring pulse near flow start */
+    /* Softer port-ring pulse near flow start */
     if (ring) {
       ring.visible = true;
-      const pulse = smoothstep(0.02, 0.18, flowE) * (1 - smoothstep(0.45, 0.85, flowE));
-      const beat = 0.55 + 0.45 * Math.sin(clock.getElapsedTime() * 5.5);
-      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.85, 0, 0.9);
-      ring.material.emissiveIntensity = pulse * beat * 1.6;
-      const s = 1 + pulse * 0.08 * beat;
+      const pulse =
+        smoothstep(0.02, 0.2, flowE) * (1 - smoothstep(0.5, 0.88, flowE));
+      const beat = 0.7 + 0.3 * Math.sin(clock.getElapsedTime() * 3.2);
+      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.55, 0, 0.7);
+      ring.material.emissiveIntensity = pulse * beat * 0.95;
+      const s = 1 + pulse * 0.05 * beat;
       ring.scale.set(s, s, s);
     }
   }
@@ -560,19 +602,27 @@ function boot() {
       return;
     }
     mesh.visible = true;
-    const sy = 0.02 + 0.92 * easeInOutCubic(fillE);
+    /* Assertive rise */
+    const sy = 0.02 + 0.96 * easeOutCubic(fillE);
     const h = sy * state.liquidFullH;
     mesh.scale.y = h;
     mesh.position.y = state.liquidBaseY + h * 0.5;
-    mesh.material.opacity = THREE.MathUtils.clamp(0.32 + fillE * 0.48, 0, 0.82);
+    mesh.material.opacity = THREE.MathUtils.clamp(0.38 + fillE * 0.5, 0, 0.88);
   }
 
   function applyTheatre(t) {
-    /* explode → full reassemble → stream reveal → fill; sep→0 before/during fill */
-    const open = easeInOutCubic(smoothstep(0, 0.36, t));
-    const rejoin = easeInOutCubic(smoothstep(0.36, 0.62, t));
+    /*
+     * Intro  0–0.12  : almost locked, scale-in / dolly from farther
+     * Explode 0.12–0.38: stronger sep + lid tilt, yaw swing
+     * Rejoin 0.38–0.55: sep→0, brief hold
+     * Stream 0.48–0.72: look into port; dramatic drawRange
+     * Fill   0.62–1.0 : assertive liquid; push-in; product +~8%
+     */
+    const introE = easeOutCubic(smoothstep(0.0, 0.12, t));
+    const open = easeInOutCubic(smoothstep(0.12, 0.38, t));
+    const rejoin = easeInOutCubic(smoothstep(0.38, 0.55, t));
     const sep = open * (1 - rejoin);
-    const flowE = easeInOutCubic(smoothstep(0.48, 0.78, t));
+    const flowE = easeInOutCubic(smoothstep(0.48, 0.72, t));
     const fillE = easeInOutCubic(smoothstep(0.62, 1.0, t));
 
     if (state.lid) {
@@ -594,9 +644,24 @@ function boot() {
       state.body.rotation.copy(state.bodyBaseRot);
     }
 
-    placeCamera(sep, flowE, fillE);
+    /* Intro scale-in (~0.94→1) then fill push (~+8%) */
+    const introScale = 0.94 + 0.06 * introE;
+    const fillScale = 1 + 0.08 * fillE;
+    const s = introScale * fillScale;
+    product.scale.set(s, s, s);
+
+    placeCamera(t, sep, flowE, fillE, introE);
     updateStream(flowE);
     updateLiquid(fillE);
+
+    /* Light drama: key + rim ramp with flow/fill */
+    if (state.keyLight) {
+      state.keyLight.intensity = 0.85 + flowE * 0.35 + fillE * 0.45;
+    }
+    if (state.rimLight) {
+      state.rimLight.intensity = 0.85 + flowE * 0.4 + fillE * 0.25;
+    }
+    renderer.toneMappingExposure = 0.9 + flowE * 0.06 + fillE * 0.08;
 
     if (progressFill) progressFill.style.width = Math.round(t * 100) + '%';
     applyCaptions(t);
@@ -648,7 +713,8 @@ function boot() {
 
   function applyFrame() {
     state.targetT = scrubProgress();
-    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.1 : 0.055;
+    /* Heavy scrub lerp — keep smooth, avoid jitter */
+    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.1 : 0.05;
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
