@@ -19,22 +19,24 @@
   <style>
     :root {
       --abadis: #066163;
-      --abadis-soft: #0e7475;
+      --abadis-soft: #026466;
       --mint: #e8f3f3;
-      --mint-light: #f5faf9;
-      --ink: #0d3a3f;
-      --muted: #5a7a80;
+      --mint-light: #eef6f6;
+      --ink: #0a2e32;
+      --muted: #4a6a70;
       --card: #ffffff;
-      --line: rgba(6, 97, 99, 0.12);
-      --shadow: 0 12px 40px rgba(6, 97, 99, 0.08);
+      --line: rgba(6, 97, 99, 0.14);
+      --shadow: 0 12px 40px rgba(6, 97, 99, 0.1);
       --radius: 18px;
       --font: "Vazirmatn", Tahoma, system-ui, sans-serif;
+      --stage-deep: #061416;
+      --stage-teal: #0a2a2c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: auto; }
     body {
       font-family: var(--font);
-      background: var(--mint-light);
+      background: linear-gradient(180deg, #0d1e20 0%, #eef6f6 280px);
       color: var(--ink);
       line-height: 1.75;
       overflow-x: hidden;
@@ -47,9 +49,9 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(245, 250, 249, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
+      background: rgba(6, 20, 22, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(46, 196, 198, 0.18);
     }
     .site-header-inner {
       max-width: 1120px;
@@ -64,33 +66,33 @@
     .wordmark {
       font-weight: 700;
       font-size: 0.98rem;
-      color: var(--abadis);
+      color: #e8f6f6;
       letter-spacing: -0.01em;
     }
     .header-link {
       font-size: 0.82rem;
       font-weight: 600;
-      color: var(--abadis);
-      border: 1px solid var(--line);
-      background: #fff;
+      color: #d8f0f0;
+      border: 1px solid rgba(46, 196, 198, 0.35);
+      background: rgba(6, 97, 99, 0.35);
       padding: 7px 14px;
       border-radius: 999px;
       text-decoration: none;
       white-space: nowrap;
     }
     .header-link:hover {
-      background: var(--abadis);
+      background: #066163;
       color: #fff;
       text-decoration: none;
-      border-color: var(--abadis);
+      border-color: #2ec4c6;
     }
 
-    /* —— Product Theater —— */
+    /* —— Product Theater (dark cinematic stage) —— */
     .abadis-theater {
       position: relative;
-      height: 480vh;
+      height: 520vh;
       width: 100%;
-      background: var(--mint);
+      background: var(--stage-deep);
     }
     .abadis-theater-sticky {
       position: sticky;
@@ -98,7 +100,10 @@
       height: 100vh;
       width: 100%;
       overflow: hidden;
-      background: linear-gradient(180deg, #f3fafa 0%, #e7f2f2 55%, #d9ecec 100%);
+      background:
+        radial-gradient(ellipse 75% 65% at 50% 42%, rgba(10, 42, 44, 0.55) 0%, transparent 70%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(2, 8, 10, 0.72) 100%),
+        linear-gradient(165deg, #061416 0%, #0a2a2c 48%, #051012 100%);
     }
     #abadis-scrub-canvas {
       display: block;
@@ -109,7 +114,7 @@
     .abadis-theater-captions {
       position: absolute;
       left: 0; right: 0; bottom: 0;
-      height: 42%;
+      height: 40%;
       pointer-events: none;
       z-index: 4;
       direction: rtl;
@@ -118,7 +123,7 @@
       justify-content: center;
       padding: 0 24px 72px;
       box-sizing: border-box;
-      background: linear-gradient(180deg, rgba(232,243,243,0) 0%, rgba(232,243,243,0.75) 45%, rgba(232,243,243,0.95) 100%);
+      background: linear-gradient(180deg, rgba(6,20,22,0) 0%, rgba(6,20,22,0.55) 42%, rgba(4,12,14,0.92) 100%);
     }
     .abadis-theater-caption {
       position: absolute;
@@ -135,26 +140,27 @@
       pointer-events: none;
     }
     .abadis-theater-caption-title {
-      margin: 0 0 8px;
-      font-size: clamp(1.2rem, 2.6vw, 2rem);
+      margin: 0 0 10px;
+      font-size: clamp(1.35rem, 3.1vw, 2.35rem);
       font-weight: 700;
-      line-height: 1.45;
-      color: var(--abadis);
-      letter-spacing: -0.01em;
+      line-height: 1.4;
+      color: #f4fbfb;
+      letter-spacing: -0.02em;
       text-wrap: balance;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.45);
     }
     .abadis-theater-caption-sub {
       margin: 0;
-      font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+      font-size: clamp(0.95rem, 1.55vw, 1.15rem);
       line-height: 1.65;
-      color: var(--abadis-soft);
+      color: rgba(180, 230, 228, 0.92);
       font-weight: 500;
       text-wrap: balance;
     }
     .abadis-theater-loading {
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
-      background: var(--mint); color: var(--abadis);
+      background: #061416; color: #7ad4d2;
       font-size: 0.85rem; z-index: 2;
       transition: opacity 0.45s ease;
     }
@@ -162,21 +168,23 @@
     .abadis-theater-err {
       position: absolute; inset: 0; display: none;
       align-items: center; justify-content: center;
-      background: var(--mint); color: #a33; padding: 24px; text-align: center;
+      background: #061416; color: #e88; padding: 24px; text-align: center;
       z-index: 3; font-size: 0.85rem;
     }
     .abadis-theater-hud {
       position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-      width: min(96px, 28vw); pointer-events: none; opacity: 0.45; z-index: 2;
+      width: min(110px, 30vw); pointer-events: none; opacity: 0.7; z-index: 2;
     }
     .abadis-theater-track {
-      height: 2px; background: rgba(6,97,99,0.18); border-radius: 1px; overflow: hidden;
+      height: 1.5px; background: rgba(46,196,198,0.18); border-radius: 2px; overflow: visible;
+      box-shadow: 0 0 12px rgba(46,196,198,0.15);
     }
     .abadis-theater-fill {
-      height: 100%; width: 0%; background: var(--abadis); border-radius: 1px;
+      height: 100%; width: 0%; background: #2ec4c6; border-radius: 2px;
+      box-shadow: 0 0 10px rgba(46,196,198,0.85), 0 0 22px rgba(6,97,99,0.55);
     }
     @media (max-width: 700px) {
-      .abadis-theater { height: 440vh; }
+      .abadis-theater { height: 480vh; }
       .abadis-theater-captions { height: 46%; padding-bottom: 64px; }
       .abadis-theater-caption { bottom: 64px; width: 94vw; }
     }
@@ -388,7 +396,7 @@
     /* —— Footer —— */
     .site-footer {
       border-top: 1px solid var(--line);
-      background: #fff;
+      background: #f3f8f8;
       padding: 28px 22px 40px;
       text-align: center;
     }

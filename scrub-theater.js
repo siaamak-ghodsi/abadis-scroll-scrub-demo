@@ -1,27 +1,37 @@
 /**
- * Abadis Product Theater — site-green scroll scrub
- * Clean stage, subtle camera, elegant part separation → suction flow → bag fill.
+ * Abadis Product Theater — bold cinematic scroll scrub
+ * Dark mint stage, Poly Haven surgery HDR lighting, vortex suction → bag fill.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const PARTS_URL = './abadis-scrub-parts.glb';
+const HDR_URL = './env/surgery_1k.hdr';
+const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
+const PARTICLE_SPRITE = './tex/particle-glow.png';
 
-/* Elegant separation — clear but not exaggerated */
-const LID_UP = 0.085;
-const BODY_DOWN = 0.11;
-const X_SPLIT = 0.018;
+/* Dramatic separation — Apple film + OR theater */
+const LID_UP = 0.16;
+const BODY_DOWN = 0.2;
+const X_SPLIT = 0.06;
+const LID_TILT_X = THREE.MathUtils.degToRad(6);
+const LID_TILT_Z = THREE.MathUtils.degToRad(-4);
 
-/* Subtle camera: almost frontal → slight orbit, gentle dolly */
-const CAM_YAW0 = THREE.MathUtils.degToRad(18);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-8);
-const DOLLY_IN = 0.12;
-/* Extra dolly / tilt during flow+fill (calm, Apple-like) */
-const FLOW_DOLLY = 0.08;
-const FLOW_TILT = 0.04;
+/* Risky camera: wider yaw arc, stronger dolly, Dutch during flow */
+const CAM_YAW0 = THREE.MathUtils.degToRad(35);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-25);
+const DOLLY_IN = 0.22;
+const FLOW_DOLLY = 0.14;
+const FLOW_TILT = 0.07;
+const DUTCH_MAX = THREE.MathUtils.degToRad(3);
 
-const PARTICLE_COUNT = 96;
+const IS_MOBILE =
+  typeof window !== 'undefined' &&
+  (window.matchMedia('(max-width: 700px)').matches ||
+    (navigator.maxTouchPoints > 0 && window.innerWidth < 900));
+const PARTICLE_COUNT = IS_MOBILE ? 120 : 180;
 
 const canvas = document.getElementById('abadis-scrub-canvas');
 const stageEl = document.getElementById('abadis-scrub');
@@ -36,12 +46,11 @@ const captionEls = Array.from(
     Number(b.getAttribute('data-caption'))
 );
 
-/* Caption bands remapped to explode → volume → suction/gel → fill/filters */
 const CAPTION_RANGES = [
-  { start: 0.00, end: 0.28 },
+  { start: 0.0, end: 0.28 },
   { start: 0.22, end: 0.48 },
   { start: 0.42, end: 0.72 },
-  { start: 0.66, end: 1.00 },
+  { start: 0.66, end: 1.0 },
 ];
 
 if (!canvas || !stageEl) {
@@ -60,28 +69,32 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.92;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  /* Abadis mint stage */
-  scene.background = new THREE.Color(0xe8f3f3);
+  /* Dark theatrical clear — HDR lights product, does NOT wash as BG */
+  scene.background = new THREE.Color(0x061416);
 
-  const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(28, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmrem.compileEquirectangularShader();
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfe3e3, 0.88));
-  const key = new THREE.DirectionalLight(0xffffff, 0.95);
-  key.position.set(0.4, 1.4, 0.9);
+  /* Cool key + brand teal rim (#066163 / #2ec4c6) — HDR fills reflections */
+  scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
+  const key = new THREE.DirectionalLight(0xf4faff, 0.95);
+  key.position.set(0.55, 1.55, 1.05);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.35);
-  fill.position.set(-0.8, 0.5, 0.2);
+  const fill = new THREE.DirectionalLight(0x7ab8b8, 0.22);
+  fill.position.set(-1.0, 0.45, 0.35);
   scene.add(fill);
-  const rim = new THREE.DirectionalLight(0xffffff, 0.28);
-  rim.position.set(0.2, 0.4, -1.0);
+  const rim = new THREE.DirectionalLight(0x2ec4c6, 0.9);
+  rim.position.set(0.15, 0.55, -1.15);
   scene.add(rim);
+  const rimBrand = new THREE.DirectionalLight(0x066163, 0.45);
+  rimBrand.position.set(-0.55, 0.4, -0.9);
+  scene.add(rimBrand);
 
   const product = new THREE.Group();
   scene.add(product);
@@ -104,12 +117,16 @@ function boot() {
     fitDist: 0.5,
     particles: null,
     particleSeeds: null,
+    particleRadii: null,
+    particleSpeeds: null,
     particleStart: null,
     particleEnd: null,
+    vacuumCone: null,
     liquid: null,
+    meniscus: null,
     liquidBaseY: 0,
     liquidFullH: 0.1,
-    bodyLocalBox: null,
+    particleMap: null,
   };
 
   function easeInOutCubic(t) {
@@ -122,25 +139,22 @@ function boot() {
     return t * t * (3 - 2 * t);
   }
 
-  /** Opacity for a caption band; overlapping fades OK */
   function captionOpacity(t, start, end) {
-    /* Longer soft edges for readable crossfade */
     const span = Math.max(0.0001, end - start);
-    const fade = Math.min(0.18, span * 0.55); /* slower caption crossfade */
+    const fade = Math.min(0.18, span * 0.55);
     const enter = smoothstep(start, start + fade, t);
     const leave = 1 - smoothstep(end - fade, end, t);
     return THREE.MathUtils.clamp(enter * leave, 0, 1);
   }
 
   function applyCaptions(t) {
-    /* Use raw scrub t (already smoothed upstream) for captions */
     for (let i = 0; i < captionEls.length; i++) {
       const range = CAPTION_RANGES[i];
       if (!range) continue;
       const o = captionOpacity(t, range.start, range.end);
       const el = captionEls[i];
       el.style.opacity = o.toFixed(3);
-      el.style.transform = `translate(-50%, ${(1 - o) * 20}px)`;
+      el.style.transform = `translate(-50%, ${(1 - o) * 16}px)`;
       el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
     }
   }
@@ -158,9 +172,9 @@ function boot() {
     box.getCenter(state.center);
     box.getSize(_tmpSize);
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
-    const dist = state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    /* Closer / larger in frame like Apple hero */
-    state.fitDist = dist * 1.32; /* leave room for bottom captions */
+    const dist =
+      state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
+    state.fitDist = dist * 1.08;
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -175,7 +189,7 @@ function boot() {
       for (const m of mats) {
         if (!m) continue;
         m.side = THREE.DoubleSide;
-        if ('envMapIntensity' in m) m.envMapIntensity = 0.75;
+        if ('envMapIntensity' in m) m.envMapIntensity = 1.05;
         if ('transparent' in m && m.opacity < 1) {
           m.transparent = false;
           m.opacity = 1;
@@ -200,20 +214,73 @@ function boot() {
   }
 
   function placeCamera(e, flowE, fillE) {
-    const lookBias = flowE * 0.55 + fillE * 0.45;
-    const yaw = THREE.MathUtils.lerp(CAM_YAW0, CAM_YAW1, e);
-    const dolly =
-      state.fitDist * (1 - DOLLY_IN * e - FLOW_DOLLY * lookBias);
-    const elev = state.radius * (0.16 - 0.02 * e - FLOW_TILT * lookBias);
+    const lookBias = flowE * 0.45 + fillE * 0.7;
+    const yaw = THREE.MathUtils.lerp(
+      CAM_YAW0,
+      CAM_YAW1,
+      easeInOutCubic(e + flowE * 0.35)
+    );
+    const dolly = state.fitDist * (1 - DOLLY_IN * e - FLOW_DOLLY * lookBias);
+    const elev =
+      state.radius *
+      (0.18 - 0.04 * e - FLOW_TILT * lookBias - 0.12 * fillE);
     const cx = state.center.x;
-    const cy = state.center.y + state.radius * (0.08 - 0.06 * lookBias);
+    const cy =
+      state.center.y + state.radius * (0.06 - 0.1 * lookBias - 0.08 * fillE);
     const cz = state.center.z;
     camera.position.set(
       cx + Math.sin(yaw) * dolly,
       cy + elev,
       cz + Math.cos(yaw) * dolly
     );
-    camera.lookAt(cx, cy - state.radius * 0.05 * lookBias, cz);
+    camera.lookAt(cx, cy - state.radius * (0.04 + 0.12 * fillE), cz);
+    const dutchAmp = flowE * (1 - fillE * 0.85);
+    camera.rotation.z += DUTCH_MAX * dutchAmp * Math.sin(flowE * Math.PI);
+  }
+
+  async function loadEnvironment() {
+    const rgbe = new RGBELoader();
+    try {
+      const tex = await rgbe.loadAsync(HDR_URL);
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      const envMap = pmrem.fromEquirectangular(tex).texture;
+      scene.environment = envMap;
+      /* Keep solid dark BG — optional very dark blurred env as faint ambient only */
+      tex.dispose();
+      pmrem.dispose();
+      return true;
+    } catch (e1) {
+      console.warn('[scrub-theater] surgery HDR failed, trying fallback', e1);
+      try {
+        const tex = await rgbe.loadAsync(HDR_FALLBACK);
+        tex.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = pmrem.fromEquirectangular(tex).texture;
+        tex.dispose();
+        pmrem.dispose();
+        return true;
+      } catch (e2) {
+        console.warn('[scrub-theater] HDR fallback failed, RoomEnvironment', e2);
+        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+        pmrem.dispose();
+        return false;
+      }
+    }
+  }
+
+  async function loadParticleMap() {
+    return new Promise((resolve) => {
+      const loader = new THREE.TextureLoader();
+      loader.load(
+        PARTICLE_SPRITE,
+        (tex) => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+          state.particleMap = tex;
+          resolve(tex);
+        },
+        undefined,
+        () => resolve(null)
+      );
+    });
   }
 
   function createSuctionParticles(lid, body) {
@@ -226,32 +293,40 @@ function boot() {
     lidBox.getCenter(lidCenter);
     bodyBox.getCenter(bodyCenter);
 
-    /* Port above lid top-center; stream into bag interior */
     const start = new THREE.Vector3(
       lidCenter.x,
-      lidBox.max.y + lidSize.y * 0.35,
+      lidBox.max.y + lidSize.y * 0.55,
       lidCenter.z
     );
     const end = new THREE.Vector3(
       bodyCenter.x,
-      bodyBox.min.y + (bodyBox.max.y - bodyBox.min.y) * 0.42,
+      bodyBox.min.y + (bodyBox.max.y - bodyBox.min.y) * 0.38,
       bodyCenter.z
     );
 
-    /* Convert world → product-local for parenting */
     product.worldToLocal(start);
     product.worldToLocal(end);
 
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     const colors = new Float32Array(PARTICLE_COUNT * 3);
     const seeds = new Float32Array(PARTICLE_COUNT);
-    const teal = new THREE.Color(0x2a9a9c);
-    const milk = new THREE.Color(0xe8f4f4);
+    const radii = new Float32Array(PARTICLE_COUNT);
+    const speeds = new Float32Array(PARTICLE_COUNT);
+    const teal = new THREE.Color(0x40e0d8);
+    const brand = new THREE.Color(0x066163);
+    const spark = new THREE.Color(0xffffff);
+    const accent = new THREE.Color(0x2ec4c6);
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       seeds[i] = Math.random();
-      const mix = 0.35 + Math.random() * 0.65;
-      const c = teal.clone().lerp(milk, 1 - mix);
+      radii[i] = 0.55 + Math.random() * 0.9;
+      speeds[i] = 0.75 + Math.random() * 0.55;
+      const roll = Math.random();
+      let c;
+      if (roll > 0.78) c = spark.clone();
+      else if (roll > 0.45) c = teal.clone().lerp(spark, 0.3);
+      else if (roll > 0.2) c = accent.clone();
+      else c = brand.clone().lerp(teal, 0.55);
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -265,46 +340,77 @@ function boot() {
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const mat = new THREE.PointsMaterial({
-      size: Math.max(0.004, state.radius * 0.045),
+      size: Math.max(0.008, state.radius * 0.07),
+      map: state.particleMap || null,
       vertexColors: true,
       transparent: true,
       opacity: 0,
       depthWrite: false,
       sizeAttenuation: true,
-      blending: THREE.NormalBlending,
+      blending: THREE.AdditiveBlending,
     });
+    if (state.particleMap) mat.alphaMap = state.particleMap;
 
     const points = new THREE.Points(geo, mat);
     points.frustumCulled = false;
     points.visible = false;
     product.add(points);
 
+    const coneH = state.radius * 0.55;
+    const coneR = state.radius * 0.22;
+    const coneGeo = new THREE.ConeGeometry(coneR, coneH, 24, 1, true);
+    const coneMat = new THREE.MeshBasicMaterial({
+      color: 0x40e0d8,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const cone = new THREE.Mesh(coneGeo, coneMat);
+    cone.rotation.x = Math.PI;
+    cone.position.set(start.x, start.y + coneH * 0.35, start.z);
+    cone.visible = false;
+    product.add(cone);
+
     state.particles = points;
     state.particleSeeds = seeds;
+    state.particleRadii = radii;
+    state.particleSpeeds = speeds;
     state.particleStart = start;
     state.particleEnd = end;
+    state.vacuumCone = cone;
   }
 
   function createLiquidFill(body) {
-    /* Body local AABB for sizing the fill cylinder */
     const box = new THREE.Box3().setFromObject(body);
     const size = new THREE.Vector3();
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
 
-    const radius = Math.min(size.x, size.z) * 0.36;
-    const height = size.y * 0.78;
-    const geo = new THREE.CylinderGeometry(radius, radius * 0.98, 1, 32, 1, false);
+    const radius = Math.min(size.x, size.z) * 0.38;
+    const height = size.y * 0.82;
+    const geo = new THREE.CylinderGeometry(
+      radius,
+      radius * 0.97,
+      1,
+      48,
+      1,
+      false
+    );
     const mat = new THREE.MeshPhysicalMaterial({
-      color: 0x3db5b0,
+      color: 0x148a8c,
       transparent: true,
       opacity: 0,
-      roughness: 0.15,
-      metalness: 0,
-      transmission: 0.35,
-      thickness: 0.02,
-      ior: 1.33,
+      roughness: 0.12,
+      metalness: 0.05,
+      transmission: 0.22,
+      thickness: 0.04,
+      ior: 1.35,
+      specularIntensity: 0.9,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.2,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
@@ -313,54 +419,87 @@ function boot() {
     mesh.receiveShadow = false;
     mesh.visible = false;
 
-    /* Parent to body so it rides explode; position in body-local space */
     body.updateWorldMatrix(true, false);
     const inv = new THREE.Matrix4().copy(body.matrixWorld).invert();
-    const localBottom = new THREE.Vector3(center.x, box.min.y, center.z).applyMatrix4(inv);
-    const localTopHint = new THREE.Vector3(center.x, box.min.y + height, center.z).applyMatrix4(inv);
+    const localBottom = new THREE.Vector3(
+      center.x,
+      box.min.y,
+      center.z
+    ).applyMatrix4(inv);
+    const localTopHint = new THREE.Vector3(
+      center.x,
+      box.min.y + height,
+      center.z
+    ).applyMatrix4(inv);
     const localH = Math.abs(localTopHint.y - localBottom.y) || height;
 
     mesh.position.set(localBottom.x, localBottom.y, localBottom.z);
     mesh.scale.set(1, 0.02, 1);
     body.add(mesh);
 
+    const ringGeo = new THREE.TorusGeometry(radius * 0.92, radius * 0.028, 8, 48);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x5ee8e0,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2;
+    ring.visible = false;
+    body.add(ring);
+
     state.liquid = mesh;
+    state.meniscus = ring;
     state.liquidBaseY = localBottom.y;
     state.liquidFullH = localH;
-    state.bodyLocalBox = { size, center };
   }
 
   function updateParticles(flowE, elapsed) {
     const pts = state.particles;
     if (!pts || !state.particleSeeds) return;
     const mat = pts.material;
-    if (flowE < 0.05) {
+    const cone = state.vacuumCone;
+
+    if (flowE < 0.04) {
       mat.opacity = 0;
       pts.visible = false;
+      if (cone) {
+        cone.visible = false;
+        cone.material.opacity = 0;
+      }
       return;
     }
     pts.visible = true;
-    mat.opacity = THREE.MathUtils.clamp(flowE * 0.85, 0, 0.9);
+    mat.opacity = THREE.MathUtils.clamp(0.4 + flowE * 0.95, 0, 1);
+
+    if (cone) {
+      cone.visible = true;
+      cone.material.opacity = THREE.MathUtils.clamp(flowE * 0.22, 0, 0.28);
+      cone.scale.setScalar(0.85 + flowE * 0.25);
+    }
 
     const pos = pts.geometry.attributes.position.array;
     const start = state.particleStart;
     const end = state.particleEnd;
-    const spread = state.radius * 0.12;
+    const maxSpread = state.radius * 0.28;
     const time = elapsed;
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const seed = state.particleSeeds[i];
-      const u = (seed + flowE * 1.8 + time * 0.15) % 1;
-      /* Ease into bag: start wide above port, tighten toward center */
-      const spiral = seed * Math.PI * 2;
-      const radial = spread * (1 - u * 0.85) * (0.4 + seed * 0.6);
+      const spd = state.particleSpeeds[i];
+      const rMul = state.particleRadii[i];
+      const u = (seed + flowE * 2.2 * spd + time * 0.28 * spd) % 1;
+      const turns = 3.2 + seed * 1.8;
+      const spiral = seed * Math.PI * 2 + u * Math.PI * 2 * turns;
+      const flare = u < 0.7 ? 1 - u * 1.15 : 0.2 + (u - 0.7) * 0.9;
+      const radial = maxSpread * Math.max(0.04, flare) * rMul;
       const x =
-        THREE.MathUtils.lerp(start.x, end.x, u) +
-        Math.cos(spiral + u * 4) * radial;
+        THREE.MathUtils.lerp(start.x, end.x, u) + Math.cos(spiral) * radial;
       const y = THREE.MathUtils.lerp(start.y, end.y, easeInOutCubic(u));
       const z =
-        THREE.MathUtils.lerp(start.z, end.z, u) +
-        Math.sin(spiral + u * 4) * radial;
+        THREE.MathUtils.lerp(start.z, end.z, u) + Math.sin(spiral) * radial;
       pos[i * 3] = x;
       pos[i * 3 + 1] = y;
       pos[i * 3 + 2] = z;
@@ -371,24 +510,36 @@ function boot() {
   function updateLiquid(fillE) {
     const mesh = state.liquid;
     if (!mesh) return;
+    const ring = state.meniscus;
     if (fillE < 0.02) {
       mesh.visible = false;
       mesh.material.opacity = 0;
+      if (ring) {
+        ring.visible = false;
+        ring.material.opacity = 0;
+      }
       return;
     }
     mesh.visible = true;
-    const sy = 0.02 + 0.85 * fillE;
-    mesh.scale.y = sy * state.liquidFullH;
-    /* Grow upward from bag bottom */
-    mesh.position.y = state.liquidBaseY + (sy * state.liquidFullH) * 0.5;
-    mesh.material.opacity = THREE.MathUtils.clamp(0.15 + fillE * 0.5, 0, 0.62);
+    const sy = 0.02 + 0.9 * easeInOutCubic(fillE);
+    const h = sy * state.liquidFullH;
+    mesh.scale.y = h;
+    mesh.position.y = state.liquidBaseY + h * 0.5;
+    mesh.material.opacity = THREE.MathUtils.clamp(0.35 + fillE * 0.45, 0, 0.78);
+
+    if (ring) {
+      ring.visible = true;
+      ring.position.set(mesh.position.x, state.liquidBaseY + h, mesh.position.z);
+      ring.material.opacity = THREE.MathUtils.clamp(fillE * 0.55, 0, 0.65);
+      const pulse = 1 + Math.sin(clock.getElapsedTime() * 2.2) * 0.015;
+      ring.scale.set(pulse, pulse, pulse);
+    }
   }
 
   function applyTheatre(t) {
-    /* Phased easing: explode early, hold mildly, soft rejoin as fill starts */
-    /* Full reassemble after explode (sep → 0) while flow/fill continue */
-    const open = easeInOutCubic(smoothstep(0, 0.4, t));
-    const rejoin = easeInOutCubic(smoothstep(0.48, 0.78, t));
+    /* 0–0.38 explode; 0.40–0.72 rejoin + vortex peak; 0.55–1 fill */
+    const open = easeInOutCubic(smoothstep(0, 0.38, t));
+    const rejoin = easeInOutCubic(smoothstep(0.4, 0.72, t));
     const sep = open * (1 - rejoin);
     const flowE = easeInOutCubic(smoothstep(0.38, 0.72, t));
     const fillE = easeInOutCubic(smoothstep(0.55, 1.0, t));
@@ -400,6 +551,8 @@ function boot() {
         state.lidBase.z
       );
       state.lid.rotation.copy(state.lidBaseRot);
+      state.lid.rotation.x += LID_TILT_X * sep;
+      state.lid.rotation.z += LID_TILT_Z * sep;
     }
     if (state.body) {
       state.body.position.set(
@@ -429,6 +582,7 @@ function boot() {
   const loader = new GLTFLoader();
   (async () => {
     try {
+      await Promise.all([loadEnvironment(), loadParticleMap()]);
       const gltf = await loader.loadAsync(PARTS_URL);
       const root = gltf.scene;
       prepareMaterials(root);
@@ -463,12 +617,10 @@ function boot() {
 
   function applyFrame() {
     state.targetT = scrubProgress();
-    /* Heavier smoothing = more Apple "inertia" feel */
-    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.10 : 0.055;
+    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.1 : 0.055;
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
-    /* No idle bobbing — Apple products sit still */
     product.position.set(0, 0, 0);
     product.rotation.set(0, 0, 0);
   }
