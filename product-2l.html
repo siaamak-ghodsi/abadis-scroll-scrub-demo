@@ -50,43 +50,19 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: #ffffff;
-      border-bottom: 1px solid rgba(6, 97, 99, 0.1);
-    }
-    /* Top strip — same teal as abadis-med.com header (#066163) */
-    .site-header-bar {
       background: #066163;
-      color: #fff;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.01em;
+      border-bottom: none;
     }
-    .site-header-bar-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 8px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-    .site-header-bar a {
-      color: rgba(255,255,255,0.92);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .site-header-bar a:hover { color: #fff; text-decoration: underline; }
     .site-header-inner {
       max-width: 1120px;
       margin: 0 auto;
-      padding: 10px 22px;
+      padding: 12px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      background: #ffffff;
+      background: #066163;
     }
 
     .brand-logo {
@@ -115,19 +91,19 @@
     .header-link {
       font-size: 0.82rem;
       font-weight: 600;
-      color: #066163;
-      border: 1px solid rgba(6, 97, 99, 0.28);
-      background: #eef6f6;
+      color: #e8f6f6;
+      border: 1px solid rgba(232, 246, 246, 0.45);
+      background: rgba(255,255,255,0.08);
       padding: 7px 14px;
       border-radius: 999px;
       text-decoration: none;
       white-space: nowrap;
     }
     .header-link:hover {
-      background: #066163;
+      background: rgba(255,255,255,0.18);
       color: #fff;
       text-decoration: none;
-      border-color: #066163;
+      border-color: #fff;
     }
 
     /* —— Product Theater (dark cinematic stage) —— */
@@ -335,30 +311,23 @@
     }
     .use-chip-pulse {
       position: absolute;
-      inset: -3px;
-      width: calc(100% + 6px);
-      height: calc(100% + 6px);
+      inset: -4px;
+      width: calc(100% + 8px);
+      height: calc(100% + 8px);
       pointer-events: none;
       overflow: visible;
-    }
-    .use-chip-pulse .track {
-      fill: none;
-      stroke: none;
-      opacity: 0;
-      pointer-events: none;
     }
     .use-chip-pulse .ecg {
       fill: none;
       stroke: #2ec4c6;
-      stroke-width: 2.4;
+      stroke-width: 2.6;
       stroke-linecap: round;
       stroke-linejoin: round;
       vector-effect: non-scaling-stroke;
-      /* pathLength=100 → dash+gap must sum to 100 for seamless loop */
-      stroke-dasharray: 14 86;
+      stroke-dasharray: 22 78;
       stroke-dashoffset: 0;
       opacity: 0;
-      filter: drop-shadow(0 0 5px rgba(46, 196, 198, 0.75));
+      filter: drop-shadow(0 0 5px rgba(46, 196, 198, 0.8));
     }
     .use-chip.is-inview .use-chip-pulse .ecg {
       opacity: 1;
@@ -371,6 +340,8 @@
     .use-chip:nth-child(6).is-inview .use-chip-pulse .ecg { animation-delay: -8s; }
     @keyframes abadis-ecg-orbit {
       from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -100; }
+    }
       to { stroke-dashoffset: -100; }
     }
     }
@@ -526,16 +497,9 @@
 <body>
 
   <header class="site-header">
-    <div class="site-header-bar" aria-hidden="false">
-      <div class="site-header-bar-inner">
-        <a href="https://abadis-med.com/%d8%a2%d8%ae%d8%b1%db%8c%d9%86-%d8%a7%d8%ae%d8%a8%d8%a7%d8%b1/" rel="noopener" target="_blank">آخرین اخبار</a>
-        <a href="https://abadis-med.com/%d9%84%db%8c%d8%b3%d8%aa-%d9%86%d9%85%d8%a7%db%8c%d9%86%d8%af%da%af%d8%a7%d9%86/" rel="noopener" target="_blank">لیست نمایندگان</a>
-        <a href="https://abadis-med.com/%d9%be%d8%b1%d8%b3%d8%b4-%d9%87%d8%a7%db%8c-%d9%85%d8%aa%d8%af%d8%a7%d9%88%d9%84/" rel="noopener" target="_blank">پرسش‌های متداول</a>
-      </div>
-    </div>
     <div class="site-header-inner">
       <a class="brand-logo-link" href="https://abadis-med.com/" rel="noopener" target="_blank" aria-label="مخازن طبی آبادیس">
-        <img class="brand-logo" src="./brand/abadis-site-logo.png" width="220" height="103" alt="مخازن طبی آبادیس — Abadis Med" />
+        <img class="brand-logo" src="./brand/abadis-logo-on-teal.png" width="220" height="103" alt="مخازن طبی آبادیس — Abadis Med" />
       </a>
       <a class="header-link" href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">صفحه محصول زنده</a>
     </div>
@@ -666,9 +630,19 @@
       <h2>موارد مصرف</h2>
       <div class="use-grid">
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+          <svg class="use-chip-pulse" viewBox="0 0 200 72" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ecg" pathLength="100" d="M 12 8
+          H 48
+          L 54 8 L 58 22 L 62 2 L 66 28 L 70 8 L 76 8
+          H 188
+          A 10 10 0 0 1 198 18
+          V 54
+          A 10 10 0 0 1 188 64
+          H 12
+          A 10 10 0 0 1 2 54
+          V 18
+          A 10 10 0 0 1 12 8
+          Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 16.8h5.6v2.4H9.2z"/>
@@ -680,9 +654,19 @@
           <span>ریه و آندوسکوپی</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+          <svg class="use-chip-pulse" viewBox="0 0 200 72" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ecg" pathLength="100" d="M 12 8
+          H 48
+          L 54 8 L 58 22 L 62 2 L 66 28 L 70 8 L 76 8
+          H 188
+          A 10 10 0 0 1 198 18
+          V 54
+          A 10 10 0 0 1 188 64
+          H 12
+          A 10 10 0 0 1 2 54
+          V 18
+          A 10 10 0 0 1 12 8
+          Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 14.2h5.6v5H9.2z"/>
@@ -694,9 +678,19 @@
           <span>گوارش</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+          <svg class="use-chip-pulse" viewBox="0 0 200 72" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ecg" pathLength="100" d="M 12 8
+          H 48
+          L 54 8 L 58 22 L 62 2 L 66 28 L 70 8 L 76 8
+          H 188
+          A 10 10 0 0 1 198 18
+          V 54
+          A 10 10 0 0 1 188 64
+          H 12
+          A 10 10 0 0 1 2 54
+          V 18
+          A 10 10 0 0 1 12 8
+          Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13h5.6v6.2H9.2z"/>
@@ -708,9 +702,19 @@
           <span>CCU/ICU</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+          <svg class="use-chip-pulse" viewBox="0 0 200 72" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ecg" pathLength="100" d="M 12 8
+          H 48
+          L 54 8 L 58 22 L 62 2 L 66 28 L 70 8 L 76 8
+          H 188
+          A 10 10 0 0 1 198 18
+          V 54
+          A 10 10 0 0 1 188 64
+          H 12
+          A 10 10 0 0 1 2 54
+          V 18
+          A 10 10 0 0 1 12 8
+          Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 12.2h5.6v7H9.2z"/>
@@ -722,9 +726,19 @@
           <span>عفونی</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+          <svg class="use-chip-pulse" viewBox="0 0 200 72" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ecg" pathLength="100" d="M 12 8
+          H 48
+          L 54 8 L 58 22 L 62 2 L 66 28 L 70 8 L 76 8
+          H 188
+          A 10 10 0 0 1 198 18
+          V 54
+          A 10 10 0 0 1 188 64
+          H 12
+          A 10 10 0 0 1 2 54
+          V 18
+          A 10 10 0 0 1 12 8
+          Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
@@ -736,9 +750,19 @@
           <span>بخش مردان</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
-        <path class="track" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
-        <path class="ecg" pathLength="100" d="M14 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+          <svg class="use-chip-pulse" viewBox="0 0 200 72" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ecg" pathLength="100" d="M 12 8
+          H 48
+          L 54 8 L 58 22 L 62 2 L 66 28 L 70 8 L 76 8
+          H 188
+          A 10 10 0 0 1 198 18
+          V 54
+          A 10 10 0 0 1 188 64
+          H 12
+          A 10 10 0 0 1 2 54
+          V 18
+          A 10 10 0 0 1 12 8
+          Z"/>
       </svg>
           <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
