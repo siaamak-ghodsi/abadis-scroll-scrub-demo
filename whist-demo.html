@@ -2,10 +2,10 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-SCRUB-V1" />
+  <meta name="abadis-demo-build" content="WHIST-PRODUCT-V2" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>دمو اسکراب آبادیس — حس whist</title>
+  <title>کیسه ساکشن ۲ لیتری — دمو آبادیس (سبک whist)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -23,6 +23,7 @@
       --ink: #1d1d1f;
       --muted: #6e6e73;
       --bg: #f5f5f7;
+      --line: rgba(0,0,0,0.08);
       --font: "Vazirmatn", Tahoma, system-ui, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,18 +32,21 @@
       font-family: var(--font);
       background: var(--bg);
       color: var(--ink);
-      line-height: 1.7;
+      line-height: 1.75;
       overflow-x: hidden;
     }
+    a { color: var(--abadis); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
+    /* —— Header (whist-like light blur) —— */
     .site-header {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(245, 245, 247, 0.86);
-      backdrop-filter: saturate(180%) blur(16px);
-      -webkit-backdrop-filter: saturate(180%) blur(16px);
-      border-bottom: 1px solid rgba(0,0,0,0.06);
+      background: rgba(245, 245, 247, 0.84);
+      backdrop-filter: saturate(180%) blur(18px);
+      -webkit-backdrop-filter: saturate(180%) blur(18px);
+      border-bottom: 1px solid var(--line);
     }
     .site-header-inner {
       max-width: 1120px;
@@ -60,19 +64,28 @@
       max-width: min(180px, 50vw);
       object-fit: contain;
     }
-    .brand-logo-link { line-height: 0; text-decoration: none; }
-    .header-meta {
-      font-size: 0.78rem;
+    .brand-logo-link { line-height: 0; }
+    .header-link {
+      font-size: 0.8rem;
       font-weight: 600;
-      color: var(--muted);
-      letter-spacing: -0.01em;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: 980px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .header-link:hover {
+      border-color: var(--abadis);
+      color: var(--abadis);
+      text-decoration: none;
     }
     @media (max-width: 640px) {
       .brand-logo { height: 30px; }
-      .header-meta { display: none; }
     }
 
-    /* Long whist-like runway */
+    /* —— Theater —— */
     .abadis-theater {
       position: relative;
       height: 920vh;
@@ -106,7 +119,7 @@
       position: absolute;
       left: 50%;
       bottom: 78px;
-      width: min(720px, 90vw);
+      width: min(740px, 90vw);
       margin: 0;
       padding: 0 12px;
       box-sizing: border-box;
@@ -149,7 +162,7 @@
     }
     .abadis-theater-hud {
       position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-      width: min(88px, 26vw); pointer-events: none; opacity: 0.45; z-index: 2;
+      width: min(88px, 26vw); pointer-events: none; opacity: 0.4; z-index: 2;
     }
     .abadis-theater-track {
       height: 1.5px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden;
@@ -162,38 +175,218 @@
       .abadis-theater-caption { bottom: 68px; }
     }
 
-    .after {
-      max-width: 640px;
+    /* —— Content: no cards, whist typography —— */
+    .page {
+      max-width: 920px;
       margin: 0 auto;
-      padding: 72px 24px 96px;
+      padding: 0 24px 120px;
+    }
+    .block {
+      padding: 88px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .block:last-of-type { border-bottom: none; }
+    .eyebrow {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--abadis);
+      margin-bottom: 18px;
+    }
+    .block h2 {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.25;
+      margin-bottom: 28px;
+      color: var(--ink);
+      text-wrap: balance;
+    }
+    .lead {
+      font-size: clamp(1.05rem, 2vw, 1.28rem);
+      color: var(--muted);
+      font-weight: 500;
+      max-width: 36em;
+      margin-bottom: 22px;
+    }
+    .lead strong { color: var(--ink); font-weight: 700; }
+    .plain {
+      font-size: 1.02rem;
+      color: var(--muted);
+      max-width: 40em;
+      margin-bottom: 16px;
+    }
+    .plain strong { color: var(--ink); }
+
+    /* Scroll reveal — text only, no cards */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition:
+        opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--d, 0ms);
+    }
+    .reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-line {
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--d, 0ms);
+    }
+    .reveal-line.is-in {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Specs as big stacked lines */
+    .spec-stack {
+      display: grid;
+      gap: 28px;
+      margin-top: 12px;
+    }
+    .spec-row {
+      display: grid;
+      grid-template-columns: minmax(100px, 160px) 1fr;
+      gap: 16px 28px;
+      align-items: baseline;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .spec-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .spec-k {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .spec-v {
+      font-size: clamp(1.05rem, 2vw, 1.22rem);
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.015em;
+    }
+    @media (max-width: 560px) {
+      .spec-row { grid-template-columns: 1fr; gap: 6px; }
+    }
+
+    /* Dimensions as huge numbers */
+    .dims {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px 48px;
+      margin-top: 8px;
+    }
+    .dim-item .num {
+      display: block;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+    }
+    .dim-item .lbl {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Use cases — text list, no chips */
+    .use-list {
+      list-style: none;
+      display: grid;
+      gap: 0;
+      margin-top: 8px;
+    }
+    .use-list li {
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+    }
+    .use-list li:last-child { border-bottom: none; }
+
+    /* Codes — flat table, no card chrome */
+    .codes-wrap {
+      margin-top: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table.codes {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      font-size: 0.92rem;
+    }
+    table.codes th {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 10px 12px 14px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    table.codes td {
+      text-align: center;
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      vertical-align: middle;
+    }
+    table.codes tr:last-child td { border-bottom: none; }
+    table.codes td.code {
+      font-weight: 700;
+      color: var(--abadis);
+      direction: ltr;
+    }
+    table.codes td.irc {
+      direction: ltr;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .lid-swatch {
+      display: inline-block;
+      width: 42px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+      vertical-align: middle;
+    }
+    .lid-teal { background: #2a9a8f; }
+    .lid-yellow { background: #e8c84a; }
+    .lid-red { background: #c0392b; }
+
+    .howto {
+      margin-top: 36px;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 40px 24px 56px;
       text-align: center;
     }
-    .after h2 {
-      font-size: clamp(1.2rem, 2.4vw, 1.55rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
-    }
-    .after p {
+    .site-footer p {
+      font-size: 0.82rem;
       color: var(--muted);
-      font-size: 0.98rem;
-      margin-bottom: 28px;
+      max-width: 480px;
+      margin: 0 auto 10px;
     }
-    .after a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 22px;
-      border-radius: 980px;
-      background: var(--abadis);
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.9rem;
-      text-decoration: none;
-    }
-    .after a:hover { filter: brightness(1.08); }
-
-    .demo-badge {
+    .demo-chip {
       position: fixed; z-index: 99999; bottom: 16px; left: 16px;
       background: rgba(29,29,31,0.88); color: #f5f5f7;
       font-size: 11px; padding: 7px 12px; border-radius: 980px;
@@ -208,7 +401,7 @@
       <a class="brand-logo-link" href="https://abadis-med.com/" rel="noopener" target="_blank" aria-label="مخازن طبی آبادیس">
         <img class="brand-logo" src="./brand/abadis-site-logo.png" width="220" height="103" alt="مخازن طبی آبادیس" onerror="this.src='./brand/abadis-logo-on-teal.png'" />
       </a>
-      <span class="header-meta">دمو اسکراب · حس whist</span>
+      <a class="header-link" href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">صفحه محصول زنده</a>
     </div>
   </header>
 
@@ -224,11 +417,11 @@
         </div>
         <div class="abadis-theater-caption" data-caption="1">
           <p class="abadis-theater-caption-title">جدا شدن قطعات</p>
-          <p class="abadis-theater-caption-sub">در، مخزن و اتصالات — با اسکرول آروم باز می‌شوند</p>
+          <p class="abadis-theater-caption-sub">در، مخزن و اتصالات</p>
         </div>
         <div class="abadis-theater-caption" data-caption="2">
           <p class="abadis-theater-caption-title">جریان مکش</p>
-          <p class="abadis-theater-caption-sub">مسیر بالینی از پورت تا داخل کیسه</p>
+          <p class="abadis-theater-caption-sub">از پورت تا داخل کیسه</p>
         </div>
         <div class="abadis-theater-caption" data-caption="3">
           <p class="abadis-theater-caption-title">پر شدن تا ظرفیت ۲ لیتر</p>
@@ -241,13 +434,150 @@
     </div>
   </section>
 
-  <section class="after">
-    <h2>اسکرول را دوباره امتحان کنید</h2>
-    <p>این صفحه فقط دموی هیرو است — ریتم بلند و تم روشن، مثل حس whist، روی مدل واقعی آبادیس.</p>
-    <a href="./product-2l.html">نسخهٔ کامل صفحه محصول</a>
-  </section>
+  <main class="page">
 
-  <a class="demo-badge" href="./product-2l.html">WHIST-SCRUB-V1</a>
+    <section class="block">
+      <span class="eyebrow reveal" style="--d:0ms">محصول</span>
+      <h2 class="reveal" style="--d:80ms">کیسه ساکشن ۲ لیتری</h2>
+      <p class="lead reveal" style="--d:160ms">
+        <strong>حجم ساکشن:</strong>
+        ۲ لیتر در حالت تکی، تا ۸ لیتر در حالت سری یک ردیفه بر روی پایه
+      </p>
+      <div class="spec-stack">
+        <div class="spec-row reveal-line" style="--d:0ms">
+          <span class="spec-k">مشخصات</span>
+          <span class="spec-v">پودر ژل‌کننده · فیلتر هیدروفوبیک (جلوگیری از سرریز مایعات) · سازگار با کلیه دستگاه‌های ساکشن · سیستم حفاظت از ساکشن مرکزی</span>
+        </div>
+        <div class="spec-row reveal-line" style="--d:90ms">
+          <span class="spec-k">فیلترها</span>
+          <span class="spec-v">فیلترهای کیسه‌های نهایی آبادیس در ۳ نوع تولید می‌شود و از سرریز مایعات جلوگیری می‌کند</span>
+        </div>
+      </div>
+      <p class="howto reveal" style="--d:200ms">
+        برای مشاهده نحوه استفاده از کیسه ساکشن‌ها به این
+        <a href="https://abadis-med.com/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%a7%d8%b3%d8%aa%d9%81%d8%a7%d8%af%d9%87-%da%a9%d8%a7%d8%b1%d8%a8%d8%b1-%d9%86%d9%87%d8%a7%db%8c%db%8c/" rel="noopener" target="_blank">صفحه</a>
+        مراجعه نمایید.
+      </p>
+    </section>
+
+    <section class="block">
+      <span class="eyebrow reveal">ابعاد</span>
+      <h2 class="reveal" style="--d:80ms">اندازه محصول</h2>
+      <div class="dims">
+        <div class="dim-item reveal" style="--d:120ms">
+          <span class="num">۱۱</span>
+          <span class="lbl">سانتی‌متر قطر</span>
+        </div>
+        <div class="dim-item reveal" style="--d:220ms">
+          <span class="num">۲۴٫۵</span>
+          <span class="lbl">سانتی‌متر ارتفاع</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <span class="eyebrow reveal">موارد مصرف</span>
+      <h2 class="reveal" style="--d:80ms">کجا استفاده می‌شود</h2>
+      <ul class="use-list">
+        <li class="reveal-line" style="--d:0ms">ریه و آندوسکوپی</li>
+        <li class="reveal-line" style="--d:70ms">گوارش</li>
+        <li class="reveal-line" style="--d:140ms">CCU / ICU</li>
+        <li class="reveal-line" style="--d:210ms">عفونی</li>
+        <li class="reveal-line" style="--d:280ms">بخش مردان</li>
+        <li class="reveal-line" style="--d:350ms">بخش زنان</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <span class="eyebrow reveal">کد محصول</span>
+      <h2 class="reveal" style="--d:80ms">جدول مشخصات</h2>
+      <div class="codes-wrap reveal" style="--d:140ms">
+        <table class="codes">
+          <thead>
+            <tr>
+              <th>کد محصول</th>
+              <th>IRC</th>
+              <th>سایز</th>
+              <th>نوع فیلتر</th>
+              <th>پودر</th>
+              <th>رنگ درب</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="code">۰۴۰۱۱۱۲</td>
+              <td class="irc">9647935197253589</td>
+              <td>دو لیتری</td>
+              <td>هیدروفوبیک</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-teal" title="سبزآبی"></span></td>
+            </tr>
+            <tr>
+              <td class="code">۰۴۰۱۱۰۲</td>
+              <td class="irc">5826314295044204</td>
+              <td>دو لیتری</td>
+              <td>×</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-yellow" title="زرد"></span></td>
+            </tr>
+            <tr>
+              <td class="code">۰۴۰۱۰۱۲</td>
+              <td class="irc">4383099410749165</td>
+              <td>دو لیتری</td>
+              <td>هیدروفوبیک</td>
+              <td>×</td>
+              <td><span class="lid-swatch lid-red" title="قرمز"></span></td>
+            </tr>
+            <tr>
+              <td class="code">0401132</td>
+              <td class="irc">4111380328256244</td>
+              <td>دو لیتری</td>
+              <td>مکانیکی</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-teal" title="سبزآبی"></span></td>
+            </tr>
+            <tr>
+              <td class="code">0401112</td>
+              <td class="irc">9647935197253589</td>
+              <td>دو لیتری</td>
+              <td>CIF</td>
+              <td>✓</td>
+              <td><span class="lid-swatch lid-teal" title="سبزآبی"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>دمو بازطراحی صفحه محصول — ظاهر و ریتم الهام‌گرفته از whist؛ متن‌ها از محتوای فعلی آبادیس.</p>
+    <p><a href="./product-2l.html">نسخهٔ قبلی دمو (با کارت)</a></p>
+  </footer>
+
+  <a class="demo-chip" href="./product-2l.html">WHIST-PRODUCT-V2</a>
   <script type="module" src="./scrub-theater.js"></script>
+  <script>
+    (function () {
+      const els = document.querySelectorAll('.reveal, .reveal-line');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach((el) => el.classList.add('is-in'));
+        return;
+      }
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+      );
+      els.forEach((el) => io.observe(el));
+    })();
+  </script>
 </body>
 </html>
