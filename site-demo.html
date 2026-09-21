@@ -728,39 +728,61 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				filter: none;
 				touch-action: pan-y;
 			}
+
 			.abadis-theater-captions {
 				position: absolute;
-				inset: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: auto;
+				height: 42%;
 				pointer-events: none;
 				z-index: 4;
 				direction: rtl;
+				display: flex;
+				align-items: flex-end;
+				justify-content: center;
+				padding: 0 24px 72px;
+				box-sizing: border-box;
+				background: linear-gradient(180deg, rgba(232,243,243,0) 0%, rgba(232,243,243,0.75) 45%, rgba(232,243,243,0.95) 100%);
 			}
 			.abadis-theater-caption {
 				position: absolute;
-				right: clamp(20px, 6vw, 72px);
-				left: clamp(20px, 38vw, 44%);
-				top: 16%;
+				left: 50%;
+				bottom: 72px;
+				width: min(920px, 92vw);
+				margin: 0;
+				padding: 0 12px;
+				box-sizing: border-box;
+				text-align: center;
 				opacity: 0;
-				transform: translateY(16px);
+				transform: translate(-50%, 12px);
 				will-change: opacity, transform;
+				pointer-events: none;
 			}
 			.abadis-theater-caption-title {
-				margin: 0 0 6px;
-				font-size: clamp(1.4rem, 3.3vw, 2.4rem);
+				margin: 0 0 8px;
+				font-size: clamp(1.25rem, 2.8vw, 2.1rem);
 				font-weight: 700;
-				line-height: 1.35;
+				line-height: 1.45;
 				color: #066163;
 				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
 				letter-spacing: -0.01em;
+				text-wrap: balance;
 			}
 			.abadis-theater-caption-sub {
 				margin: 0;
-				font-size: clamp(1rem, 1.7vw, 1.2rem);
+				font-size: clamp(0.95rem, 1.5vw, 1.15rem);
 				line-height: 1.6;
 				color: #0e7475;
 				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
 				font-weight: 600;
 			}
+			@media (max-width: 700px) {
+				.abadis-theater-captions { height: 46%; padding-bottom: 64px; }
+				.abadis-theater-caption { bottom: 64px; width: 94vw; }
+			}
+
 			.abadis-theater-loading {
 				position: absolute; inset: 0;
 				display: flex; align-items: center; justify-content: center;
@@ -797,7 +819,6 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 			.abadis-demo-chip:hover { background: #066163; color: #fff; }
 			@media (max-width: 700px) {
 				.abadis-theater { height: 240vh; }
-				.abadis-theater-caption { left: 16px; right: 16px; top: 12%; }
 			}
 		</style>
 		<style id="abadis-brief-skin">

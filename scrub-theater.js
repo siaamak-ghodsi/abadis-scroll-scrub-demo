@@ -32,11 +32,12 @@ const captionEls = Array.from(
 );
 
 /* Caption progress bands (site copy only); soft overlapping fades */
+/* Soft centers with long crossfades — one dominant caption at a time */
 const CAPTION_RANGES = [
-  { start: 0, end: 0.28 },
-  { start: 0.28, end: 0.55 },
-  { start: 0.55, end: 0.78 },
-  { start: 0.78, end: 1 },
+  { start: 0.00, end: 0.30 },
+  { start: 0.26, end: 0.54 },
+  { start: 0.50, end: 0.78 },
+  { start: 0.74, end: 1.00 },
 ];
 
 if (!canvas || !stageEl) {
@@ -110,20 +111,24 @@ function boot() {
 
   /** Opacity for a caption band; overlapping fades OK */
   function captionOpacity(t, start, end) {
-    const fade = 0.055;
-    const enter = smoothstep(start - fade, start + fade, t);
-    const leave = 1 - smoothstep(end - fade, end + fade, t);
-    return easeInOutCubic(THREE.MathUtils.clamp(enter * leave, 0, 1));
+    /* Longer soft edges for readable crossfade */
+    const span = Math.max(0.0001, end - start);
+    const fade = Math.min(0.12, span * 0.45);
+    const enter = smoothstep(start, start + fade, t);
+    const leave = 1 - smoothstep(end - fade, end, t);
+    return THREE.MathUtils.clamp(enter * leave, 0, 1);
   }
 
-  function applyCaptions(easedT) {
+  function applyCaptions(t) {
+    /* Use raw scrub t (already smoothed upstream) for captions */
     for (let i = 0; i < captionEls.length; i++) {
       const range = CAPTION_RANGES[i];
       if (!range) continue;
-      const o = captionOpacity(easedT, range.start, range.end);
+      const o = captionOpacity(t, range.start, range.end);
       const el = captionEls[i];
-      el.style.opacity = String(o);
-      el.style.transform = `translateY(${(1 - o) * 14}px)`;
+      el.style.opacity = o.toFixed(3);
+      el.style.transform = `translate(-50%, ${(1 - o) * 20}px)`;
+      el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
     }
   }
 
@@ -142,7 +147,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist = state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
     /* Closer / larger in frame like Apple hero */
-    state.fitDist = dist * 1.22;
+    state.fitDist = dist * 1.32; /* leave room for bottom captions */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -184,9 +189,9 @@ function boot() {
   function placeCamera(e) {
     const yaw = THREE.MathUtils.lerp(CAM_YAW0, CAM_YAW1, e);
     const dolly = state.fitDist * (1 - DOLLY_IN * e);
-    const elev = state.radius * (0.12 - 0.02 * e);
+    const elev = state.radius * (0.16 - 0.02 * e);
     const cx = state.center.x;
-    const cy = state.center.y + state.radius * 0.02;
+    const cy = state.center.y + state.radius * 0.08;
     const cz = state.center.z;
     camera.position.set(
       cx + Math.sin(yaw) * dolly,
@@ -216,7 +221,7 @@ function boot() {
     }
     placeCamera(e);
     if (progressFill) progressFill.style.width = Math.round(e * 100) + '%';
-    applyCaptions(e);
+    applyCaptions(t); /* match scroll feel, not double-eased */
   }
 
   function showError(msg) {
