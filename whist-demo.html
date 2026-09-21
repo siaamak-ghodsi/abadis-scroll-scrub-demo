@@ -2,10 +2,10 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-PRODUCT-V2" />
+  <meta name="abadis-demo-build" content="WHIST-STORY-V3" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>کیسه ساکشن ۲ لیتری — دمو آبادیس (سبک whist)</title>
+  <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -23,7 +23,7 @@
       --ink: #1d1d1f;
       --muted: #6e6e73;
       --bg: #f5f5f7;
-      --line: rgba(0,0,0,0.08);
+      --line: rgba(0,0,0,0.07);
       --font: "Vazirmatn", Tahoma, system-ui, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,13 +32,11 @@
       font-family: var(--font);
       background: var(--bg);
       color: var(--ink);
-      line-height: 1.75;
+      line-height: 1.6;
       overflow-x: hidden;
     }
     a { color: var(--abadis); text-decoration: none; }
-    a:hover { text-decoration: underline; }
 
-    /* —— Header (whist-like light blur) —— */
     .site-header {
       position: sticky;
       top: 0;
@@ -74,18 +72,11 @@
       padding: 8px 16px;
       border-radius: 980px;
       text-decoration: none;
-      white-space: nowrap;
     }
-    .header-link:hover {
-      border-color: var(--abadis);
-      color: var(--abadis);
-      text-decoration: none;
-    }
-    @media (max-width: 640px) {
-      .brand-logo { height: 30px; }
-    }
+    .header-link:hover { border-color: var(--abadis); color: var(--abadis); }
+    @media (max-width: 640px) { .brand-logo { height: 30px; } }
 
-    /* —— Theater —— */
+    /* 3D product scrub */
     .abadis-theater {
       position: relative;
       height: 920vh;
@@ -120,28 +111,24 @@
       left: 50%;
       bottom: 78px;
       width: min(740px, 90vw);
-      margin: 0;
-      padding: 0 12px;
-      box-sizing: border-box;
       text-align: center;
       opacity: 0;
       transform: translate(-50%, 12px);
       will-change: opacity, transform;
       pointer-events: none;
+      padding: 0 12px;
     }
     .abadis-theater-caption-title {
       margin: 0 0 8px;
       font-size: clamp(1.45rem, 3.4vw, 2.55rem);
       font-weight: 700;
       line-height: 1.35;
-      color: var(--ink);
       letter-spacing: -0.03em;
       text-wrap: balance;
     }
     .abadis-theater-caption-sub {
       margin: 0;
       font-size: clamp(0.95rem, 1.5vw, 1.12rem);
-      line-height: 1.65;
       color: var(--muted);
       font-weight: 500;
       text-wrap: balance;
@@ -162,7 +149,7 @@
     }
     .abadis-theater-hud {
       position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-      width: min(88px, 26vw); pointer-events: none; opacity: 0.4; z-index: 2;
+      width: min(88px, 26vw); pointer-events: none; opacity: 0.35; z-index: 2;
     }
     .abadis-theater-track {
       height: 1.5px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden;
@@ -175,216 +162,206 @@
       .abadis-theater-caption { bottom: 68px; }
     }
 
-    /* —— Content: no cards, whist typography —— */
-    .page {
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 0 24px 120px;
+    /* —— Story panels: sticky scroll text theater (no cards, no tables) —— */
+    .story {
+      position: relative;
+      background: var(--bg);
     }
-    .block {
-      padding: 88px 0 24px;
-      border-bottom: 1px solid var(--line);
+    .story-panel {
+      position: relative;
+      height: 160vh;
+      width: 100%;
     }
-    .block:last-of-type { border-bottom: none; }
-    .eyebrow {
+    .story-panel-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 28px;
+      overflow: hidden;
+    }
+    .story-panel-inner {
+      width: min(820px, 100%);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(36px) scale(0.985);
+      filter: blur(6px);
+      transition:
+        opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity, transform, filter;
+    }
+    .story-panel.is-active .story-panel-inner {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+    .story-panel.is-leaving .story-panel-inner {
+      opacity: 0;
+      transform: translateY(-28px) scale(0.99);
+      filter: blur(4px);
+      transition-duration: 0.55s;
+    }
+    .story-kicker {
       display: block;
       font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--abadis);
-      margin-bottom: 18px;
-    }
-    .block h2 {
-      font-size: clamp(1.75rem, 4vw, 2.75rem);
-      font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1.25;
-      margin-bottom: 28px;
-      color: var(--ink);
-      text-wrap: balance;
-    }
-    .lead {
-      font-size: clamp(1.05rem, 2vw, 1.28rem);
-      color: var(--muted);
-      font-weight: 500;
-      max-width: 36em;
-      margin-bottom: 22px;
-    }
-    .lead strong { color: var(--ink); font-weight: 700; }
-    .plain {
-      font-size: 1.02rem;
-      color: var(--muted);
-      max-width: 40em;
-      margin-bottom: 16px;
-    }
-    .plain strong { color: var(--ink); }
-
-    /* Scroll reveal — text only, no cards */
-    .reveal {
+      margin-bottom: 20px;
       opacity: 0;
-      transform: translateY(28px);
-      transition:
-        opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-      transition-delay: var(--d, 0ms);
+      transform: translateY(14px);
+      transition: opacity 0.7s ease 0.08s, transform 0.7s ease 0.08s;
     }
-    .reveal.is-in {
+    .story-panel.is-active .story-kicker {
       opacity: 1;
       transform: none;
     }
-    .reveal-line {
-      opacity: 0;
-      transform: translateY(22px);
-      transition:
-        opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-      transition-delay: var(--d, 0ms);
-    }
-    .reveal-line.is-in {
-      opacity: 1;
-      transform: none;
-    }
-
-    /* Specs as big stacked lines */
-    .spec-stack {
-      display: grid;
-      gap: 28px;
-      margin-top: 12px;
-    }
-    .spec-row {
-      display: grid;
-      grid-template-columns: minmax(100px, 160px) 1fr;
-      gap: 16px 28px;
-      align-items: baseline;
-      padding-bottom: 22px;
-      border-bottom: 1px solid var(--line);
-    }
-    .spec-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .spec-k {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--muted);
-    }
-    .spec-v {
-      font-size: clamp(1.05rem, 2vw, 1.22rem);
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: -0.015em;
-    }
-    @media (max-width: 560px) {
-      .spec-row { grid-template-columns: 1fr; gap: 6px; }
-    }
-
-    /* Dimensions as huge numbers */
-    .dims {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px 48px;
-      margin-top: 8px;
-    }
-    .dim-item .num {
-      display: block;
-      font-size: clamp(2.4rem, 6vw, 3.6rem);
+    .story-title {
+      font-size: clamp(1.85rem, 5vw, 3.35rem);
       font-weight: 700;
       letter-spacing: -0.04em;
-      color: var(--ink);
-      line-height: 1.05;
-      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+      margin-bottom: 18px;
+      text-wrap: balance;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
+                  transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
     }
-    .dim-item .lbl {
-      display: block;
-      margin-top: 8px;
-      font-size: 0.92rem;
+    .story-panel.is-active .story-title {
+      opacity: 1;
+      transform: none;
+    }
+    .story-sub {
+      font-size: clamp(1.05rem, 2.1vw, 1.35rem);
       color: var(--muted);
       font-weight: 500;
+      max-width: 28em;
+      margin: 0 auto;
+      text-wrap: balance;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s,
+                  transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s;
     }
-
-    /* Use cases — text list, no chips */
-    .use-list {
+    .story-panel.is-active .story-sub {
+      opacity: 1;
+      transform: none;
+    }
+    .story-giant {
+      font-size: clamp(3.2rem, 12vw, 7rem);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      opacity: 0;
+      transform: translateY(40px) scale(0.94);
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s,
+                  transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+    }
+    .story-panel.is-active .story-giant {
+      opacity: 1;
+      transform: none;
+    }
+    .story-giant-unit {
+      display: block;
+      margin-top: 14px;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: -0.01em;
+    }
+    .story-codes {
       list-style: none;
       display: grid;
-      gap: 0;
+      gap: 14px;
       margin-top: 8px;
     }
-    .use-list li {
-      font-size: clamp(1.35rem, 3vw, 2rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      padding: 18px 0;
-      border-bottom: 1px solid var(--line);
-      color: var(--ink);
-    }
-    .use-list li:last-child { border-bottom: none; }
-
-    /* Codes — flat table, no card chrome */
-    .codes-wrap {
-      margin-top: 12px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    table.codes {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 640px;
-      font-size: 0.92rem;
-    }
-    table.codes th {
-      text-align: center;
+    .story-codes li {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
       font-weight: 600;
-      font-size: 0.78rem;
-      color: var(--muted);
-      padding: 10px 12px 14px;
-      border-bottom: 1px solid var(--line);
-      white-space: nowrap;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--d, 0ms);
     }
-    table.codes td {
-      text-align: center;
-      padding: 16px 12px;
-      border-bottom: 1px solid var(--line);
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-      vertical-align: middle;
+    .story-panel.is-active .story-codes li {
+      opacity: 1;
+      transform: none;
     }
-    table.codes tr:last-child td { border-bottom: none; }
-    table.codes td.code {
-      font-weight: 700;
+    .story-codes .code {
       color: var(--abadis);
       direction: ltr;
+      unicode-bidi: embed;
+      font-variant-numeric: tabular-nums;
+      margin-left: 0.35em;
     }
-    table.codes td.irc {
-      direction: ltr;
-      font-size: 0.82rem;
+    .story-codes .meta {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.88rem;
+      font-weight: 500;
       color: var(--muted);
     }
-    .lid-swatch {
-      display: inline-block;
-      width: 42px;
-      height: 12px;
-      border-radius: 3px;
-      border: 1px solid rgba(0,0,0,0.1);
-      vertical-align: middle;
-    }
-    .lid-teal { background: #2a9a8f; }
-    .lid-yellow { background: #e8c84a; }
-    .lid-red { background: #c0392b; }
 
-    .howto {
-      margin-top: 36px;
-      font-size: 1rem;
-      color: var(--muted);
+    .story-uses {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .story-uses li {
+      font-size: clamp(1.4rem, 3.5vw, 2.35rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--d, 0ms);
+    }
+    .story-panel.is-active .story-uses li {
+      opacity: 1;
+      transform: none;
+    }
+
+    .story-cta {
+      margin-top: 28px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease 0.35s, transform 0.7s ease 0.35s;
+    }
+    .story-panel.is-active .story-cta {
+      opacity: 1;
+      transform: none;
+    }
+    .story-cta a {
+      display: inline-flex;
+      padding: 12px 22px;
+      border-radius: 980px;
+      background: var(--abadis);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-decoration: none;
     }
 
     .site-footer {
-      border-top: 1px solid var(--line);
-      padding: 40px 24px 56px;
+      padding: 48px 24px 72px;
       text-align: center;
+      border-top: 1px solid var(--line);
     }
     .site-footer p {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      max-width: 480px;
-      margin: 0 auto 10px;
     }
     .demo-chip {
       position: fixed; z-index: 99999; bottom: 16px; left: 16px;
@@ -434,149 +411,174 @@
     </div>
   </section>
 
-  <main class="page">
+  <div class="story" id="story">
 
-    <section class="block">
-      <span class="eyebrow reveal" style="--d:0ms">محصول</span>
-      <h2 class="reveal" style="--d:80ms">کیسه ساکشن ۲ لیتری</h2>
-      <p class="lead reveal" style="--d:160ms">
-        <strong>حجم ساکشن:</strong>
-        ۲ لیتر در حالت تکی، تا ۸ لیتر در حالت سری یک ردیفه بر روی پایه
-      </p>
-      <div class="spec-stack">
-        <div class="spec-row reveal-line" style="--d:0ms">
-          <span class="spec-k">مشخصات</span>
-          <span class="spec-v">پودر ژل‌کننده · فیلتر هیدروفوبیک (جلوگیری از سرریز مایعات) · سازگار با کلیه دستگاه‌های ساکشن · سیستم حفاظت از ساکشن مرکزی</span>
-        </div>
-        <div class="spec-row reveal-line" style="--d:90ms">
-          <span class="spec-k">فیلترها</span>
-          <span class="spec-v">فیلترهای کیسه‌های نهایی آبادیس در ۳ نوع تولید می‌شود و از سرریز مایعات جلوگیری می‌کند</span>
-        </div>
-      </div>
-      <p class="howto reveal" style="--d:200ms">
-        برای مشاهده نحوه استفاده از کیسه ساکشن‌ها به این
-        <a href="https://abadis-med.com/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%a7%d8%b3%d8%aa%d9%81%d8%a7%d8%af%d9%87-%da%a9%d8%a7%d8%b1%d8%a8%d8%b1-%d9%86%d9%87%d8%a7%db%8c%db%8c/" rel="noopener" target="_blank">صفحه</a>
-        مراجعه نمایید.
-      </p>
-    </section>
-
-    <section class="block">
-      <span class="eyebrow reveal">ابعاد</span>
-      <h2 class="reveal" style="--d:80ms">اندازه محصول</h2>
-      <div class="dims">
-        <div class="dim-item reveal" style="--d:120ms">
-          <span class="num">۱۱</span>
-          <span class="lbl">سانتی‌متر قطر</span>
-        </div>
-        <div class="dim-item reveal" style="--d:220ms">
-          <span class="num">۲۴٫۵</span>
-          <span class="lbl">سانتی‌متر ارتفاع</span>
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">محصول</span>
+          <h2 class="story-title">کیسه ساکشن ۲ لیتری</h2>
+          <p class="story-sub">مخازن طبی آبادیس — طراحی‌شده برای ساکشن بیمارستانی امن و یکبارمصرف</p>
         </div>
       </div>
     </section>
 
-    <section class="block">
-      <span class="eyebrow reveal">موارد مصرف</span>
-      <h2 class="reveal" style="--d:80ms">کجا استفاده می‌شود</h2>
-      <ul class="use-list">
-        <li class="reveal-line" style="--d:0ms">ریه و آندوسکوپی</li>
-        <li class="reveal-line" style="--d:70ms">گوارش</li>
-        <li class="reveal-line" style="--d:140ms">CCU / ICU</li>
-        <li class="reveal-line" style="--d:210ms">عفونی</li>
-        <li class="reveal-line" style="--d:280ms">بخش مردان</li>
-        <li class="reveal-line" style="--d:350ms">بخش زنان</li>
-      </ul>
-    </section>
-
-    <section class="block">
-      <span class="eyebrow reveal">کد محصول</span>
-      <h2 class="reveal" style="--d:80ms">جدول مشخصات</h2>
-      <div class="codes-wrap reveal" style="--d:140ms">
-        <table class="codes">
-          <thead>
-            <tr>
-              <th>کد محصول</th>
-              <th>IRC</th>
-              <th>سایز</th>
-              <th>نوع فیلتر</th>
-              <th>پودر</th>
-              <th>رنگ درب</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="code">۰۴۰۱۱۱۲</td>
-              <td class="irc">9647935197253589</td>
-              <td>دو لیتری</td>
-              <td>هیدروفوبیک</td>
-              <td>✓</td>
-              <td><span class="lid-swatch lid-teal" title="سبزآبی"></span></td>
-            </tr>
-            <tr>
-              <td class="code">۰۴۰۱۱۰۲</td>
-              <td class="irc">5826314295044204</td>
-              <td>دو لیتری</td>
-              <td>×</td>
-              <td>✓</td>
-              <td><span class="lid-swatch lid-yellow" title="زرد"></span></td>
-            </tr>
-            <tr>
-              <td class="code">۰۴۰۱۰۱۲</td>
-              <td class="irc">4383099410749165</td>
-              <td>دو لیتری</td>
-              <td>هیدروفوبیک</td>
-              <td>×</td>
-              <td><span class="lid-swatch lid-red" title="قرمز"></span></td>
-            </tr>
-            <tr>
-              <td class="code">0401132</td>
-              <td class="irc">4111380328256244</td>
-              <td>دو لیتری</td>
-              <td>مکانیکی</td>
-              <td>✓</td>
-              <td><span class="lid-swatch lid-teal" title="سبزآبی"></span></td>
-            </tr>
-            <tr>
-              <td class="code">0401112</td>
-              <td class="irc">9647935197253589</td>
-              <td>دو لیتری</td>
-              <td>CIF</td>
-              <td>✓</td>
-              <td><span class="lid-swatch lid-teal" title="سبزآبی"></span></td>
-            </tr>
-          </tbody>
-        </table>
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">حجم</span>
+          <p class="story-giant">۲<span class="story-giant-unit">لیتر تکی</span></p>
+          <p class="story-sub" style="margin-top:28px">تا ۸ لیتر در حالت سری یک ردیفه روی پایه</p>
+        </div>
       </div>
     </section>
 
-  </main>
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">مشخصات</span>
+          <h2 class="story-title">پودر ژل‌کننده</h2>
+          <p class="story-sub">مایعات را به ژل تبدیل می‌کند و مدیریت ایمن‌تری می‌دهد</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">ایمنی</span>
+          <h2 class="story-title">فیلتر هیدروفوبیک</h2>
+          <p class="story-sub">جلوگیری از سرریز مایعات · سه نوع فیلتر کیسهٔ نهایی</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">سازگاری</span>
+          <h2 class="story-title">همه دستگاه‌های ساکشن</h2>
+          <p class="story-sub">به‌همراه سیستم حفاظت از ساکشن مرکزی</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">ابعاد</span>
+          <p class="story-giant">۱۱<span class="story-giant-unit">سانتی‌متر قطر</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">ابعاد</span>
+          <p class="story-giant">۲۴٫۵<span class="story-giant-unit">سانتی‌متر ارتفاع</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">موارد مصرف</span>
+          <ul class="story-uses">
+            <li style="--d:0ms">ریه و آندوسکوپی</li>
+            <li style="--d:80ms">گوارش</li>
+            <li style="--d:160ms">CCU / ICU</li>
+            <li style="--d:240ms">عفونی</li>
+            <li style="--d:320ms">بخش مردان</li>
+            <li style="--d:400ms">بخش زنان</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">کد محصول</span>
+          <h2 class="story-title">پنج واریانت</h2>
+          <ul class="story-codes">
+            <li style="--d:0ms">
+              <span class="code">۰۴۰۱۱۱۲</span> هیدروفوبیک · پودر
+              <span class="meta">IRC 9647935197253589</span>
+            </li>
+            <li style="--d:70ms">
+              <span class="code">۰۴۰۱۱۰۲</span> بدون فیلتر · پودر
+              <span class="meta">IRC 5826314295044204</span>
+            </li>
+            <li style="--d:140ms">
+              <span class="code">۰۴۰۱۰۱۲</span> هیدروفوبیک
+              <span class="meta">IRC 4383099410749165</span>
+            </li>
+            <li style="--d:210ms">
+              <span class="code">0401132</span> مکانیکی · پودر
+              <span class="meta">IRC 4111380328256244</span>
+            </li>
+            <li style="--d:280ms">
+              <span class="code">0401112</span> CIF · پودر
+              <span class="meta">IRC 9647935197253589</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">راهنما</span>
+          <h2 class="story-title">نحوه استفاده</h2>
+          <p class="story-sub">ویدیو و راهنمای کامل روی سایت آبادیس</p>
+          <div class="story-cta">
+            <a href="https://abadis-med.com/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%a7%d8%b3%d8%aa%d9%81%d8%a7%d8%af%d9%87-%da%a9%d8%a7%d8%b1%d8%a8%d8%b1-%d9%86%d9%87%d8%a7%db%8c%db%8c/" rel="noopener" target="_blank">مشاهده راهنما</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
 
   <footer class="site-footer">
-    <p>دمو بازطراحی صفحه محصول — ظاهر و ریتم الهام‌گرفته از whist؛ متن‌ها از محتوای فعلی آبادیس.</p>
-    <p><a href="./product-2l.html">نسخهٔ قبلی دمو (با کارت)</a></p>
+    <p>دمو داستانی آبادیس — بدون کارت و جدول؛ همهٔ متن با اسکرول وارد می‌شود.</p>
   </footer>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-PRODUCT-V2</a>
+  <a class="demo-chip" href="./product-2l.html">WHIST-STORY-V3</a>
   <script type="module" src="./scrub-theater.js"></script>
   <script>
     (function () {
-      const els = document.querySelectorAll('.reveal, .reveal-line');
-      if (!('IntersectionObserver' in window)) {
-        els.forEach((el) => el.classList.add('is-in'));
-        return;
+      const panels = Array.from(document.querySelectorAll('[data-story]'));
+      if (!panels.length) return;
+
+      function update() {
+        const mid = window.innerHeight * 0.42;
+        for (const panel of panels) {
+          const rect = panel.getBoundingClientRect();
+          const stickyH = Math.min(window.innerHeight, rect.height);
+          /* Active while sticky viewport is centered in the panel's scroll range */
+          const enter = rect.top <= mid && rect.bottom >= mid + stickyH * 0.15;
+          const leaving = rect.bottom < mid + stickyH * 0.35 && rect.bottom > 0;
+          panel.classList.toggle('is-active', enter);
+          panel.classList.toggle('is-leaving', !enter && leaving);
+        }
       }
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) {
-              e.target.classList.add('is-in');
-              io.unobserve(e.target);
-            }
-          }
-        },
-        { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
-      );
-      els.forEach((el) => io.observe(el));
+
+      let ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          update();
+          ticking = false;
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      update();
     })();
   </script>
 </body>
