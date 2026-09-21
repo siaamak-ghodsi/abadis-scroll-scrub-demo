@@ -798,8 +798,103 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				-webkit-backdrop-filter: blur(12px);
 			}
 			.abadis-demo-chip:hover { background: rgba(29, 29, 31, 0.92); color: #fff; }
+
+			.abadis-theater-captions {
+				position: absolute;
+				inset: 0;
+				pointer-events: none;
+				z-index: 2;
+				direction: rtl;
+			}
+			.abadis-theater-caption {
+				position: absolute;
+				left: max(28px, 7vw);
+				right: max(28px, 7vw);
+				top: 11%;
+				opacity: 0;
+				transform: translateY(16px);
+				text-align: center;
+				will-change: opacity, transform;
+			}
+			.abadis-theater-caption-title {
+				margin: 0;
+				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Vazirmatn, Tahoma, sans-serif;
+				font-size: clamp(1.55rem, 4.1vw, 2.85rem);
+				font-weight: 600;
+				letter-spacing: -0.015em;
+				line-height: 1.28;
+				color: #1d1d1f;
+			}
+			.abadis-theater-caption-sub {
+				margin: 0.55rem 0 0;
+				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Vazirmatn, Tahoma, sans-serif;
+				font-size: clamp(0.95rem, 2vw, 1.2rem);
+				font-weight: 500;
+				letter-spacing: 0.01em;
+				line-height: 1.4;
+				color: #066163;
+			}
+			@media (max-width: 700px) {
+				.abadis-theater-caption { top: 9%; }
+				.abadis-theater-caption-title { font-size: clamp(1.25rem, 6.2vw, 1.75rem); }
+			}
 			@media (max-width: 700px) {
 				.abadis-theater { height: 240vh; }
+			}
+		</style>
+		<style id="abadis-brief-skin">
+			/* Medical / Premium / minimal — visual only; no copy changes */
+			body {
+				background-color: #f5f5f7 !important;
+			}
+			.elementor-6 {
+				background-color: #f5f5f7;
+			}
+			.elementor-6 .elementor-heading-title,
+			.elementor-6 h1.elementor-heading-title,
+			.elementor-6 h2.elementor-heading-title,
+			.elementor-6 h3.elementor-heading-title {
+				color: #066163 !important;
+				letter-spacing: 0.012em;
+				font-weight: 600;
+			}
+			.elementor-6 .elementor-top-section > .elementor-container {
+				border-radius: 14px;
+				box-shadow: 0 6px 28px rgba(29, 29, 31, 0.045);
+				padding-block: 6px;
+			}
+			.elementor-6 .elementor-widget-wrap.elementor-element-populated {
+				border-radius: 12px;
+			}
+			.elementor-6 .elementor-button,
+			.elementor-6 a.elementor-button,
+			.elementor-6 .elementor-button-link {
+				background-color: #066163 !important;
+				border-color: #066163 !important;
+				border-radius: 980px !important;
+				box-shadow: none !important;
+			}
+			.elementor-6 a:not(.abadis-demo-chip):hover {
+				color: #066163;
+			}
+			.elementor-6 .elementor-section[data-settings*="gradient"],
+			.elementor-6 .elementor-background-overlay {
+				opacity: 0.82;
+			}
+			.elementor-6 .swiper-pagination-bullet,
+			.elementor-6 .swiper-button-next,
+			.elementor-6 .swiper-button-prev,
+			.elementor-6 .tp-leftarrow,
+			.elementor-6 .tp-rightarrow,
+			.elementor-6 .uranus-nav-control {
+				opacity: 0.45 !important;
+			}
+			.elementor-6 .bdt-ep-advanced-icon-box,
+			.elementor-6 .elementor-widget-image-box .elementor-image-box-wrapper {
+				border-radius: 14px;
+				box-shadow: 0 4px 20px rgba(29, 29, 31, 0.04);
+				padding: 8px;
+				background: rgba(255, 255, 255, 0.55);
 			}
 		</style>
 		<div class="wp-block-themepunch-revslider">
@@ -808,6 +903,21 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 					<canvas id="abadis-scrub-canvas"></canvas>
 					<div class="abadis-theater-loading" id="abadisScrubLoading"></div>
 					<div class="abadis-theater-err" id="abadisScrubErr"></div>
+					<div class="abadis-theater-captions" aria-hidden="true">
+						<div class="abadis-theater-caption" data-caption="0">
+							<p class="abadis-theater-caption-title">مخازن طبی آبادیس</p>
+							<p class="abadis-theater-caption-sub">کیسه ساکشن</p>
+						</div>
+						<div class="abadis-theater-caption" data-caption="1">
+							<p class="abadis-theater-caption-title">ما برای اثر گذاری آمده ایم…</p>
+						</div>
+						<div class="abadis-theater-caption" data-caption="2">
+							<p class="abadis-theater-caption-title">مدیریت سیالات و زباله‌های عفونی بیمارستانی</p>
+						</div>
+						<div class="abadis-theater-caption" data-caption="3">
+							<p class="abadis-theater-caption-title">همراه با بیش از 600 مرکز درمانی در سطح کشور</p>
+						</div>
+					</div>
 					<div class="abadis-theater-hud" aria-hidden="true">
 						<div class="abadis-theater-track"><div class="abadis-theater-fill" id="abadisProgressFill"></div></div>
 					</div>

@@ -23,6 +23,21 @@ const stageEl = document.getElementById('abadis-scrub');
 const errEl = document.getElementById('abadisScrubErr');
 const loadingEl = document.getElementById('abadisScrubLoading');
 const progressFill = document.getElementById('abadisProgressFill');
+const captionEls = Array.from(
+  document.querySelectorAll('.abadis-theater-caption[data-caption]')
+).sort(
+  (a, b) =>
+    Number(a.getAttribute('data-caption')) -
+    Number(b.getAttribute('data-caption'))
+);
+
+/* Caption progress bands (site copy only); soft overlapping fades */
+const CAPTION_RANGES = [
+  { start: 0, end: 0.28 },
+  { start: 0.28, end: 0.55 },
+  { start: 0.55, end: 0.78 },
+  { start: 0.78, end: 1 },
+];
 
 if (!canvas || !stageEl) {
   console.error('[scrub-theater] missing canvas/stage');
@@ -86,6 +101,30 @@ function boot() {
   function easeInOutCubic(t) {
     t = THREE.MathUtils.clamp(t, 0, 1);
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function smoothstep(edge0, edge1, x) {
+    const t = THREE.MathUtils.clamp((x - edge0) / (edge1 - edge0), 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+
+  /** Opacity for a caption band; overlapping fades OK */
+  function captionOpacity(t, start, end) {
+    const fade = 0.055;
+    const enter = smoothstep(start - fade, start + fade, t);
+    const leave = 1 - smoothstep(end - fade, end + fade, t);
+    return easeInOutCubic(THREE.MathUtils.clamp(enter * leave, 0, 1));
+  }
+
+  function applyCaptions(easedT) {
+    for (let i = 0; i < captionEls.length; i++) {
+      const range = CAPTION_RANGES[i];
+      if (!range) continue;
+      const o = captionOpacity(easedT, range.start, range.end);
+      const el = captionEls[i];
+      el.style.opacity = String(o);
+      el.style.transform = `translateY(${(1 - o) * 14}px)`;
+    }
   }
 
   function sizeCanvas() {
@@ -177,6 +216,7 @@ function boot() {
     }
     placeCamera(e);
     if (progressFill) progressFill.style.width = Math.round(e * 100) + '%';
+    applyCaptions(e);
   }
 
   function showError(msg) {
