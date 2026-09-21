@@ -270,27 +270,68 @@
       gap: 10px;
     }
     
+
     .use-chip {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       text-align: center;
-      padding: 14px 10px;
+      padding: 16px 12px;
       background: var(--mint-light);
-      border: 1px solid var(--line);
+      border: 1px solid transparent;
       border-radius: 14px;
       font-weight: 600;
       font-size: 0.92rem;
       color: var(--abadis);
       opacity: 0;
       transform: translateY(10px);
-      transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.45s ease, border-color 0.45s ease;
+      transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.45s ease;
+      overflow: visible;
+    }
+    .use-chip-pulse {
+      position: absolute;
+      inset: -3px;
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      pointer-events: none;
+      overflow: visible;
+    }
+    .use-chip-pulse .track {
+      fill: none;
+      stroke: rgba(6, 97, 99, 0.18);
+      stroke-width: 1.25;
+      vector-effect: non-scaling-stroke;
+    }
+    .use-chip-pulse .ecg {
+      fill: none;
+      stroke: #066163;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+      stroke-dasharray: 36 260;
+      stroke-dashoffset: 0;
+      opacity: 0;
+      filter: drop-shadow(0 0 3px rgba(46, 196, 198, 0.55));
+    }
+    .use-chip.is-inview .use-chip-pulse .ecg {
+      opacity: 1;
+      animation: abadis-ecg-orbit 2.6s linear infinite;
+    }
+    .use-chip:nth-child(2).is-inview .use-chip-pulse .ecg { animation-delay: -0.35s; }
+    .use-chip:nth-child(3).is-inview .use-chip-pulse .ecg { animation-delay: -0.7s; }
+    .use-chip:nth-child(4).is-inview .use-chip-pulse .ecg { animation-delay: -1.05s; }
+    .use-chip:nth-child(5).is-inview .use-chip-pulse .ecg { animation-delay: -1.4s; }
+    .use-chip:nth-child(6).is-inview .use-chip-pulse .ecg { animation-delay: -1.75s; }
+    @keyframes abadis-ecg-orbit {
+      to { stroke-dashoffset: -296; }
     }
     .use-chip-icon-wrap {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
       background: rgba(6,97,99,0.1);
       display: inline-flex;
       align-items: center;
@@ -299,37 +340,25 @@
       flex: 0 0 auto;
     }
     .use-chip-icon {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       display: block;
       overflow: visible;
     }
-    .use-chip-icon path,
-    .use-chip-icon circle,
-    .use-chip-icon line,
-    .use-chip-icon polyline,
-    .use-chip-icon ellipse,
-    .use-chip-icon rect {
-      stroke-dasharray: 64;
-      stroke-dashoffset: 64;
-      transition: stroke-dashoffset 0.9s ease, opacity 0.55s ease;
-      opacity: 0.35;
+    .use-chip-icon .bag-fill {
+      fill: rgba(6, 97, 99, 0.22);
+      stroke: none;
+      transition: fill 0.6s ease;
+    }
+    .use-chip.is-inview .use-chip-icon .bag-fill {
+      fill: rgba(6, 97, 99, 0.38);
     }
     .use-chip.is-inview {
       opacity: 1;
       transform: translateY(0);
       box-shadow: 0 8px 20px rgba(6,97,99,0.1);
-      border-color: rgba(6,97,99,0.32);
     }
-    .use-chip.is-inview .use-chip-icon path,
-    .use-chip.is-inview .use-chip-icon circle,
-    .use-chip.is-inview .use-chip-icon line,
-    .use-chip.is-inview .use-chip-icon polyline,
-    .use-chip.is-inview .use-chip-icon ellipse,
-    .use-chip.is-inview .use-chip-icon rect {
-      stroke-dashoffset: 0;
-      opacity: 1;
-    }
+
     .spec-card[data-animate="rise"],
     .table-wrap[data-animate="rise"] {
       opacity: 0;
@@ -581,12 +610,90 @@
       <span class="section-label">کاربرد</span>
       <h2>موارد مصرف</h2>
       <div class="use-grid">
-        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 3.8c-2.1 0-3.7 1.9-3.7 4.2v3.6c0 2.4 1.4 4.3 3.2 4.3h.9V9.2c0-1.8.9-3.5 2.6-4.4"/><path d="M15.8 3.8c2.1 0 3.7 1.9 3.7 4.2v3.6c0 2.4-1.4 4.3-3.2 4.3h-.9V9.2c0-1.8-.9-3.5-2.6-4.4"/><path d="M12 4.2v9.4"/><path d="M12 13.6c0 2.2-.4 3.6-1.2 4.8"/><path d="M14.8 16.2h3.6c.7 0 1.2.5 1.2 1.1v1.4"/><path d="M18.4 17.4v2.2"/></svg></span><span>ریه و آندوسکوپی</span></div>
-        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 4.2h5.6c.6 0 1.1.5 1.1 1.1v2.2c0 1.4-.7 2.6-1.8 3.3l-1.3.8c-1.1.7-1.8 1.9-1.8 3.3v3.9"/><path d="M9.2 7.5h.01"/><path d="M15.5 4.5c1.6.2 2.8 1.2 3.2 2.6"/><path d="M17.8 12.2h2.4c.5 0 .9.4.9.9v1.6"/><path d="M20.2 13.5v2.4"/></svg></span><span>گوارش</span></div>
-        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 14.5h11.5v3.2H3.5z"/><path d="M4.2 14.5V11c0-.8.6-1.4 1.4-1.4h5.2"/><path d="M15 11.2h3.2c.7 0 1.3.6 1.3 1.3v5.2c0 .7-.6 1.3-1.3 1.3H15"/><path d="M16.2 13.2h2"/><path d="M16.2 15.2h2"/><path d="M7.2 8.2l1.1-1.6 1.3 2.2 1.1-1.6 1.1 1.6"/><circle cx="18.2" cy="9.2" r="1.1"/></svg></span><span>CCU/ICU</span></div>
-        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2l6.4 2.6v4.4c0 4.2-2.9 7.2-6.4 8.6-3.5-1.4-6.4-4.4-6.4-8.6V5.8L12 3.2z"/><path d="M9.6 11.2h4.8v5.2c0 .7-.6 1.2-1.2 1.2h-2.4c-.7 0-1.2-.5-1.2-1.2v-5.2z"/><path d="M10.4 11.2V9.8c0-.9.7-1.6 1.6-1.6s1.6.7 1.6 1.6v1.4"/></svg></span><span>عفونی</span></div>
-        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M5.2 20.2V7.6c0-.8.6-1.4 1.4-1.4h7.6c.8 0 1.4.6 1.4 1.4v12.6"/><path d="M5.2 9.4h10.4"/><path d="M9.2 7.2V5.4"/><path d="M12.6 7.2V5.4"/><path d="M15.8 12.4h2.6c.6 0 1.1.5 1.1 1.1v5.4c0 .6-.5 1.1-1.1 1.1h-2.6"/><path d="M16.6 14.2h2"/><circle cx="18.6" cy="6.4" r="1.5"/><path d="M19.7 5.3l1.5-1.5"/><path d="M19.4 3.8h1.8v1.8"/></svg></span><span>بخش مردان</span></div>
-        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M5.2 20.2V7.6c0-.8.6-1.4 1.4-1.4h7.6c.8 0 1.4.6 1.4 1.4v12.6"/><path d="M5.2 9.4h10.4"/><path d="M9.2 7.2V5.4"/><path d="M12.6 7.2V5.4"/><path d="M8.4 13.2h4.2v5.6H8.4z"/><path d="M9.2 13.2V12c0-.8.6-1.4 1.4-1.4s1.4.6 1.4 1.4v1.2"/><path d="M9.4 15h2.2"/><path d="M9.4 16.8h2.2"/><circle cx="18.6" cy="6.2" r="1.5"/><path d="M18.6 7.7v2.4"/><path d="M17.5 9h2.2"/></svg></span><span>بخش زنان</span></div>
+        <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
+        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+      </svg>
+          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="bag-fill" d="M9.2 16.8h5.6v2.4H9.2z"/>
+        <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
+        <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
+        <circle cx="12" cy="5.6" r="0.85" fill="currentColor" stroke="none"/>
+        <path d="M12 4.2v2.2"/><path d="M12 4.2c1.6-.1 2.6.6 3.1 1.5"/>
+      </svg></span>
+          <span>ریه و آندوسکوپی</span>
+        </div>
+        <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
+        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+      </svg>
+          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="bag-fill" d="M9.2 14.2h5.6v5H9.2z"/>
+        <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
+        <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
+        <circle cx="12" cy="5.6" r="0.85" fill="currentColor" stroke="none"/>
+        <path d="M9.4 15.2c.7-.6 1.4-.6 2.1 0s1.4.6 2.1 0 1.4-.6 2.1 0" stroke-width="1.2"/>
+      </svg></span>
+          <span>گوارش</span>
+        </div>
+        <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
+        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+      </svg>
+          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="bag-fill" d="M9.2 13h5.6v6.2H9.2z"/>
+        <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
+        <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
+        <circle cx="12" cy="5.6" r="0.85" fill="currentColor" stroke="none"/>
+        <path d="M17.2 10.2h2.2"/><path d="M18.2 10.2l.6-1.2.6 2 .5-1.1.5 1.1"/>
+      </svg></span>
+          <span>CCU/ICU</span>
+        </div>
+        <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
+        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+      </svg>
+          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="bag-fill" d="M9.2 12.2h5.6v7H9.2z"/>
+        <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
+        <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
+        <circle cx="12" cy="5.6" r="0.85" fill="currentColor" stroke="none"/>
+        <path d="M10.8 8.2h2.4"/><path d="M12 7.2v2"/>
+      </svg></span>
+          <span>عفونی</span>
+        </div>
+        <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
+        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+      </svg>
+          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
+        <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
+        <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
+        <circle cx="12" cy="5.6" r="0.85" fill="currentColor" stroke="none"/>
+        <path d="M17.4 8.4l.9 1.6.9-1.6"/><path d="M17.4 10h1.8" stroke-width="1.3"/>
+      </svg></span>
+          <span>بخش مردان</span>
+        </div>
+        <div class="use-chip" data-animate="icon">
+          <svg class="use-chip-pulse" viewBox="0 0 120 56" preserveAspectRatio="none" aria-hidden="true">
+        <path class="track" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+        <path class="ecg" d="M14 4 H42 L46 4 L49 14 L52 0 L55 18 L58 4 L62 4 H106 A8 8 0 0 1 114 12 V44 A8 8 0 0 1 106 52 H14 A8 8 0 0 1 6 44 V12 A8 8 0 0 1 14 4 Z"/>
+      </svg>
+          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
+        <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
+        <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
+        <circle cx="12" cy="5.6" r="0.85" fill="currentColor" stroke="none"/>
+        <circle cx="18.3" cy="8.6" r="1.15"/><path d="M18.3 9.8v1.4" stroke-width="1.3"/>
+      </svg></span>
+          <span>بخش زنان</span>
+        </div>
       </div>
     </section>
 
