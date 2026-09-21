@@ -710,7 +710,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				width: 100%;
 				margin: 0;
 				padding: 0;
-				background: #f5f5f7;
+				background: #e8f3f3;
 			}
 			.abadis-theater-sticky {
 				position: sticky;
@@ -718,7 +718,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				height: 100vh;
 				width: 100%;
 				overflow: hidden;
-				background: #f5f5f7;
+				background: linear-gradient(180deg, #f3fafa 0%, #e7f2f2 55%, #d9ecec 100%);
 			}
 			#abadis-scrub-canvas {
 				display: block;
@@ -728,173 +728,123 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				filter: none;
 				touch-action: pan-y;
 			}
-			.abadis-theater-loading {
-				position: absolute;
-				inset: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: #f5f5f7;
-				color: #86868b;
-				font-size: 0.8rem;
-				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Tahoma, sans-serif;
-				letter-spacing: 0.02em;
-				z-index: 2;
-				transition: opacity 0.45s ease;
-			}
-			.abadis-theater-loading.hide { opacity: 0; pointer-events: none; }
-			.abadis-theater-err {
-				position: absolute;
-				inset: 0;
-				display: none;
-				align-items: center;
-				justify-content: center;
-				background: #f5f5f7;
-				color: #a33;
-				padding: 24px;
-				text-align: center;
-				z-index: 3;
-				font-size: 0.85rem;
-				font-family: Tahoma, sans-serif;
-			}
-			.abadis-theater-hud {
-				position: absolute;
-				bottom: 28px;
-				left: 50%;
-				transform: translateX(-50%);
-				width: min(96px, 28vw);
-				pointer-events: none;
-				opacity: 0.35;
-				z-index: 2;
-			}
-			.abadis-theater-track {
-				height: 2px;
-				background: rgba(0,0,0,0.08);
-				border-radius: 1px;
-				overflow: hidden;
-			}
-			.abadis-theater-fill {
-				height: 100%;
-				width: 0%;
-				background: #1d1d1f;
-				border-radius: 1px;
-			}
-			.abadis-demo-chip {
-				position: fixed;
-				z-index: 99999;
-				bottom: 16px;
-				left: 16px;
-				background: rgba(29, 29, 31, 0.78);
-				color: #f5f5f7;
-				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				font-size: 11px;
-				line-height: 1.4;
-				padding: 7px 11px;
-				border-radius: 980px;
-				text-decoration: none;
-				direction: rtl;
-				max-width: min(90vw, 280px);
-				backdrop-filter: blur(12px);
-				-webkit-backdrop-filter: blur(12px);
-			}
-			.abadis-demo-chip:hover { background: rgba(29, 29, 31, 0.92); color: #fff; }
-
 			.abadis-theater-captions {
 				position: absolute;
 				inset: 0;
 				pointer-events: none;
-				z-index: 2;
+				z-index: 4;
 				direction: rtl;
 			}
 			.abadis-theater-caption {
 				position: absolute;
-				left: max(28px, 7vw);
-				right: max(28px, 7vw);
-				top: 11%;
+				right: clamp(20px, 6vw, 72px);
+				left: clamp(20px, 38vw, 44%);
+				top: 16%;
 				opacity: 0;
 				transform: translateY(16px);
-				text-align: center;
 				will-change: opacity, transform;
 			}
 			.abadis-theater-caption-title {
-				margin: 0;
-				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Vazirmatn, Tahoma, sans-serif;
-				font-size: clamp(1.55rem, 4.1vw, 2.85rem);
-				font-weight: 600;
-				letter-spacing: -0.015em;
-				line-height: 1.28;
-				color: #1d1d1f;
+				margin: 0 0 6px;
+				font-size: clamp(1.4rem, 3.3vw, 2.4rem);
+				font-weight: 700;
+				line-height: 1.35;
+				color: #066163;
+				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
+				letter-spacing: -0.01em;
 			}
 			.abadis-theater-caption-sub {
-				margin: 0.55rem 0 0;
-				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Vazirmatn, Tahoma, sans-serif;
-				font-size: clamp(0.95rem, 2vw, 1.2rem);
-				font-weight: 500;
-				letter-spacing: 0.01em;
-				line-height: 1.4;
-				color: #066163;
+				margin: 0;
+				font-size: clamp(1rem, 1.7vw, 1.2rem);
+				line-height: 1.6;
+				color: #0e7475;
+				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
+				font-weight: 600;
 			}
-			@media (max-width: 700px) {
-				.abadis-theater-caption { top: 9%; }
-				.abadis-theater-caption-title { font-size: clamp(1.25rem, 6.2vw, 1.75rem); }
+			.abadis-theater-loading {
+				position: absolute; inset: 0;
+				display: flex; align-items: center; justify-content: center;
+				background: #e8f3f3; color: #066163;
+				font-size: 0.8rem; z-index: 2;
+				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
+				transition: opacity 0.45s ease;
 			}
+			.abadis-theater-loading.hide { opacity: 0; pointer-events: none; }
+			.abadis-theater-err {
+				position: absolute; inset: 0; display: none;
+				align-items: center; justify-content: center;
+				background: #e8f3f3; color: #a33; padding: 24px; text-align: center;
+				z-index: 3; font-size: 0.85rem; font-family: Tahoma, sans-serif;
+			}
+			.abadis-theater-hud {
+				position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+				width: min(96px, 28vw); pointer-events: none; opacity: 0.45; z-index: 2;
+			}
+			.abadis-theater-track {
+				height: 2px; background: rgba(6,97,99,0.18); border-radius: 1px; overflow: hidden;
+			}
+			.abadis-theater-fill {
+				height: 100%; width: 0%; background: #066163; border-radius: 1px;
+			}
+			.abadis-demo-chip {
+				position: fixed; z-index: 99999; bottom: 16px; left: 16px;
+				background: rgba(6, 97, 99, 0.92); color: #f3fafa;
+				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
+				font-size: 11px; line-height: 1.4; padding: 7px 11px;
+				border-radius: 980px; text-decoration: none; direction: rtl;
+				max-width: min(90vw, 280px);
+			}
+			.abadis-demo-chip:hover { background: #066163; color: #fff; }
 			@media (max-width: 700px) {
 				.abadis-theater { height: 240vh; }
+				.abadis-theater-caption { left: 16px; right: 16px; top: 12%; }
 			}
 		</style>
 		<style id="abadis-brief-skin">
-			/* Medical / Premium / minimal — visual only; no copy changes */
-			body {
-				background-color: #f5f5f7 !important;
+			/* Visual-only skin: Abadis site green identity — no copy changes */
+			html, body {
+				background: #eef6f6 !important;
 			}
-			.elementor-6 {
-				background-color: #f5f5f7;
+			.elementor-location-header,
+			.elementor-11553,
+			.elementor-11591 {
+				background: #066163 !important;
 			}
 			.elementor-6 .elementor-heading-title,
-			.elementor-6 h1.elementor-heading-title,
-			.elementor-6 h2.elementor-heading-title,
-			.elementor-6 h3.elementor-heading-title {
+			.elementor-6 h1, .elementor-6 h2, .elementor-6 h3 {
 				color: #066163 !important;
-				letter-spacing: 0.012em;
-				font-weight: 600;
-			}
-			.elementor-6 .elementor-top-section > .elementor-container {
-				border-radius: 14px;
-				box-shadow: 0 6px 28px rgba(29, 29, 31, 0.045);
-				padding-block: 6px;
-			}
-			.elementor-6 .elementor-widget-wrap.elementor-element-populated {
-				border-radius: 12px;
+				letter-spacing: -0.01em;
+				font-weight: 600 !important;
 			}
 			.elementor-6 .elementor-button,
 			.elementor-6 a.elementor-button,
 			.elementor-6 .elementor-button-link {
 				background-color: #066163 !important;
 				border-color: #066163 !important;
-				border-radius: 980px !important;
-				box-shadow: none !important;
+				color: #fff !important;
+				border-radius: 999px !important;
 			}
-			.elementor-6 a:not(.abadis-demo-chip):hover {
-				color: #066163;
+			.elementor-6 a:not(.elementor-button) {
+				color: #0e7475;
 			}
-			.elementor-6 .elementor-section[data-settings*="gradient"],
-			.elementor-6 .elementor-background-overlay {
-				opacity: 0.82;
-			}
-			.elementor-6 .swiper-pagination-bullet,
-			.elementor-6 .swiper-button-next,
-			.elementor-6 .swiper-button-prev,
-			.elementor-6 .tp-leftarrow,
-			.elementor-6 .tp-rightarrow,
-			.elementor-6 .uranus-nav-control {
-				opacity: 0.45 !important;
-			}
-			.elementor-6 .bdt-ep-advanced-icon-box,
-			.elementor-6 .elementor-widget-image-box .elementor-image-box-wrapper {
+			.elementor-6 > .elementor-section-wrap > .elementor-top-section .elementor-container {
 				border-radius: 14px;
-				box-shadow: 0 4px 20px rgba(29, 29, 31, 0.04);
-				padding: 8px;
-				background: rgba(255, 255, 255, 0.55);
+				box-shadow: 0 8px 28px rgba(6, 97, 99, 0.07);
+			}
+			.elementor-6 .elementor-top-section {
+				background-color: rgba(255,255,255,0.92) !important;
+			}
+			/* keep teal branded bands */
+			.elementor-6 [data-dce-background-color="#066163"],
+			.elementor-element-504ecfa {
+				background-color: #066163 !important;
+			}
+			.elementor-6 .elementor-swiper-button,
+			.elementor-6 .swiper-pagination-bullet {
+				opacity: 0.55;
+			}
+			.elementor-6 img, .elementor-6 .elementor-image-box-img img {
+				border-radius: 12px;
 			}
 		</style>
 		<div class="wp-block-themepunch-revslider">

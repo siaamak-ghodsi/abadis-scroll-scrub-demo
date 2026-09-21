@@ -1,5 +1,5 @@
 /**
- * Abadis Product Theater — Apple-like scroll scrub
+ * Abadis Product Theater — site-green scroll scrub
  * Clean stage, subtle camera, elegant part separation.
  */
 import * as THREE from 'three';
@@ -59,15 +59,15 @@ function boot() {
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  /* Apple-like cool gray-white */
-  scene.background = new THREE.Color(0xf5f5f7);
+  /* Abadis mint stage */
+  scene.background = new THREE.Color(0xe8f3f3);
 
   const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xe8e8ed, 0.85));
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfe3e3, 0.88));
   const key = new THREE.DirectionalLight(0xffffff, 0.95);
   key.position.set(0.4, 1.4, 0.9);
   scene.add(key);
