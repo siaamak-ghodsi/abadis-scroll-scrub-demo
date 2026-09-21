@@ -34,9 +34,9 @@ const captionEls = Array.from(
 /* Caption progress bands (site copy only); soft overlapping fades */
 /* Soft centers with long crossfades — one dominant caption at a time */
 const CAPTION_RANGES = [
-  { start: 0.00, end: 0.30 },
-  { start: 0.26, end: 0.54 },
-  { start: 0.50, end: 0.78 },
+  { start: 0.00, end: 0.34 },
+  { start: 0.28, end: 0.58 },
+  { start: 0.52, end: 0.80 },
   { start: 0.74, end: 1.00 },
 ];
 
@@ -113,7 +113,7 @@ function boot() {
   function captionOpacity(t, start, end) {
     /* Longer soft edges for readable crossfade */
     const span = Math.max(0.0001, end - start);
-    const fade = Math.min(0.12, span * 0.45);
+    const fade = Math.min(0.18, span * 0.55); /* slower caption crossfade */
     const enter = smoothstep(start, start + fade, t);
     const leave = 1 - smoothstep(end - fade, end, t);
     return THREE.MathUtils.clamp(enter * leave, 0, 1);
@@ -268,7 +268,7 @@ function boot() {
   function applyFrame() {
     state.targetT = scrubProgress();
     /* Heavier smoothing = more Apple "inertia" feel */
-    const k = Math.abs(state.targetT - state.smoothT) > 0.12 ? 0.22 : 0.12;
+    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.10 : 0.055; /* slower text/scrub follow */
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyExplode(state.smoothT);

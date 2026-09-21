@@ -88,7 +88,7 @@
     /* —— Product Theater —— */
     .abadis-theater {
       position: relative;
-      height: 260vh;
+      height: 400vh;
       width: 100%;
       background: var(--mint);
     }
@@ -176,7 +176,7 @@
       height: 100%; width: 0%; background: var(--abadis); border-radius: 1px;
     }
     @media (max-width: 700px) {
-      .abadis-theater { height: 240vh; }
+      .abadis-theater { height: 360vh; }
       .abadis-theater-captions { height: 46%; padding-bottom: 64px; }
       .abadis-theater-caption { bottom: 64px; width: 94vw; }
     }
@@ -261,6 +261,50 @@
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 10px;
     }
+    
+    .use-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.45s ease, box-shadow 0.45s ease, border-color 0.45s ease;
+    }
+    .use-chip-icon-wrap {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: rgba(6,97,99,0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #066163;
+      flex: 0 0 auto;
+    }
+    .use-chip-icon { width: 16px; height: 16px; display: block; }
+    .use-chip.is-inview {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(6,97,99,0.12);
+      border-color: rgba(6,97,99,0.35);
+    }
+    .use-chip.is-inview .use-chip-icon-wrap {
+      animation: abadis-icon-pop 0.7s ease both;
+    }
+    @keyframes abadis-icon-pop {
+      0% { transform: scale(0.7); opacity: 0.3; }
+      60% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .spec-card[data-animate="rise"],
+    .table-wrap[data-animate="rise"] {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .spec-card.is-inview,
+    .table-wrap.is-inview {
+      opacity: 1;
+      transform: none;
+    }
+
     .use-chip {
       text-align: center;
       padding: 14px 10px;
@@ -439,7 +483,7 @@
     <section class="section">
       <span class="section-label">کدها</span>
       <h2>کد محصول</h2>
-      <div class="table-wrap">
+      <div class="table-wrap" data-animate="rise">
         <table class="codes">
           <thead>
             <tr>
@@ -511,12 +555,12 @@
       <span class="section-label">کاربرد</span>
       <h2>موارد مصرف</h2>
       <div class="use-grid">
-        <div class="use-chip">ریه و آندوسکوپی</div>
-        <div class="use-chip">گوارش</div>
-        <div class="use-chip">CCU/ICU</div>
-        <div class="use-chip">عفونی</div>
-        <div class="use-chip">بخش مردان</div>
-        <div class="use-chip">بخش زنان</div>
+        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 4c-2 0-4 2-4 5v4c0 3 2 5 4 5h1V9c0-2 1-4 3-5"/><path d="M17 4c2 0 4 2 4 5v4c0 3-2 5-4 5h-1V9c0-2-1-4-3-5"/><path d="M12 4v16"/></svg></span><span>ریه و آندوسکوپی</span></div>
+        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4h8v4a4 4 0 01-4 4 4 4 0 00-4 4v4"/><path d="M8 8h.01M16 16h.01"/></svg></span><span>گوارش</span></div>
+        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 11c0 5.5-7 10-7 10z"/></svg></span><span>CCU/ICU</span></div>
+        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></span><span>عفونی</span></div>
+        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c1.5-3 3.8-4.5 6.5-4.5S17 16 18.5 19"/></svg></span><span>بخش مردان</span></div>
+        <div class="use-chip" data-animate="icon"><span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c1.5-3 3.8-4.5 6.5-4.5S17 16 18.5 19"/></svg></span><span>بخش زنان</span></div>
       </div>
     </section>
 
@@ -529,6 +573,26 @@
   </footer>
 
   <a class="abadis-demo-chip" href="./site-demo.html" title="بازگشت به دمو سایت">DEMO — نسخه پروداکت ۲L</a>
+
+  
+  <script>
+    (function () {
+      const els = document.querySelectorAll('[data-animate], .use-chip, .spec-card, .table-wrap');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach((el) => el.classList.add('is-inview'));
+        return;
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-inview');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.25, rootMargin: '0px 0px -8% 0px' });
+      els.forEach((el) => io.observe(el));
+    })();
+  </script>
 
   <script type="module" src="./scrub-theater.js"></script>
 </body>
