@@ -291,6 +291,7 @@
     
 
 
+
     .use-chip {
       position: relative;
       display: inline-flex;
@@ -311,59 +312,62 @@
       overflow: visible;
       isolation: isolate;
     }
-    /* Pulse MUST overlay the card border — never in flex flow */
-    .use-chip-pulse {
-      position: absolute !important;
-      left: -1px !important;
-      top: -1px !important;
-      right: -1px !important;
-      bottom: -1px !important;
-      width: auto !important;
-      height: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      z-index: 1;
+    /* Pulse ring: follows the SAME border-radius as the card (no SVG stretch) */
+    .use-chip::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 16px; /* 14px card + 2px inset */
+      padding: 2px;
+      background: conic-gradient(
+        from var(--abadis-pulse, 0deg),
+        #2ec4c6 0deg,
+        #2ec4c6 28deg,
+        rgba(46, 196, 198, 0.15) 42deg,
+        transparent 55deg,
+        transparent 360deg
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
       pointer-events: none;
-      overflow: visible;
-      display: block !important;
-      flex: none !important;
-    }
-    .use-chip-pulse .ecg {
-      fill: none;
-      stroke: #2ec4c6;
-      stroke-width: 2.25;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      vector-effect: non-scaling-stroke;
-      /* pathLength=100 → seamless loop around border */
-      stroke-dasharray: 22 78;
-      stroke-dashoffset: 0;
+      z-index: 1;
       opacity: 0;
-      filter: drop-shadow(0 0 3px rgba(46, 196, 198, 0.6));
+      box-sizing: border-box;
     }
     .use-chip.is-inview {
       opacity: 1;
       transform: translateY(0);
-      box-shadow: 0 8px 20px rgba(6,97,99,0.1);
+      box-shadow: 0 8px 20px rgba(6, 97, 99, 0.1);
     }
-    .use-chip.is-inview .use-chip-pulse .ecg {
+    .use-chip.is-inview::before {
       opacity: 1;
       animation: abadis-ecg-orbit 9.5s linear infinite;
     }
-    .use-chip:nth-child(2).is-inview .use-chip-pulse .ecg { animation-delay: -1.2s; }
-    .use-chip:nth-child(3).is-inview .use-chip-pulse .ecg { animation-delay: -2.4s; }
-    .use-chip:nth-child(4).is-inview .use-chip-pulse .ecg { animation-delay: -3.6s; }
-    .use-chip:nth-child(5).is-inview .use-chip-pulse .ecg { animation-delay: -4.8s; }
-    .use-chip:nth-child(6).is-inview .use-chip-pulse .ecg { animation-delay: -6s; }
+    .use-chip:nth-child(2).is-inview::before { animation-delay: -1.2s; }
+    .use-chip:nth-child(3).is-inview::before { animation-delay: -2.4s; }
+    .use-chip:nth-child(4).is-inview::before { animation-delay: -3.6s; }
+    .use-chip:nth-child(5).is-inview::before { animation-delay: -4.8s; }
+    .use-chip:nth-child(6).is-inview::before { animation-delay: -6s; }
+    @property --abadis-pulse {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
     @keyframes abadis-ecg-orbit {
-      from { stroke-dashoffset: 0; }
-      to { stroke-dashoffset: -100; }
+      to { --abadis-pulse: 360deg; }
     }
     .use-chip-icon-wrap,
     .use-chip > span {
       position: relative;
       z-index: 2;
     }
+
 
     .use-chip-icon-wrap {
       width: 34px;
@@ -650,10 +654,7 @@
       <h2>موارد مصرف</h2>
       <div class="use-grid">
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" aria-hidden="true" focusable="false">
-        <path class="ecg" pathLength="100" fill="none"/>
-      </svg>
-          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 16.8h5.6v2.4H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
         <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
@@ -663,10 +664,7 @@
           <span>ریه و آندوسکوپی</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" aria-hidden="true" focusable="false">
-        <path class="ecg" pathLength="100" fill="none"/>
-      </svg>
-          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 14.2h5.6v5H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
         <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
@@ -676,10 +674,7 @@
           <span>گوارش</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" aria-hidden="true" focusable="false">
-        <path class="ecg" pathLength="100" fill="none"/>
-      </svg>
-          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13h5.6v6.2H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
         <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
@@ -689,10 +684,7 @@
           <span>CCU/ICU</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" aria-hidden="true" focusable="false">
-        <path class="ecg" pathLength="100" fill="none"/>
-      </svg>
-          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 12.2h5.6v7H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
         <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
@@ -702,10 +694,7 @@
           <span>عفونی</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" aria-hidden="true" focusable="false">
-        <path class="ecg" pathLength="100" fill="none"/>
-      </svg>
-          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
         <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
@@ -715,10 +704,7 @@
           <span>بخش مردان</span>
         </div>
         <div class="use-chip" data-animate="icon">
-          <svg class="use-chip-pulse" aria-hidden="true" focusable="false">
-        <path class="ecg" pathLength="100" fill="none"/>
-      </svg>
-          <span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<span class="use-chip-icon-wrap"><svg class="use-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="bag-fill" d="M9.2 13.6h5.6v5.6H9.2z"/>
         <path d="M9 9.2h6c.9 0 1.6.7 1.6 1.6v7.2c0 1.3-1 2.4-2.3 2.4H9.7c-1.3 0-2.3-1.1-2.3-2.4v-7.2c0-.9.7-1.6 1.6-1.6z"/>
         <path d="M9.4 9.2V7.6c0-1.4 1.2-2.5 2.6-2.5s2.6 1.1 2.6 2.5v1.6"/>
@@ -764,51 +750,6 @@
   </script>
 
 
-  <script>
-    (function () {
-      var RADIUS = 14; /* = .use-chip border-radius */
-      function roundedRectPath(w, h, r) {
-        var pad = 1.25;
-        var x = pad, y = pad;
-        var rw = Math.max(1, w - pad * 2);
-        var rh = Math.max(1, h - pad * 2);
-        r = Math.min(r, rw / 2, rh / 2);
-        /* True rounded rect — arcs match CSS border-radius (no stretch) */
-        return [
-          'M', (x + r), y,
-          'H', (x + rw - r),
-          'A', r, r, 0, 0, 1, (x + rw), (y + r),
-          'V', (y + rh - r),
-          'A', r, r, 0, 0, 1, (x + rw - r), (y + rh),
-          'H', (x + r),
-          'A', r, r, 0, 0, 1, x, (y + rh - r),
-          'V', (y + r),
-          'A', r, r, 0, 0, 1, (x + r), y,
-          'Z'
-        ].join(' ');
-      }
-      function fit() {
-        document.querySelectorAll('.use-chip').forEach(function (chip) {
-          var svg = chip.querySelector('.use-chip-pulse');
-          var path = svg && svg.querySelector('.ecg');
-          if (!svg || !path) return;
-          var w = chip.offsetWidth + 2; /* matches -1px inset each side */
-          var h = chip.offsetHeight + 2;
-          if (w < 8 || h < 8) return;
-          svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-          svg.setAttribute('width', w);
-          svg.setAttribute('height', h);
-          path.setAttribute('d', roundedRectPath(w, h, RADIUS + 1));
-        });
-      }
-      window.addEventListener('resize', fit);
-      window.addEventListener('load', fit);
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-      requestAnimationFrame(function () { requestAnimationFrame(fit); });
-      setTimeout(fit, 120);
-      setTimeout(fit, 600);
-    })();
-  </script>
 
   <script type="module" src="./scrub-theater.js"></script>
 </body>
