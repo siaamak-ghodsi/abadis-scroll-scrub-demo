@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>آبادیس — باز شدن سیستم</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #0d3a3f;
+      --muted: #5a7a80;
+      --teal: #0d5c63;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body {
+      font-family: "Vazirmatn", "Tahoma", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+    .intro, .outro {
+      min-height: 55vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 24px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .intro h1 {
+      font-size: clamp(1.55rem, 4vw, 2.35rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--teal);
+    }
+    .intro p, .outro p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      max-width: 36em;
+    }
+    .scroll-hint {
+      margin-top: 28px;
+      font-size: 0.85rem;
+      color: var(--teal);
+      opacity: 0.65;
+      animation: bob 1.8s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(6px); opacity: 1; }
+    }
+    .scrub-section { position: relative; height: 250vh; }
+    .scrub-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    #c {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: pan-y;
+    }
+    .hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(16px, 3vw, 32px);
+    }
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      opacity: 0.85;
+    }
+    .title-rtl {
+      font-size: clamp(1rem, 2.4vw, 1.25rem);
+      font-weight: 650;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(13, 92, 99, 0.1);
+      border-radius: 999px;
+      padding: 8px 18px;
+    }
+    .hud-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 300px;
+    }
+    .progress-track {
+      direction: ltr;
+      height: 3px;
+      background: rgba(13, 92, 99, 0.12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0d5c63, #7ec8cf);
+      border-radius: 2px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .progress-label .active { color: var(--teal); }
+    .state-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 4px;
+    }
+    .outro h2 {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      color: var(--teal);
+      margin-bottom: 10px;
+    }
+    .err {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      background: var(--bg); color: #a33; padding: 24px; text-align: center;
+      z-index: 5; font-size: 0.95rem; line-height: 1.6;
+    }
+    .loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg); color: var(--muted);
+      z-index: 4; font-size: 0.95rem;
+      transition: opacity 0.35s ease;
+    }
+    .loading.hide { opacity: 0; pointer-events: none; }
+    @media (max-width: 600px) {
+      .hud-bottom { max-width: 100%; }
+      .intro { min-height: 45vh; padding: 32px 18px; }
+      .title-rtl { font-size: 0.92rem; padding: 7px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="intro">
+    <h1>آبادیس — باز شدن سیستم</h1>
+    <p>اسکرول کنید تا درب و بدنه از هم جدا شوند — نمای انفجاری محصول.</p>
+    <div class="scroll-hint">↓ اسکرول کنید</div>
+  </section>
+
+  <section class="scrub-section" id="scrub">
+    <div class="scrub-sticky">
+      <canvas id="c"></canvas>
+      <div class="hud">
+        <div class="hud-top">
+          <div class="brand">ABADIS</div>
+          <div class="title-rtl">آبادیس — باز شدن سیستم</div>
+        </div>
+        <div class="hud-bottom">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-label" style="direction:ltr">
+            <span id="labelAssembled" class="active">سوار</span>
+            <span id="labelExploded">باز</span>
+          </div>
+          <div class="state-label" id="stateLabel">سوار / Assembled</div>
+        </div>
+      </div>
+      <div class="loading" id="loading">در حال بارگذاری مدل…</div>
+      <div class="err" id="err"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2>سیستم باز شد</h2>
+    <p>درب به بالا و بدنه به پایین حرکت کرده‌اند. دوباره اسکرول کنید تا سوار شود.</p>
+  </section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    /*
+      Apple-style scroll scrub explode.
+      Prefers multi-node abadis-scrub-parts.glb (lid + body).
+      Fallback: single-mesh HQ → camera orbit 0→90° + dolly.
+    */
+
+    const PARTS_URL = './abadis-scrub-parts.glb';
+    const FALLBACK_URL = './abadis-product-hq.glb';
+
+    const LID_UP = 0.04;      // m
+    const BODY_DOWN = 0.10;   // m
+    const Z_OFFSET = 0.012;   // tiny Z separation at full explode
+
+    const canvas = document.getElementById('c');
+    const errEl = document.getElementById('err');
+    const loadingEl = document.getElementById('loading');
+    const stateLabel = document.getElementById('stateLabel');
+    const progressFill = document.getElementById('progressFill');
+    const labelAssembled = document.getElementById('labelAssembled');
+    const labelExploded = document.getElementById('labelExploded');
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: 'high-performance',
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    renderer.shadowMap.enabled = false;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
+
+    const camera = new THREE.PerspectiveCamera(
+      36,
+      window.innerWidth / window.innerHeight,
+      0.01,
+      40
+    );
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xe8eef0, 0.85));
+    const key = new THREE.DirectionalLight(0xffffff, 0.95);
+    key.position.set(0.5, 1.2, 0.8);
+    key.castShadow = false;
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xb8d4da, 0.35);
+    fill.position.set(-0.8, 0.4, -0.5);
+    fill.castShadow = false;
+    scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xf0f6f8, 0.25);
+    rim.position.set(0.15, 0.3, -1.0);
+    scene.add(rim);
+
+    const product = new THREE.Group();
+    scene.add(product);
+
+    const state = {
+      ready: false,
+      mode: 'explode', // 'explode' | 'orbit'
+      smoothT: 0,
+      targetT: 0,
+      idle: 0,
+      lid: null,
+      body: null,
+      lidBase: new THREE.Vector3(),
+      bodyBase: new THREE.Vector3(),
+      center: new THREE.Vector3(),
+      radius: 0.2,
+    };
+
+    function smoothstep(t) {
+      t = THREE.MathUtils.clamp(t, 0, 1);
+      return t * t * (3 - 2 * t);
+    }
+
+    function fitCamera(box) {
+      box.getCenter(state.center);
+      const size = box.getSize(new THREE.Vector3());
+      state.radius = Math.max(size.x, size.y, size.z) * 0.5 || 0.15;
+      const dist = state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
+      const z = dist * 1.35;
+      camera.position.set(state.center.x + z * 0.15, state.center.y + state.radius * 0.15, state.center.z + z);
+      camera.near = Math.max(0.005, dist / 100);
+      camera.far = dist * 40;
+      camera.updateProjectionMatrix();
+      camera.lookAt(state.center);
+      state._camHome = camera.position.clone();
+      state._lookHome = state.center.clone();
+      state._fitDist = z;
+    }
+
+    function prepareMaterials(root) {
+      root.traverse((o) => {
+        if (!o.isMesh) return;
+        o.castShadow = false;
+        o.receiveShadow = false;
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of mats) {
+          if (!m) continue;
+          m.side = THREE.DoubleSide;
+          if ('envMapIntensity' in m) m.envMapIntensity = 0.85;
+        }
+      });
+    }
+
+    function findNamed(root, name) {
+      let found = null;
+      root.traverse((o) => {
+        if (found) return;
+        if (o.name === name) found = o;
+      });
+      return found;
+    }
+
+    function scrubProgress() {
+      const el = document.getElementById('scrub');
+      if (!el) return 0;
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      if (total <= 0) return 0;
+      return THREE.MathUtils.clamp((-rect.top) / total, 0, 1);
+    }
+
+    function syncFromScroll() {
+      state.targetT = scrubProgress();
+    }
+
+    function updateHud(t) {
+      const e = smoothstep(t);
+      progressFill.style.width = Math.round(e * 100) + '%';
+      labelAssembled.classList.toggle('active', e < 0.5);
+      labelExploded.classList.toggle('active', e >= 0.5);
+      if (state.mode === 'explode') {
+        if (e < 0.25) stateLabel.textContent = 'سوار / Assembled';
+        else if (e < 0.75) stateLabel.textContent = 'در حال باز شدن…';
+        else stateLabel.textContent = 'باز / Exploded';
+      } else {
+        if (e < 0.35) stateLabel.textContent = 'نمای جلو';
+        else if (e < 0.7) stateLabel.textContent = 'چرخش…';
+        else stateLabel.textContent = 'نمای جانبی';
+      }
+    }
+
+    function applyExplode(t) {
+      const e = smoothstep(t);
+      if (state.lid) {
+        state.lid.position.set(
+          state.lidBase.x,
+          state.lidBase.y + LID_UP * e,
+          state.lidBase.z + Z_OFFSET * e
+        );
+      }
+      if (state.body) {
+        state.body.position.set(
+          state.bodyBase.x,
+          state.bodyBase.y - BODY_DOWN * e,
+          state.bodyBase.z - Z_OFFSET * 0.5 * e
+        );
+      }
+      // Keep camera fixed during explode; only idle yaw on product
+      camera.position.copy(state._camHome);
+      camera.lookAt(state._lookHome);
+      updateHud(t);
+    }
+
+    function applyOrbitFallback(t) {
+      const e = smoothstep(t);
+      const angle = e * Math.PI * 0.5; // 0 → 90°
+      const dolly = state._fitDist * (1 - 0.22 * e);
+      const cx = state.center.x;
+      const cy = state.center.y + state.radius * 0.08;
+      const cz = state.center.z;
+      camera.position.set(
+        cx + Math.sin(angle) * dolly,
+        cy + state.radius * 0.12 * e,
+        cz + Math.cos(angle) * dolly
+      );
+      camera.lookAt(cx, cy, cz);
+      updateHud(t);
+    }
+
+    function showError(msg) {
+      loadingEl.classList.add('hide');
+      errEl.style.display = 'flex';
+      errEl.innerHTML = msg;
+    }
+
+    const loader = new GLTFLoader();
+
+    async function loadParts() {
+      try {
+        return await loader.loadAsync(PARTS_URL);
+      } catch (e) {
+        console.warn('parts GLB failed, trying HQ fallback', e);
+        return null;
+      }
+    }
+
+    (async () => {
+      let gltf = await loadParts();
+      let mode = 'explode';
+
+      if (gltf) {
+        const root = gltf.scene;
+        prepareMaterials(root);
+        const lid = findNamed(root, 'lid');
+        const body = findNamed(root, 'body');
+        if (!lid || !body) {
+          console.warn('missing lid/body nodes — orbit fallback');
+          mode = 'orbit';
+        } else {
+          product.add(root);
+          state.lid = lid;
+          state.body = body;
+          state.lidBase.copy(lid.position);
+          state.bodyBase.copy(body.position);
+          root.updateMatrixWorld(true);
+          const box = new THREE.Box3().setFromObject(product);
+          fitCamera(box);
+          state.mode = 'explode';
+          state.ready = true;
+          loadingEl.classList.add('hide');
+          applyExplode(0);
+          syncFromScroll();
+          return;
+        }
+      }
+
+      // Fallback: single HQ mesh + orbit scrub
+      try {
+        gltf = gltf || (await loader.loadAsync(FALLBACK_URL));
+        const root = gltf.scene;
+        prepareMaterials(root);
+        product.add(root);
+        root.updateMatrixWorld(true);
+        const box = new THREE.Box3().setFromObject(product);
+        fitCamera(box);
+        state.mode = 'orbit';
+        state.ready = true;
+        loadingEl.classList.add('hide');
+        applyOrbitFallback(0);
+        syncFromScroll();
+      } catch (err) {
+        console.error(err);
+        showError(
+          'بارگذاری مدل ناموفق بود.<br/>این پوشه را با <code>python3 -m http.server 8770</code> سرو کنید.'
+        );
+      }
+    })();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function applyFrame() {
+      syncFromScroll();
+      const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.32 : 0.18;
+      state.smoothT += (state.targetT - state.smoothT) * k;
+      if (!state.ready) return;
+      if (state.mode === 'explode') {
+        applyExplode(state.smoothT);
+        state.idle += 0.003;
+        product.rotation.y = Math.sin(state.idle) * 0.06;
+      } else {
+        applyOrbitFallback(state.smoothT);
+        state.idle += 0.002;
+        product.rotation.y = Math.sin(state.idle) * 0.04;
+      }
+    }
+
+    window.addEventListener('scroll', () => { syncFromScroll(); applyFrame(); }, { passive: true });
+    window.addEventListener('touchmove', () => { syncFromScroll(); applyFrame(); }, { passive: true });
+
+    function tick() {
+      applyFrame();
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    // Backup ticker if rAF is throttled (background / some automation)
+    setInterval(() => { applyFrame(); }, 50);
+    tick();
+  </script>
+</body>
+</html>
