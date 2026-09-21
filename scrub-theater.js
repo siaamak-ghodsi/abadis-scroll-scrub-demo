@@ -386,9 +386,10 @@ function boot() {
 
   function applyTheatre(t) {
     /* Phased easing: explode early, hold mildly, soft rejoin as fill starts */
-    const sep =
-      easeInOutCubic(smoothstep(0, 0.4, t)) *
-      (1 - 0.55 * smoothstep(0.55, 0.85, t));
+    /* Full reassemble after explode (sep → 0) while flow/fill continue */
+    const open = easeInOutCubic(smoothstep(0, 0.4, t));
+    const rejoin = easeInOutCubic(smoothstep(0.48, 0.78, t));
+    const sep = open * (1 - rejoin);
     const flowE = easeInOutCubic(smoothstep(0.38, 0.72, t));
     const fillE = easeInOutCubic(smoothstep(0.55, 1.0, t));
 
