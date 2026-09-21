@@ -1,6 +1,7 @@
 /**
- * Abadis Product Theater — bold cinematic scroll scrub
- * Dark mint stage, Poly Haven surgery HDR lighting, vortex suction → bag fill.
+ * Abadis Product Theater — clinical stream + sealed capacity
+ * Dark mint stage, Poly Haven surgery HDR; continuous suction tube → bag fill.
+ * No particles / sparks / helix vortex.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -10,7 +11,6 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const PARTS_URL = './abadis-scrub-parts.glb';
 const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
-const PARTICLE_SPRITE = './tex/particle-glow.png';
 
 /* Dramatic separation — Apple film + OR theater */
 const LID_UP = 0.16;
@@ -19,19 +19,16 @@ const X_SPLIT = 0.06;
 const LID_TILT_X = THREE.MathUtils.degToRad(6);
 const LID_TILT_Z = THREE.MathUtils.degToRad(-4);
 
-/* Risky camera: wider yaw arc, stronger dolly, Dutch during flow */
+/* Camera: wider yaw arc, stronger dolly during flow */
 const CAM_YAW0 = THREE.MathUtils.degToRad(35);
 const CAM_YAW1 = THREE.MathUtils.degToRad(-25);
 const DOLLY_IN = 0.22;
 const FLOW_DOLLY = 0.14;
 const FLOW_TILT = 0.07;
-const DUTCH_MAX = THREE.MathUtils.degToRad(3);
+const DUTCH_MAX = THREE.MathUtils.degToRad(2.2);
 
-const IS_MOBILE =
-  typeof window !== 'undefined' &&
-  (window.matchMedia('(max-width: 700px)').matches ||
-    (navigator.maxTouchPoints > 0 && window.innerWidth < 900));
-const PARTICLE_COUNT = IS_MOBILE ? 120 : 180;
+const STREAM_TUBULAR_SEGS = 64;
+const STREAM_RADIAL_SEGS = 10;
 
 const canvas = document.getElementById('abadis-scrub-canvas');
 const stageEl = document.getElementById('abadis-scrub');
@@ -73,7 +70,6 @@ function boot() {
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  /* Dark theatrical clear — HDR lights product, does NOT wash as BG */
   scene.background = new THREE.Color(0x061416);
 
   const camera = new THREE.PerspectiveCamera(28, 1, 0.01, 40);
@@ -81,7 +77,6 @@ function boot() {
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
 
-  /* Cool key + brand teal rim (#066163 / #2ec4c6) — HDR fills reflections */
   scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
   const key = new THREE.DirectionalLight(0xf4faff, 0.95);
   key.position.set(0.55, 1.55, 1.05);
@@ -115,18 +110,15 @@ function boot() {
     center: new THREE.Vector3(),
     radius: 0.2,
     fitDist: 0.5,
-    particles: null,
-    particleSeeds: null,
-    particleRadii: null,
-    particleSpeeds: null,
-    particleStart: null,
-    particleEnd: null,
-    vacuumCone: null,
+    stream: null,
+    streamHi: null,
+    streamCurve: null,
+    streamIndexCount: 0,
+    streamHiIndexCount: 0,
+    portRing: null,
     liquid: null,
-    meniscus: null,
     liquidBaseY: 0,
     liquidFullH: 0.1,
-    particleMap: null,
   };
 
   function easeInOutCubic(t) {
@@ -245,7 +237,6 @@ function boot() {
       tex.mapping = THREE.EquirectangularReflectionMapping;
       const envMap = pmrem.fromEquirectangular(tex).texture;
       scene.environment = envMap;
-      /* Keep solid dark BG — optional very dark blurred env as faint ambient only */
       tex.dispose();
       pmrem.dispose();
       return true;
@@ -267,23 +258,12 @@ function boot() {
     }
   }
 
-  async function loadParticleMap() {
-    return new Promise((resolve) => {
-      const loader = new THREE.TextureLoader();
-      loader.load(
-        PARTICLE_SPRITE,
-        (tex) => {
-          tex.colorSpace = THREE.SRGBColorSpace;
-          state.particleMap = tex;
-          resolve(tex);
-        },
-        undefined,
-        () => resolve(null)
-      );
-    });
-  }
-
-  function createSuctionParticles(lid, body) {
+  /**
+   * Continuous clinical suction stream: tapered TubeGeometry along a
+   * CatmullRom path from above the lid port into the bag interior.
+   * Revealed via drawRange; optional thinner highlight tube.
+   */
+  function createClinicalStream(lid, body) {
     const lidBox = new THREE.Box3().setFromObject(lid);
     const bodyBox = new THREE.Box3().setFromObject(body);
     const lidSize = new THREE.Vector3();
@@ -293,93 +273,153 @@ function boot() {
     lidBox.getCenter(lidCenter);
     bodyBox.getCenter(bodyCenter);
 
-    const start = new THREE.Vector3(
+    const r = state.radius;
+    const p0 = new THREE.Vector3(
       lidCenter.x,
-      lidBox.max.y + lidSize.y * 0.55,
+      lidBox.max.y + lidSize.y * 0.72,
       lidCenter.z
     );
-    const end = new THREE.Vector3(
+    const p1 = new THREE.Vector3(
+      lidCenter.x,
+      lidBox.max.y + lidSize.y * 0.12,
+      lidCenter.z
+    );
+    const p2 = new THREE.Vector3(
+      lidCenter.x * 0.4 + bodyCenter.x * 0.6,
+      (lidBox.min.y + bodyBox.max.y) * 0.5,
+      lidCenter.z
+    );
+    const p3 = new THREE.Vector3(
       bodyCenter.x,
-      bodyBox.min.y + (bodyBox.max.y - bodyBox.min.y) * 0.38,
+      bodyBox.min.y + (bodyBox.max.y - bodyBox.min.y) * 0.42,
       bodyCenter.z
     );
 
-    product.worldToLocal(start);
-    product.worldToLocal(end);
+    product.worldToLocal(p0);
+    product.worldToLocal(p1);
+    product.worldToLocal(p2);
+    product.worldToLocal(p3);
 
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const colors = new Float32Array(PARTICLE_COUNT * 3);
-    const seeds = new Float32Array(PARTICLE_COUNT);
-    const radii = new Float32Array(PARTICLE_COUNT);
-    const speeds = new Float32Array(PARTICLE_COUNT);
-    const teal = new THREE.Color(0x40e0d8);
-    const brand = new THREE.Color(0x066163);
-    const spark = new THREE.Color(0xffffff);
-    const accent = new THREE.Color(0x2ec4c6);
+    const curve = new THREE.CatmullRomCurve3([p0, p1, p2, p3]);
+    curve.curveType = 'catmullrom';
+    curve.tension = 0.35;
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      seeds[i] = Math.random();
-      radii[i] = 0.55 + Math.random() * 0.9;
-      speeds[i] = 0.75 + Math.random() * 0.55;
-      const roll = Math.random();
-      let c;
-      if (roll > 0.78) c = spark.clone();
-      else if (roll > 0.45) c = teal.clone().lerp(spark, 0.3);
-      else if (roll > 0.2) c = accent.clone();
-      else c = brand.clone().lerp(teal, 0.55);
-      colors[i * 3] = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
-      positions[i * 3] = start.x;
-      positions[i * 3 + 1] = start.y;
-      positions[i * 3 + 2] = start.z;
+    const tubeRadius = Math.max(0.0045, r * 0.038);
+    const geo = new THREE.TubeGeometry(
+      curve,
+      STREAM_TUBULAR_SEGS,
+      tubeRadius,
+      STREAM_RADIAL_SEGS,
+      false
+    );
+
+    /* Taper: shrink radius toward the tip (end of path) */
+    {
+      const pos = geo.attributes.position;
+      const radial = STREAM_RADIAL_SEGS;
+      const tubular = STREAM_TUBULAR_SEGS;
+      for (let i = 0; i <= tubular; i++) {
+        const u = i / tubular;
+        const taper = 1.15 - u * 0.72; /* wide at port → thin inside bag */
+        for (let j = 0; j <= radial; j++) {
+          const idx = i * (radial + 1) + j;
+          const px = pos.getX(idx);
+          const py = pos.getY(idx);
+          const pz = pos.getZ(idx);
+          const center = curve.getPointAt(u);
+          pos.setXYZ(
+            idx,
+            center.x + (px - center.x) * taper,
+            center.y + (py - center.y) * taper,
+            center.z + (pz - center.z) * taper
+          );
+        }
+      }
+      pos.needsUpdate = true;
+      geo.computeVertexNormals();
     }
 
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    const mat = new THREE.PointsMaterial({
-      size: Math.max(0.008, state.radius * 0.07),
-      map: state.particleMap || null,
-      vertexColors: true,
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: 0x066163,
+      emissive: 0x2ec4c6,
+      emissiveIntensity: 0.18,
       transparent: true,
       opacity: 0,
+      roughness: 0.22,
+      metalness: 0.08,
+      transmission: 0.35,
+      thickness: 0.02,
+      ior: 1.33,
+      clearcoat: 0.4,
+      clearcoatRoughness: 0.25,
       depthWrite: false,
-      sizeAttenuation: true,
-      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
     });
-    if (state.particleMap) mat.alphaMap = state.particleMap;
 
-    const points = new THREE.Points(geo, mat);
-    points.frustumCulled = false;
-    points.visible = false;
-    product.add(points);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.frustumCulled = false;
+    mesh.visible = false;
+    product.add(mesh);
 
-    const coneH = state.radius * 0.55;
-    const coneR = state.radius * 0.22;
-    const coneGeo = new THREE.ConeGeometry(coneR, coneH, 24, 1, true);
-    const coneMat = new THREE.MeshBasicMaterial({
-      color: 0x40e0d8,
+    /* Thinner highlight core */
+    const hiGeo = new THREE.TubeGeometry(
+      curve,
+      STREAM_TUBULAR_SEGS,
+      tubeRadius * 0.38,
+      6,
+      false
+    );
+    const hiMat = new THREE.MeshBasicMaterial({
+      color: 0x2ec4c6,
       transparent: true,
       opacity: 0,
       depthWrite: false,
       side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
     });
-    const cone = new THREE.Mesh(coneGeo, coneMat);
-    cone.rotation.x = Math.PI;
-    cone.position.set(start.x, start.y + coneH * 0.35, start.z);
-    cone.visible = false;
-    product.add(cone);
+    const hi = new THREE.Mesh(hiGeo, hiMat);
+    hi.frustumCulled = false;
+    hi.visible = false;
+    product.add(hi);
 
-    state.particles = points;
-    state.particleSeeds = seeds;
-    state.particleRadii = radii;
-    state.particleSpeeds = speeds;
-    state.particleStart = start;
-    state.particleEnd = end;
-    state.vacuumCone = cone;
+    const indexCount = geo.index ? geo.index.count : geo.getAttribute('position').count;
+    const hiIndexCount = hiGeo.index ? hiGeo.index.count : hiGeo.getAttribute('position').count;
+    geo.setDrawRange(0, 0);
+    hiGeo.setDrawRange(0, 0);
+
+    state.stream = mesh;
+    state.streamHi = hi;
+    state.streamCurve = curve;
+    state.streamIndexCount = indexCount;
+    state.streamHiIndexCount = hiIndexCount;
+
+    /* Port ring on lid — brief emissive pulse when flow starts */
+    const portR = Math.max(0.008, r * 0.055);
+    const ringGeo = new THREE.TorusGeometry(portR, portR * 0.18, 10, 32);
+    const ringMat = new THREE.MeshStandardMaterial({
+      color: 0x066163,
+      emissive: 0x2ec4c6,
+      emissiveIntensity: 0,
+      roughness: 0.35,
+      metalness: 0.25,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2;
+    /* Local to lid: near top center of lid bbox */
+    lid.updateWorldMatrix(true, false);
+    const invLid = new THREE.Matrix4().copy(lid.matrixWorld).invert();
+    const portWorld = new THREE.Vector3(
+      lidCenter.x,
+      lidBox.max.y - lidSize.y * 0.02,
+      lidCenter.z
+    );
+    const portLocal = portWorld.clone().applyMatrix4(invLid);
+    ring.position.copy(portLocal);
+    ring.visible = false;
+    lid.add(ring);
+    state.portRing = ring;
   }
 
   function createLiquidFill(body) {
@@ -403,14 +443,14 @@ function boot() {
       color: 0x148a8c,
       transparent: true,
       opacity: 0,
-      roughness: 0.12,
-      metalness: 0.05,
-      transmission: 0.22,
-      thickness: 0.04,
+      roughness: 0.18,
+      metalness: 0.04,
+      transmission: 0.28,
+      thickness: 0.05,
       ior: 1.35,
-      specularIntensity: 0.9,
-      clearcoat: 0.35,
-      clearcoatRoughness: 0.2,
+      specularIntensity: 0.85,
+      clearcoat: 0.28,
+      clearcoatRoughness: 0.22,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
@@ -437,112 +477,103 @@ function boot() {
     mesh.scale.set(1, 0.02, 1);
     body.add(mesh);
 
-    const ringGeo = new THREE.TorusGeometry(radius * 0.92, radius * 0.028, 8, 48);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x5ee8e0,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.rotation.x = Math.PI / 2;
-    ring.visible = false;
-    body.add(ring);
-
     state.liquid = mesh;
-    state.meniscus = ring;
     state.liquidBaseY = localBottom.y;
     state.liquidFullH = localH;
   }
 
-  function updateParticles(flowE, elapsed) {
-    const pts = state.particles;
-    if (!pts || !state.particleSeeds) return;
-    const mat = pts.material;
-    const cone = state.vacuumCone;
+  function updateStream(flowE) {
+    const mesh = state.stream;
+    const hi = state.streamHi;
+    const ring = state.portRing;
+    if (!mesh) return;
 
-    if (flowE < 0.04) {
-      mat.opacity = 0;
-      pts.visible = false;
-      if (cone) {
-        cone.visible = false;
-        cone.material.opacity = 0;
+    if (flowE < 0.02) {
+      mesh.visible = false;
+      mesh.material.opacity = 0;
+      mesh.geometry.setDrawRange(0, 0);
+      if (hi) {
+        hi.visible = false;
+        hi.material.opacity = 0;
+        hi.geometry.setDrawRange(0, 0);
+      }
+      if (ring) {
+        ring.visible = false;
+        ring.material.opacity = 0;
+        ring.material.emissiveIntensity = 0;
       }
       return;
     }
-    pts.visible = true;
-    mat.opacity = THREE.MathUtils.clamp(0.4 + flowE * 0.95, 0, 1);
 
-    if (cone) {
-      cone.visible = true;
-      cone.material.opacity = THREE.MathUtils.clamp(flowE * 0.22, 0, 0.28);
-      cone.scale.setScalar(0.85 + flowE * 0.25);
+    mesh.visible = true;
+    /* Marching reveal along tube length */
+    const reveal = easeInOutCubic(THREE.MathUtils.clamp(flowE * 1.15, 0, 1));
+    const count = Math.max(
+      STREAM_RADIAL_SEGS * 3,
+      Math.floor(state.streamIndexCount * reveal)
+    );
+    /* Snap to triangle multiples so end cap stays clean */
+    const tri = Math.floor(count / 3) * 3;
+    mesh.geometry.setDrawRange(0, tri);
+
+    /* Opacity: soft fade-in, solid mid-flow (liquid column feel) */
+    const midBoost = Math.sin(Math.PI * THREE.MathUtils.clamp(flowE, 0, 1));
+    mesh.material.opacity = THREE.MathUtils.clamp(
+      0.22 + flowE * 0.55 + midBoost * 0.18,
+      0,
+      0.88
+    );
+    mesh.material.emissiveIntensity = 0.12 + midBoost * 0.22;
+
+    if (hi) {
+      hi.visible = true;
+      const hiCount = Math.max(
+        18,
+        Math.floor(state.streamHiIndexCount * reveal)
+      );
+      hi.geometry.setDrawRange(0, Math.floor(hiCount / 3) * 3);
+      hi.material.opacity = THREE.MathUtils.clamp(
+        0.08 + flowE * 0.35 + midBoost * 0.2,
+        0,
+        0.55
+      );
     }
 
-    const pos = pts.geometry.attributes.position.array;
-    const start = state.particleStart;
-    const end = state.particleEnd;
-    const maxSpread = state.radius * 0.28;
-    const time = elapsed;
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const seed = state.particleSeeds[i];
-      const spd = state.particleSpeeds[i];
-      const rMul = state.particleRadii[i];
-      const u = (seed + flowE * 2.2 * spd + time * 0.28 * spd) % 1;
-      const turns = 3.2 + seed * 1.8;
-      const spiral = seed * Math.PI * 2 + u * Math.PI * 2 * turns;
-      const flare = u < 0.7 ? 1 - u * 1.15 : 0.2 + (u - 0.7) * 0.9;
-      const radial = maxSpread * Math.max(0.04, flare) * rMul;
-      const x =
-        THREE.MathUtils.lerp(start.x, end.x, u) + Math.cos(spiral) * radial;
-      const y = THREE.MathUtils.lerp(start.y, end.y, easeInOutCubic(u));
-      const z =
-        THREE.MathUtils.lerp(start.z, end.z, u) + Math.sin(spiral) * radial;
-      pos[i * 3] = x;
-      pos[i * 3 + 1] = y;
-      pos[i * 3 + 2] = z;
+    /* Brief port-ring pulse near flow start */
+    if (ring) {
+      ring.visible = true;
+      const pulse = smoothstep(0.02, 0.18, flowE) * (1 - smoothstep(0.45, 0.85, flowE));
+      const beat = 0.55 + 0.45 * Math.sin(clock.getElapsedTime() * 5.5);
+      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.85, 0, 0.9);
+      ring.material.emissiveIntensity = pulse * beat * 1.6;
+      const s = 1 + pulse * 0.08 * beat;
+      ring.scale.set(s, s, s);
     }
-    pts.geometry.attributes.position.needsUpdate = true;
   }
 
   function updateLiquid(fillE) {
     const mesh = state.liquid;
     if (!mesh) return;
-    const ring = state.meniscus;
     if (fillE < 0.02) {
       mesh.visible = false;
       mesh.material.opacity = 0;
-      if (ring) {
-        ring.visible = false;
-        ring.material.opacity = 0;
-      }
       return;
     }
     mesh.visible = true;
-    const sy = 0.02 + 0.9 * easeInOutCubic(fillE);
+    const sy = 0.02 + 0.92 * easeInOutCubic(fillE);
     const h = sy * state.liquidFullH;
     mesh.scale.y = h;
     mesh.position.y = state.liquidBaseY + h * 0.5;
-    mesh.material.opacity = THREE.MathUtils.clamp(0.35 + fillE * 0.45, 0, 0.78);
-
-    if (ring) {
-      ring.visible = true;
-      ring.position.set(mesh.position.x, state.liquidBaseY + h, mesh.position.z);
-      ring.material.opacity = THREE.MathUtils.clamp(fillE * 0.55, 0, 0.65);
-      const pulse = 1 + Math.sin(clock.getElapsedTime() * 2.2) * 0.015;
-      ring.scale.set(pulse, pulse, pulse);
-    }
+    mesh.material.opacity = THREE.MathUtils.clamp(0.32 + fillE * 0.48, 0, 0.82);
   }
 
   function applyTheatre(t) {
-    /* 0–0.38 explode; 0.40–0.72 rejoin + vortex peak; 0.55–1 fill */
-    const open = easeInOutCubic(smoothstep(0, 0.38, t));
-    const rejoin = easeInOutCubic(smoothstep(0.4, 0.72, t));
+    /* explode → full reassemble → stream reveal → fill; sep→0 before/during fill */
+    const open = easeInOutCubic(smoothstep(0, 0.36, t));
+    const rejoin = easeInOutCubic(smoothstep(0.36, 0.62, t));
     const sep = open * (1 - rejoin);
-    const flowE = easeInOutCubic(smoothstep(0.38, 0.72, t));
-    const fillE = easeInOutCubic(smoothstep(0.55, 1.0, t));
+    const flowE = easeInOutCubic(smoothstep(0.48, 0.78, t));
+    const fillE = easeInOutCubic(smoothstep(0.62, 1.0, t));
 
     if (state.lid) {
       state.lid.position.set(
@@ -564,7 +595,7 @@ function boot() {
     }
 
     placeCamera(sep, flowE, fillE);
-    updateParticles(flowE, clock.getElapsedTime());
+    updateStream(flowE);
     updateLiquid(fillE);
 
     if (progressFill) progressFill.style.width = Math.round(t * 100) + '%';
@@ -582,7 +613,7 @@ function boot() {
   const loader = new GLTFLoader();
   (async () => {
     try {
-      await Promise.all([loadEnvironment(), loadParticleMap()]);
+      await loadEnvironment();
       const gltf = await loader.loadAsync(PARTS_URL);
       const root = gltf.scene;
       prepareMaterials(root);
@@ -602,7 +633,7 @@ function boot() {
       root.updateMatrixWorld(true);
       sizeCanvas();
       fitCamera(new THREE.Box3().setFromObject(product));
-      createSuctionParticles(lid, body);
+      createClinicalStream(lid, body);
       createLiquidFill(body);
       state.ready = true;
       if (loadingEl) loadingEl.classList.add('hide');
