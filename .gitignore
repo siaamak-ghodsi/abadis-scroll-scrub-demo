@@ -1,2 +1,5 @@
 node_modules
 .venv
+brand/*.ai
+brand/abadis-logo-pdf-1.png
+brand/abadis-logo.svg

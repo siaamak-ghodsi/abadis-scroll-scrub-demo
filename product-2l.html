@@ -64,6 +64,36 @@
       gap: 16px;
       flex-wrap: wrap;
     }
+
+    .brand-logo {
+      display: block;
+      height: 40px;
+      width: auto;
+      max-width: min(240px, 58vw);
+      object-fit: contain;
+    }
+    .brand-logo-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      line-height: 0;
+    }
+    .theater-brand {
+      position: absolute;
+      top: 18px;
+      inset-inline-start: 18px;
+      z-index: 6;
+      height: 44px;
+      width: auto;
+      opacity: 0.92;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.35));
+    }
+    @media (max-width: 640px) {
+      .brand-logo { height: 32px; }
+      .theater-brand { height: 34px; top: 12px; inset-inline-start: 12px; }
+    }
+
     .wordmark {
       font-weight: 700;
       font-size: 0.98rem;
@@ -485,7 +515,9 @@
 
   <header class="site-header">
     <div class="site-header-inner">
-      <div class="wordmark">مخازن طبی آبادیس</div>
+      <a class="brand-logo-link" href="https://abadis-med.com/" rel="noopener" target="_blank" aria-label="مخازن طبی آبادیس">
+        <img class="brand-logo" src="./brand/abadis-logo-light.png" width="220" height="103" alt="مخازن طبی آبادیس — Abadis Med" />
+      </a>
       <a class="header-link" href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">صفحه محصول زنده</a>
     </div>
   </header>
@@ -705,6 +737,7 @@
 
   <footer class="site-footer">
     <div class="demo-badge">DEMO</div>
+    <img class="footer-brand" src="./brand/abadis-logo.png" alt="Abadis Med" width="160" height="75" style="display:block;margin:12px auto 8px;height:36px;width:auto;opacity:0.9;" />
     <p>پیش‌نمایش بازطراحی صفحه محصول ۲ لیتری — متن از صفحه زنده آبادیس؛ بدون ادعاهای بالینی جدید.</p>
     <p><a href="https://abadis-med.com/%D9%85%D8%AD%D8%B5%D9%88%D9%84%D8%A7%D8%AA/%DA%A9%DB%8C%D8%B3%D9%87-%D8%B3%D8%A7%DA%A9%D8%B4%D9%86/" rel="noopener" target="_blank">abadis-med.com/محصولات/کیسه-ساکشن</a></p>
   </footer>
