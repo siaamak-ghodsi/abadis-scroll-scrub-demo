@@ -314,28 +314,19 @@
     }
     /* Soft rounded rail */
     /* Pulse ring on card border-radius — ECG-shaped highlight */
+    /* Pulse ring: follows the SAME border-radius as the card (no SVG stretch) */
     .use-chip::before {
       content: "";
       position: absolute;
       inset: -2px;
-      border-radius: 16px;
-      padding: 2.25px;
+      border-radius: 16px; /* 14px card + 2px inset */
+      padding: 2px;
       background: conic-gradient(
         from var(--abadis-pulse, 0deg),
-        transparent 0deg,
-        transparent 4deg,
-        #2ec4c6 4deg,
-        #2ec4c6 6deg,
-        transparent 6deg,
-        transparent 9deg,
-        #7fe8e6 9deg,
-        #ffffff 11deg,
-        #2ec4c6 13deg,
-        transparent 15deg,
-        transparent 18deg,
-        #2ec4c6 18deg,
-        #2ec4c6 20deg,
-        transparent 22deg,
+        #2ec4c6 0deg,
+        #2ec4c6 28deg,
+        rgba(46, 196, 198, 0.15) 42deg,
+        transparent 55deg,
         transparent 360deg
       );
       -webkit-mask:
@@ -350,7 +341,6 @@
       z-index: 1;
       opacity: 0;
       box-sizing: border-box;
-      filter: drop-shadow(0 0 3px rgba(46, 196, 198, 0.55));
     }
     .use-chip.is-inview {
       opacity: 1;
@@ -373,6 +363,11 @@
     }
     @keyframes abadis-ecg-orbit {
       to { --abadis-pulse: 360deg; }
+    }
+    .use-chip-icon-wrap,
+    .use-chip > span {
+      position: relative;
+      z-index: 2;
     }
     .use-chip-icon-wrap,
     .use-chip > span {
