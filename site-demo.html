@@ -210,6 +210,22 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </head>
 <body class="rtl home wp-singular page-template page-template-elementor_header_footer page page-id-6 wp-theme-hello-elementor jet-desktop-menu-active elementor-default elementor-template-full-width elementor-kit-5 elementor-page elementor-page-6">
 
+<!-- Fixed WebGL layer (behind content) -->
+		<div class="abadis-scrub-fixed" id="abadis-scrub-bg" aria-hidden="true">
+			<canvas id="abadis-scrub-canvas"></canvas>
+		</div>
+		<div class="abadis-scrub-loading" id="abadisScrubLoading">در حال بارگذاری مدل…</div>
+		<div class="abadis-scrub-err" id="abadisScrubErr"></div>
+		<div class="abadis-scrub-hud" aria-hidden="true">
+			<div class="abadis-scrub-track"><div class="abadis-scrub-fill" id="abadisProgressFill"></div></div>
+			<div class="abadis-scrub-labels">
+				<span id="abadisLabelAssembled" class="active">سوار</span>
+				<span id="abadisLabelExploded">باز</span>
+			</div>
+		</div>
+
+
+
 
 <a class="skip-link screen-reader-text" href="#content">
 	پرش به محتوا</a>
@@ -692,46 +708,122 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 								<div class="elementor-element elementor-element-15970b3 elementor-widget elementor-widget-slider_revolution" data-id="15970b3" data-element_type="widget" data-widget_type="slider_revolution.default">
 				<div class="elementor-widget-container">
 			
-		<!-- ABADIS PITCH DEMO: scroll-scrub replaces Revolution Slider hero only -->
+		<!-- ABADIS PITCH DEMO: fixed behind-content WebGL scrub (full-page scroll) -->
 		<style id="abadis-scrub-demo-css">
-			.abadis-scrub-wrap {
-				position: relative;
-				height: 240vh;
-				width: 100%;
-				margin: 0;
-				padding: 0;
-				background: #ffffff;
-			}
-			.abadis-scrub-sticky {
-				position: sticky;
-				top: 0;
-				height: 100vh;
-				width: 100%;
+			/* Fixed full-viewport 3D layer behind site content */
+			.abadis-scrub-fixed {
+				position: fixed;
+				inset: 0;
+				z-index: 0;
+				pointer-events: none;
 				overflow: hidden;
-				background: #ffffff;
+				background: transparent;
 			}
 			#abadis-scrub-canvas {
 				display: block;
 				width: 100%;
 				height: 100%;
-				touch-action: pan-y;
+				opacity: 0.42;
+				filter: blur(0.8px) saturate(0.92);
+				touch-action: none;
 			}
-			.abadis-scrub-hud {
+			.abadis-scrub-fixed::after {
+				content: "";
 				position: absolute;
 				inset: 0;
 				pointer-events: none;
-				display: flex;
-				flex-direction: column;
-				justify-content: flex-end;
-				padding: clamp(16px, 3vw, 28px);
+				background: radial-gradient(
+					ellipse 70% 60% at 50% 45%,
+					rgba(255,255,255,0) 35%,
+					rgba(255,255,255,0.55) 100%
+				);
 			}
-			.abadis-scrub-hud-bottom {
-				max-width: 280px;
+			/* Keep site UI above the canvas */
+			body > a.skip-link,
+			body > .elementor,
+			body > div[data-elementor-type],
+			.abadis-hero-spacer,
+			.abadis-demo-chip {
+				position: relative;
+				z-index: 1;
+			}
+			.elementor-location-header {
+				z-index: 10;
+			}
+			/* Soften opaque whites on early page sections so product peeks through */
+			.elementor-6 > .elementor-section-wrap > .elementor-top-section:nth-of-type(-n+4),
+			.elementor-6 > .elementor-top-section:nth-of-type(-n+4),
+			.elementor-6 .elementor-element-32a51eb,
+			.elementor-6 .elementor-element-b24aaba,
+			.elementor-6 .elementor-element-0dd3212 {
+				background-color: rgba(255, 255, 255, 0.72) !important;
+			}
+			.elementor-6 .elementor-element-32a51eb .elementor-container,
+			.elementor-6 .elementor-element-b24aaba .elementor-container {
+				background-color: transparent !important;
+			}
+			/* Short band where Revolution slider was — no new marketing copy */
+			.abadis-hero-spacer {
+				height: 80vh;
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				background: linear-gradient(
+					180deg,
+					rgba(6, 97, 99, 0.08) 0%,
+					rgba(255, 255, 255, 0.35) 45%,
+					rgba(255, 255, 255, 0.55) 100%
+				);
+				pointer-events: none;
+			}
+			/* Minimal loading / error (non-blocking) */
+			.abadis-scrub-loading {
+				position: fixed;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				z-index: 2;
+				pointer-events: none;
+				color: rgba(90, 122, 128, 0.7);
+				font-size: 0.8rem;
+				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
+				background: rgba(255,255,255,0.55);
+				padding: 8px 14px;
+				border-radius: 999px;
+				transition: opacity 0.35s ease;
+			}
+			.abadis-scrub-loading.hide { opacity: 0; }
+			.abadis-scrub-err {
+				position: fixed;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				z-index: 2;
+				display: none;
+				pointer-events: none;
+				color: #a33;
+				font-size: 0.85rem;
+				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
+				background: rgba(255,255,255,0.85);
+				padding: 12px 16px;
+				border-radius: 8px;
+				text-align: center;
+				max-width: 80vw;
+			}
+			/* Tiny optional progress — labels hidden */
+			.abadis-scrub-hud {
+				position: fixed;
+				bottom: 56px;
+				left: 16px;
+				z-index: 2;
+				pointer-events: none;
 				direction: ltr;
+				opacity: 0.55;
 			}
 			.abadis-scrub-track {
-				height: 3px;
-				background: rgba(6, 97, 99, 0.12);
+				width: 72px;
+				height: 2px;
+				background: rgba(6, 97, 99, 0.15);
 				border-radius: 2px;
 				overflow: hidden;
 			}
@@ -741,32 +833,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				background: linear-gradient(90deg, #066163, #7ec8cf);
 				border-radius: 2px;
 			}
-			.abadis-scrub-labels {
-				display: flex;
-				justify-content: space-between;
-				margin-top: 8px;
-				font-size: 0.78rem;
-				font-weight: 600;
-				color: #5a7a80;
-				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-			}
-			.abadis-scrub-labels .active { color: #066163; }
-			.abadis-scrub-loading {
-				position: absolute; inset: 0;
-				display: flex; align-items: center; justify-content: center;
-				background: #ffffff; color: #5a7a80;
-				z-index: 4; font-size: 0.9rem;
-				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				transition: opacity 0.35s ease;
-			}
-			.abadis-scrub-loading.hide { opacity: 0; pointer-events: none; }
-			.abadis-scrub-err {
-				position: absolute; inset: 0;
-				display: none; align-items: center; justify-content: center;
-				background: #ffffff; color: #a33; padding: 24px; text-align: center;
-				z-index: 5; font-size: 0.9rem;
-				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-			}
+			.abadis-scrub-labels { display: none !important; }
 			.abadis-demo-chip {
 				position: fixed;
 				z-index: 99999;
@@ -786,27 +853,15 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 			}
 			.abadis-demo-chip:hover { background: #066163; color: #fff; }
 			@media (max-width: 600px) {
-				.abadis-scrub-wrap { height: 220vh; }
+				.abadis-hero-spacer { height: 70vh; }
+				#abadis-scrub-canvas { opacity: 0.38; }
 				.abadis-demo-chip { font-size: 11px; bottom: 10px; left: 10px; padding: 7px 10px; }
+				.abadis-scrub-hud { bottom: 48px; left: 10px; }
 			}
 		</style>
+		<!-- Short spacer replacing tall sticky hero / RevSlider -->
 		<div class="wp-block-themepunch-revslider abadis-scrub-hero">
-			<section class="abadis-scrub-wrap" id="abadis-scrub" aria-label="Abadis product scroll scrub">
-				<div class="abadis-scrub-sticky">
-					<canvas id="abadis-scrub-canvas"></canvas>
-					<div class="abadis-scrub-hud">
-						<div class="abadis-scrub-hud-bottom">
-							<div class="abadis-scrub-track"><div class="abadis-scrub-fill" id="abadisProgressFill"></div></div>
-							<div class="abadis-scrub-labels">
-								<span id="abadisLabelAssembled" class="active">سوار</span>
-								<span id="abadisLabelExploded">باز</span>
-							</div>
-						</div>
-					</div>
-					<div class="abadis-scrub-loading" id="abadisScrubLoading">در حال بارگذاری مدل…</div>
-					<div class="abadis-scrub-err" id="abadisScrubErr"></div>
-				</div>
-			</section>
+			<div class="abadis-hero-spacer" id="abadis-scrub" aria-hidden="true"></div>
 		</div>
 
 
@@ -3391,25 +3446,24 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
   if (!canvas) throw new Error('scrub canvas missing');
 
   const renderer = new THREE.WebGLRenderer({
-    canvas, antialias: true, alpha: false, powerPreference: 'high-performance',
+    canvas, antialias: true, alpha: true, powerPreference: 'high-performance',
   });
+  renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  const sticky = canvas.parentElement;
+
   function canvasSize() {
-    const w = sticky.clientWidth || window.innerWidth;
-    const h = sticky.clientHeight || window.innerHeight;
-    return { w, h };
+    return { w: window.innerWidth, h: window.innerHeight };
   }
   let { w: cw, h: ch } = canvasSize();
   renderer.setSize(cw, ch, false);
 
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xffffff);
+  scene.background = null;
 
   const camera = new THREE.PerspectiveCamera(36, cw / ch, 0.01, 40);
 
@@ -3486,22 +3540,21 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
     return found;
   }
 
+  /** Full-page scroll progress 0..1 */
   function scrubProgress() {
-    const el = document.getElementById('abadis-scrub');
-    if (!el) return 0;
-    const rect = el.getBoundingClientRect();
-    const total = el.offsetHeight - window.innerHeight;
-    if (total <= 0) return 0;
-    return THREE.MathUtils.clamp((-rect.top) / total, 0, 1);
+    const doc = document.documentElement;
+    const max = Math.max(1, (doc.scrollHeight || document.body.scrollHeight) - window.innerHeight);
+    const y = window.scrollY || window.pageYOffset || doc.scrollTop || 0;
+    return THREE.MathUtils.clamp(y / max, 0, 1);
   }
 
   function syncFromScroll() { state.targetT = scrubProgress(); }
 
   function updateHud(t) {
     const e = smoothstep(t);
-    progressFill.style.width = Math.round(e * 100) + '%';
-    labelAssembled.classList.toggle('active', e < 0.5);
-    labelExploded.classList.toggle('active', e >= 0.5);
+    if (progressFill) progressFill.style.width = Math.round(e * 100) + '%';
+    if (labelAssembled) labelAssembled.classList.toggle('active', e < 0.5);
+    if (labelExploded) labelExploded.classList.toggle('active', e >= 0.5);
   }
 
   function applyExplode(t) {
@@ -3528,9 +3581,11 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
   }
 
   function showError(msg) {
-    loadingEl.classList.add('hide');
-    errEl.style.display = 'flex';
-    errEl.innerHTML = msg;
+    if (loadingEl) loadingEl.classList.add('hide');
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerHTML = msg;
+    }
   }
 
   const loader = new GLTFLoader();
@@ -3553,7 +3608,7 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
       root.updateMatrixWorld(true);
       fitCamera(new THREE.Box3().setFromObject(product));
       state.ready = true;
-      loadingEl.classList.add('hide');
+      if (loadingEl) loadingEl.classList.add('hide');
       applyExplode(0);
       syncFromScroll();
     } catch (err) {

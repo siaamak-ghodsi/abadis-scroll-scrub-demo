@@ -1,15 +1,17 @@
-# site-demo.html — pitch-only Abadis scroll-scrub overlay
+# site-demo.html — pitch-only Abadis full-page scroll scrub
 
-**Purpose:** Pitch / sales demo that shows the scroll-scrub product explode **in place of** the live homepage Revolution Slider hero, while keeping all Elementor body text, counters, news, header, and footer exactly as on https://abadis-med.com/.
+**Purpose:** Pitch / sales demo that shows the 3D product explode **behind** the live homepage Elementor content as the user scrolls the whole page. Site text is unchanged.
 
 **Public URL:** https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/site-demo.html
 
-**SEO-safe:** This file includes `<meta name="robots" content="noindex,nofollow">`. It is **not** production. Production would swap hero media only (slider → scrub canvas) without republishing a full mirrored page.
+**SEO-safe:** `<meta name="robots" content="noindex,nofollow">`. Not production.
 
 **What changed vs live site:**
-- Replaced only the `rs-module-wrap#rev_slider_4_1_wrapper` / punch-revslider hero block with a ~240vh sticky three.js scrub loading `./abadis-scrub-parts.glb`.
-- Tiny fixed corner chip: «دمو بصری — متن سایت بدون تغییر» (links back to live site).
-- Protocol-relative `//` assets normalized to `https://`.
-- RevSlider init for slider 4 stubbed so missing module does not throw.
+- Revolution Slider hero replaced with a short (~80vh) teal/white spacer (no new marketing copy).
+- Fixed full-viewport WebGL layer (`z-index: 0`, `pointer-events: none`, canvas opacity ~0.42) sits behind page content.
+- Scrub progress = `scrollY / (scrollHeight - innerHeight)` across the entire page → lid/body explode.
+- Softened early white Elementor section backgrounds so the product peeks behind text; teal header stays solid.
+- Tiny DEMO chip: «دمو بصری — متن سایت بدون تغییر».
+- Protocol-relative `//` assets normalized to `https://`. RevSlider init stubbed.
 
 **Do not index.** Pitch use only.
