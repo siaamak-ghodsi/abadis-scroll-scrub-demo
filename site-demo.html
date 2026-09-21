@@ -3,9 +3,9 @@
 <head>
 	<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="robots" content="noindex,nofollow">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-	<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+	<meta name="robots" content="noindex,nofollow">
+	<meta name="googlebot" content="noindex,nofollow">
 
 	<!-- This site is optimized with the Yoast SEO Premium plugin v19.5 (Yoast SEO v19.10) - https://yoast.com/wordpress/plugins/seo/ -->
 	<title>صفحه اصلی &raquo; مخازن طبی آبادیس</title>
@@ -27,7 +27,7 @@
 	<!-- / Yoast SEO Premium plugin. -->
 
 
-<link rel='dns-prefetch' href='//efa.storagefa.ir' />
+<link rel='dns-prefetch' href='https://efa.storagefa.ir' />
 <link rel="alternate" type="application/rss+xml" title="مخازن طبی آبادیس &raquo; خوراک" href="https://abadis-med.com/feed/" />
 <link rel="alternate" type="application/rss+xml" title="مخازن طبی آبادیس &raquo; خوراک دیدگاه‌ها" href="https://abadis-med.com/comments/feed/" />
 <link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://abadis-med.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fabadis-med.com%2F" />
@@ -146,7 +146,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <link rel="icon" href="https://abadis-med.com/wp-content/uploads/2023/05/123.png" sizes="192x192" />
 <link rel="apple-touch-icon" href="https://abadis-med.com/wp-content/uploads/2023/05/123.png" />
 <meta name="msapplication-TileImage" content="https://abadis-med.com/wp-content/uploads/2023/05/123.png" />
-<script>function setREVStartSize(e){ if(!e||!e.c||!document.getElementById(e.c)) return; 
+<script>function setREVStartSize(e){
 			//window.requestAnimationFrame(function() {
 				window.RSIW = window.RSIW===undefined ? window.innerWidth : window.RSIW;
 				window.RSIH = window.RSIH===undefined ? window.innerHeight : window.RSIH;
@@ -207,24 +207,17 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 /*# sourceURL=rs-plugin-settings-inline-css */
 </style>
 
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 <body class="rtl home wp-singular page-template page-template-elementor_header_footer page page-id-6 wp-theme-hello-elementor jet-desktop-menu-active elementor-default elementor-template-full-width elementor-kit-5 elementor-page elementor-page-6">
-
-<!-- Fixed WebGL layer (behind content) -->
-		<div class="abadis-scrub-fixed" id="abadis-scrub-bg" aria-hidden="true">
-			<canvas id="abadis-scrub-canvas"></canvas>
-		</div>
-		<div class="abadis-scrub-loading" id="abadisScrubLoading">در حال بارگذاری مدل…</div>
-		<div class="abadis-scrub-err" id="abadisScrubErr"></div>
-		<div class="abadis-scrub-hud" aria-hidden="true">
-			<div class="abadis-scrub-track"><div class="abadis-scrub-fill" id="abadisProgressFill"></div></div>
-			<div class="abadis-scrub-labels">
-				<span id="abadisLabelAssembled" class="active">سوار</span>
-				<span id="abadisLabelExploded">باز</span>
-			</div>
-		</div>
-
-
 
 
 <a class="skip-link screen-reader-text" href="#content">
@@ -708,138 +701,90 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 								<div class="elementor-element elementor-element-15970b3 elementor-widget elementor-widget-slider_revolution" data-id="15970b3" data-element_type="widget" data-widget_type="slider_revolution.default">
 				<div class="elementor-widget-container">
 			
-		<!-- ABADIS PITCH DEMO: fixed behind-content WebGL scrub (full-page scroll) -->
-		<style id="abadis-scrub-demo-css">
-			/* Fixed full-viewport 3D layer behind site content */
-			.abadis-scrub-fixed {
-				position: fixed;
-				inset: 0;
-				z-index: 0;
-				pointer-events: none;
+		
+		<!-- ABADIS PRODUCT THEATER — vivid sticky explode (pitch demo, SEO-safe) -->
+		<style id="abadis-theater-css">
+			.abadis-theater {
+				position: relative;
+				height: 200vh;
+				width: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			.abadis-theater-sticky {
+				position: sticky;
+				top: 0;
+				height: 100vh;
+				width: 100%;
 				overflow: hidden;
-				background: transparent;
+				background: linear-gradient(165deg, #ffffff 0%, #f4fafb 42%, #e6f3f4 78%, #d4ecee 100%);
 			}
 			#abadis-scrub-canvas {
 				display: block;
 				width: 100%;
 				height: 100%;
-				opacity: 0.42;
-				filter: blur(0.8px) saturate(0.92);
-				touch-action: none;
+				opacity: 1;
+				filter: none;
+				touch-action: pan-y;
 			}
-			.abadis-scrub-fixed::after {
-				content: "";
+			.abadis-theater-loading {
 				position: absolute;
 				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 3;
 				pointer-events: none;
-				background: radial-gradient(
-					ellipse 70% 60% at 50% 45%,
-					rgba(255,255,255,0) 35%,
-					rgba(255,255,255,0.55) 100%
-				);
-			}
-			/* Keep site UI above the canvas */
-			body > a.skip-link,
-			body > .elementor,
-			body > div[data-elementor-type],
-			.abadis-hero-spacer,
-			.abadis-demo-chip {
-				position: relative;
-				z-index: 1;
-			}
-			.elementor-location-header {
-				z-index: 10;
-			}
-			/* Soften opaque whites on early page sections so product peeks through */
-			.elementor-6 > .elementor-section-wrap > .elementor-top-section:nth-of-type(-n+4),
-			.elementor-6 > .elementor-top-section:nth-of-type(-n+4),
-			.elementor-6 .elementor-element-32a51eb,
-			.elementor-6 .elementor-element-b24aaba,
-			.elementor-6 .elementor-element-0dd3212 {
-				background-color: rgba(255, 255, 255, 0.72) !important;
-			}
-			.elementor-6 .elementor-element-32a51eb .elementor-container,
-			.elementor-6 .elementor-element-b24aaba .elementor-container {
-				background-color: transparent !important;
-			}
-			/* Short band where Revolution slider was — no new marketing copy */
-			.abadis-hero-spacer {
-				height: 80vh;
-				width: 100%;
-				margin: 0;
-				padding: 0;
-				background: linear-gradient(
-					180deg,
-					rgba(6, 97, 99, 0.08) 0%,
-					rgba(255, 255, 255, 0.35) 45%,
-					rgba(255, 255, 255, 0.55) 100%
-				);
-				pointer-events: none;
-			}
-			/* Minimal loading / error (non-blocking) */
-			.abadis-scrub-loading {
-				position: fixed;
-				left: 50%;
-				top: 50%;
-				transform: translate(-50%, -50%);
-				z-index: 2;
-				pointer-events: none;
-				color: rgba(90, 122, 128, 0.7);
-				font-size: 0.8rem;
+				color: #5a7a80;
+				font-size: 0.9rem;
 				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				background: rgba(255,255,255,0.55);
-				padding: 8px 14px;
-				border-radius: 999px;
+				background: rgba(247, 251, 251, 0.72);
 				transition: opacity 0.35s ease;
 			}
-			.abadis-scrub-loading.hide { opacity: 0; }
-			.abadis-scrub-err {
-				position: fixed;
-				left: 50%;
-				top: 50%;
-				transform: translate(-50%, -50%);
-				z-index: 2;
+			.abadis-theater-loading.hide { opacity: 0; }
+			.abadis-theater-err {
+				position: absolute;
+				inset: 0;
 				display: none;
-				pointer-events: none;
+				align-items: center;
+				justify-content: center;
+				z-index: 4;
 				color: #a33;
-				font-size: 0.85rem;
+				font-size: 0.9rem;
 				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
-				background: rgba(255,255,255,0.85);
-				padding: 12px 16px;
-				border-radius: 8px;
+				background: #f7fbfb;
+				padding: 24px;
 				text-align: center;
-				max-width: 80vw;
 			}
-			/* Tiny optional progress — labels hidden */
-			.abadis-scrub-hud {
-				position: fixed;
-				bottom: 56px;
-				left: 16px;
-				z-index: 2;
+			.abadis-theater-hud {
+				position: absolute;
+				bottom: 28px;
+				left: 50%;
+				transform: translateX(-50%);
+				z-index: 5;
 				pointer-events: none;
 				direction: ltr;
-				opacity: 0.55;
+				width: min(160px, 40vw);
 			}
-			.abadis-scrub-track {
-				width: 72px;
-				height: 2px;
-				background: rgba(6, 97, 99, 0.15);
+			.abadis-theater-track {
+				height: 3px;
+				background: rgba(13, 92, 99, 0.14);
 				border-radius: 2px;
 				overflow: hidden;
 			}
-			.abadis-scrub-fill {
+			.abadis-theater-fill {
 				height: 100%;
 				width: 0%;
-				background: linear-gradient(90deg, #066163, #7ec8cf);
+				background: linear-gradient(90deg, #0d5c63, #7ec8cf);
 				border-radius: 2px;
+				transition: width 0.05s linear;
 			}
-			.abadis-scrub-labels { display: none !important; }
 			.abadis-demo-chip {
 				position: fixed;
 				z-index: 99999;
 				bottom: 16px;
 				left: 16px;
-				background: rgba(6, 97, 99, 0.92);
+				background: rgba(6, 97, 99, 0.94);
 				color: #fff;
 				font-family: Tahoma, Vazirmatn, system-ui, sans-serif;
 				font-size: 12px;
@@ -853,15 +798,22 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 			}
 			.abadis-demo-chip:hover { background: #066163; color: #fff; }
 			@media (max-width: 600px) {
-				.abadis-hero-spacer { height: 70vh; }
-				#abadis-scrub-canvas { opacity: 0.38; }
+				.abadis-theater { height: 220vh; }
 				.abadis-demo-chip { font-size: 11px; bottom: 10px; left: 10px; padding: 7px 10px; }
-				.abadis-scrub-hud { bottom: 48px; left: 10px; }
+				.abadis-theater-hud { bottom: 20px; width: min(120px, 50vw); }
 			}
 		</style>
-		<!-- Short spacer replacing tall sticky hero / RevSlider -->
-		<div class="wp-block-themepunch-revslider abadis-scrub-hero">
-			<div class="abadis-hero-spacer" id="abadis-scrub" aria-hidden="true"></div>
+		<div class="wp-block-themepunch-revslider">
+			<section class="abadis-theater" id="abadis-scrub" aria-label="Product Theater">
+				<div class="abadis-theater-sticky">
+					<canvas id="abadis-scrub-canvas"></canvas>
+					<div class="abadis-theater-loading" id="abadisScrubLoading">…</div>
+					<div class="abadis-theater-err" id="abadisScrubErr"></div>
+					<div class="abadis-theater-hud" aria-hidden="true">
+						<div class="abadis-theater-track"><div class="abadis-theater-fill" id="abadisProgressFill"></div></div>
+					</div>
+				</div>
+			</section>
 		</div>
 
 
@@ -3404,247 +3356,22 @@ var elementorExtrasFrontendConfig = {"urls":{"assets":"https://abadis-med.com/wp
 <script id="wp-emoji-settings" type="application/json">
 {"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://abadis-med.com/wp-includes/js/wp-emoji-release.min.js?ver=7.1.1"}}
 </script>
-<script type="module">
+<script type="text/plain" data-abadis-disabled-emoji-module>
 /*! This file is auto-generated */
 var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof HTMLScriptElement))throw new Error("Element missing: "+e);const r=JSON.parse(t.text),s=(window._wpemojiSettings=r,"wpEmojiSettingsSupports"),o=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(s,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const r=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===r[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,r){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!r(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,r){let a;const s=(a="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),o=(s.textBaseline="top",s.font="600 32px Arial",{});return e.forEach(e=>{o[e]=t(s,e,n,r)}),o}function a(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}r.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(s));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(o),u.toString(),c.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"});const a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=e=>{i(n=e.data),a.terminate(),t(n)})}catch(e){}i(n=f(o,u,c,p))}t(n)}).then(e=>{for(const n in e)r.supports[n]=e[n],r.supports.everything=r.supports.everything&&r.supports[n],"flag"!==n&&(r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&r.supports[n]);var t;r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&!r.supports.flag,r.supports.everything||((t=r.source||{}).concatemoji?a(t.concatemoji):t.wpemoji&&t.twemoji&&(a(t.twemoji),a(t.wpemoji)))});
 //# sourceURL=https://abadis-med.com/wp-includes/js/wp-emoji-loader.min.js
 </script>
 <script id="rs-initialisation-scripts">
-		/* Pitch demo: Revolution Slider #4 removed; keep stubs so leftover RS scripts stay quiet */
+		/* Pitch demo: Revolution Slider #4 replaced by Product Theater */
 		if(window.RS_MODULES === undefined) window.RS_MODULES = {};
 		if(RS_MODULES.modules === undefined) RS_MODULES.modules = {};
-		RS_MODULES.modules["revslider41"] = {once: true, init: function(){ /* no-op: slider replaced by scrub */ }};
+		RS_MODULES.modules["revslider41"] = {once: true, init: function(){ /* no-op */ }};
 		if (window.RS_MODULES.checkMinimal!==undefined) { try { window.RS_MODULES.checkMinimal(); } catch(e){} }
 	</script>
 <script>flatpickr.setDefaults({dateFormat:'Y-m-d', time_24hr:false}); </script>
 
 <a class="abadis-demo-chip" href="https://abadis-med.com/" title="بازگشت به سایت زنده" rel="noopener">دمو بصری — متن سایت بدون تغییر</a>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-  }
-}
-</script>
-<script type="module">
-  import * as THREE from 'three';
-  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-  const PARTS_URL = './abadis-scrub-parts.glb';
-  const LID_UP = 0.04;
-  const BODY_DOWN = 0.10;
-  const Z_OFFSET = 0.012;
-
-  const canvas = document.getElementById('abadis-scrub-canvas');
-  const errEl = document.getElementById('abadisScrubErr');
-  const loadingEl = document.getElementById('abadisScrubLoading');
-  const progressFill = document.getElementById('abadisProgressFill');
-  const labelAssembled = document.getElementById('abadisLabelAssembled');
-  const labelExploded = document.getElementById('abadisLabelExploded');
-  if (!canvas) throw new Error('scrub canvas missing');
-
-  const renderer = new THREE.WebGLRenderer({
-    canvas, antialias: true, alpha: true, powerPreference: 'high-performance',
-  });
-  renderer.setClearColor(0x000000, 0);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-  function canvasSize() {
-    return { w: window.innerWidth, h: window.innerHeight };
-  }
-  let { w: cw, h: ch } = canvasSize();
-  renderer.setSize(cw, ch, false);
-
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
-  renderer.shadowMap.enabled = false;
-
-  const scene = new THREE.Scene();
-  scene.background = null;
-
-  const camera = new THREE.PerspectiveCamera(36, cw / ch, 0.01, 40);
-
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xe8eef0, 0.85));
-  const key = new THREE.DirectionalLight(0xffffff, 0.95);
-  key.position.set(0.5, 1.2, 0.8);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(0xb8d4da, 0.35);
-  fill.position.set(-0.8, 0.4, -0.5);
-  scene.add(fill);
-  const rim = new THREE.DirectionalLight(0xf0f6f8, 0.25);
-  rim.position.set(0.15, 0.3, -1.0);
-  scene.add(rim);
-
-  const product = new THREE.Group();
-  scene.add(product);
-
-  const state = {
-    ready: false,
-    smoothT: 0,
-    targetT: 0,
-    idle: 0,
-    lid: null,
-    body: null,
-    lidBase: new THREE.Vector3(),
-    bodyBase: new THREE.Vector3(),
-    center: new THREE.Vector3(),
-    radius: 0.2,
-  };
-
-  function smoothstep(t) {
-    t = THREE.MathUtils.clamp(t, 0, 1);
-    return t * t * (3 - 2 * t);
-  }
-
-  function fitCamera(box) {
-    box.getCenter(state.center);
-    const size = box.getSize(new THREE.Vector3());
-    state.radius = Math.max(size.x, size.y, size.z) * 0.5 || 0.15;
-    const dist = state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    const z = dist * 1.35;
-    camera.position.set(state.center.x + z * 0.15, state.center.y + state.radius * 0.15, state.center.z + z);
-    camera.near = Math.max(0.005, dist / 100);
-    camera.far = dist * 40;
-    camera.updateProjectionMatrix();
-    camera.lookAt(state.center);
-    state._camHome = camera.position.clone();
-    state._lookHome = state.center.clone();
-  }
-
-  function prepareMaterials(root) {
-    root.traverse((o) => {
-      if (!o.isMesh) return;
-      o.castShadow = false;
-      o.receiveShadow = false;
-      const mats = Array.isArray(o.material) ? o.material : [o.material];
-      for (const m of mats) {
-        if (!m) continue;
-        m.side = THREE.DoubleSide;
-        if ('envMapIntensity' in m) m.envMapIntensity = 0.85;
-      }
-    });
-  }
-
-  function findNamed(root, name) {
-    let found = null;
-    root.traverse((o) => {
-      if (found) return;
-      if (o.name === name) found = o;
-    });
-    return found;
-  }
-
-  /** Full-page scroll progress 0..1 */
-  function scrubProgress() {
-    const doc = document.documentElement;
-    const max = Math.max(1, (doc.scrollHeight || document.body.scrollHeight) - window.innerHeight);
-    const y = window.scrollY || window.pageYOffset || doc.scrollTop || 0;
-    return THREE.MathUtils.clamp(y / max, 0, 1);
-  }
-
-  function syncFromScroll() { state.targetT = scrubProgress(); }
-
-  function updateHud(t) {
-    const e = smoothstep(t);
-    if (progressFill) progressFill.style.width = Math.round(e * 100) + '%';
-    if (labelAssembled) labelAssembled.classList.toggle('active', e < 0.5);
-    if (labelExploded) labelExploded.classList.toggle('active', e >= 0.5);
-  }
-
-  function applyExplode(t) {
-    const e = smoothstep(t);
-    if (state.lid) {
-      state.lid.position.set(
-        state.lidBase.x,
-        state.lidBase.y + LID_UP * e,
-        state.lidBase.z + Z_OFFSET * e
-      );
-    }
-    if (state.body) {
-      state.body.position.set(
-        state.bodyBase.x,
-        state.bodyBase.y - BODY_DOWN * e,
-        state.bodyBase.z - Z_OFFSET * 0.5 * e
-      );
-    }
-    if (state._camHome) {
-      camera.position.copy(state._camHome);
-      camera.lookAt(state._lookHome);
-    }
-    updateHud(t);
-  }
-
-  function showError(msg) {
-    if (loadingEl) loadingEl.classList.add('hide');
-    if (errEl) {
-      errEl.style.display = 'block';
-      errEl.innerHTML = msg;
-    }
-  }
-
-  const loader = new GLTFLoader();
-  (async () => {
-    try {
-      const gltf = await loader.loadAsync(PARTS_URL);
-      const root = gltf.scene;
-      prepareMaterials(root);
-      const lid = findNamed(root, 'lid');
-      const body = findNamed(root, 'body');
-      if (!lid || !body) {
-        showError('مدل فاقد گره‌های lid/body است.');
-        return;
-      }
-      product.add(root);
-      state.lid = lid;
-      state.body = body;
-      state.lidBase.copy(lid.position);
-      state.bodyBase.copy(body.position);
-      root.updateMatrixWorld(true);
-      fitCamera(new THREE.Box3().setFromObject(product));
-      state.ready = true;
-      if (loadingEl) loadingEl.classList.add('hide');
-      applyExplode(0);
-      syncFromScroll();
-    } catch (err) {
-      console.error(err);
-      showError('بارگذاری مدل ناموفق بود.');
-    }
-  })();
-
-  window.addEventListener('resize', () => {
-    const s = canvasSize();
-    camera.aspect = s.w / s.h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(s.w, s.h, false);
-  });
-
-  function applyFrame() {
-    syncFromScroll();
-    const k = Math.abs(state.targetT - state.smoothT) > 0.08 ? 0.32 : 0.18;
-    state.smoothT += (state.targetT - state.smoothT) * k;
-    if (!state.ready) return;
-    applyExplode(state.smoothT);
-    state.idle += 0.003;
-    product.rotation.y = Math.sin(state.idle) * 0.06;
-  }
-
-  window.addEventListener('scroll', () => { syncFromScroll(); applyFrame(); }, { passive: true });
-  window.addEventListener('touchmove', () => { syncFromScroll(); applyFrame(); }, { passive: true });
-
-  function tick() {
-    applyFrame();
-    renderer.render(scene, camera);
-    requestAnimationFrame(tick);
-  }
-  setInterval(() => { applyFrame(); }, 50);
-  tick();
-</script>
+<script type="module" src="./scrub-theater.js"></script>
 
 </body>
 </html>
