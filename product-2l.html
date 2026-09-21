@@ -312,74 +312,16 @@
       overflow: visible;
       isolation: isolate;
     }
-    /* Soft rounded rail */
-    /* Pulse ring on card border-radius — ECG-shaped highlight */
-    /* Pulse ring: follows the SAME border-radius as the card (no SVG stretch) */
-    .use-chip::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: 16px; /* 14px card + 2px inset */
-      padding: 2px;
-      background: conic-gradient(
-        from var(--abadis-pulse, 0deg),
-        #2ec4c6 0deg,
-        #2ec4c6 28deg,
-        rgba(46, 196, 198, 0.15) 42deg,
-        transparent 55deg,
-        transparent 360deg
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      mask-composite: exclude;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0;
-      box-sizing: border-box;
-    }
     .use-chip.is-inview {
       opacity: 1;
       transform: translateY(0);
       box-shadow: 0 8px 20px rgba(6, 97, 99, 0.1);
     }
-    .use-chip.is-inview::before {
-      opacity: 1;
-      animation: abadis-ecg-orbit 9.5s linear infinite;
-    }
-    .use-chip:nth-child(2).is-inview::before { animation-delay: -1.2s; }
-    .use-chip:nth-child(3).is-inview::before { animation-delay: -2.4s; }
-    .use-chip:nth-child(4).is-inview::before { animation-delay: -3.6s; }
-    .use-chip:nth-child(5).is-inview::before { animation-delay: -4.8s; }
-    .use-chip:nth-child(6).is-inview::before { animation-delay: -6s; }
-    @property --abadis-pulse {
-      syntax: "<angle>";
-      inherits: false;
-      initial-value: 0deg;
-    }
-    @keyframes abadis-ecg-orbit {
-      to { --abadis-pulse: 360deg; }
-    }
     .use-chip-icon-wrap,
     .use-chip > span {
       position: relative;
       z-index: 2;
     }
-    .use-chip-icon-wrap,
-    .use-chip > span {
-      position: relative;
-      z-index: 2;
-    }
-    .use-chip-icon-wrap,
-    .use-chip > span {
-      position: relative;
-      z-index: 2;
-    }
-
 
     .use-chip-icon-wrap {
       width: 34px;
