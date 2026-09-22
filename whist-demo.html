@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V8b" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V9" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -229,7 +229,7 @@
     /* 3D scrub */
     .abadis-theater {
       position: relative;
-      height: 920vh;
+      height: 720vh;
       width: 100%;
       background: transparent;
     }
@@ -297,24 +297,38 @@
       padding: 0 12px;
     }
     .abadis-theater-caption-title {
-      margin: 0 0 8px;
-      font-size: clamp(1.55rem, 3.6vw, 2.7rem);
+      margin: 0 0 10px;
+      font-size: clamp(1.7rem, 4vw, 3rem);
       font-weight: 800;
-      line-height: 1.3;
-      letter-spacing: -0.03em;
+      line-height: 1.22;
+      letter-spacing: -0.035em;
       text-wrap: balance;
-      background: linear-gradient(105deg, #066163 0%, #05686b 45%, #0e7475 100%);
+      background: linear-gradient(105deg, #066163 0%, #05686b 40%, #0e7475 70%, #015f61 100%);
+      background-size: 180% 100%;
+      animation: title-sheen 5.5s ease-in-out infinite;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 1px 0 rgba(243,250,250,0.9));
+      filter: drop-shadow(0 2px 12px rgba(5,104,107,0.18));
+    }
+    @keyframes title-sheen {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
     .abadis-theater-caption-sub {
-      margin: 0;
-      font-size: clamp(0.95rem, 1.5vw, 1.12rem);
-      color: var(--muted);
-      font-weight: 600;
+      margin: 0 auto;
+      display: inline-block;
+      font-size: clamp(0.92rem, 1.45vw, 1.08rem);
+      color: #066163;
+      font-weight: 700;
       text-wrap: balance;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(5,104,107,0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(5,104,107,0.1);
     }
     .abadis-theater-loading {
       position: absolute; inset: 0;
@@ -353,7 +367,7 @@
       100% { background-position: 200% 50%; }
     }
     @media (max-width: 700px) {
-      .abadis-theater { height: 860vh; }
+      .abadis-theater { height: 680vh; }
       .abadis-theater-caption { top: 78px; bottom: auto; }
     }
 
@@ -658,6 +672,59 @@
       box-shadow: 0 0 14px rgba(5, 104, 107, 0.55);
       pointer-events: none;
     }
+
+    /* V9 Whist feel */
+    .fx-grain {
+      position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+    .cursor-glow {
+      position: fixed; width: 280px; height: 280px; border-radius: 50%;
+      pointer-events: none; z-index: 5; transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(220,227,149,0.35) 0%, rgba(5,104,107,0.12) 40%, transparent 70%);
+      mix-blend-mode: multiply; opacity: 0.85; transition: opacity 0.4s ease;
+      will-change: left, top;
+    }
+    .scroll-hint {
+      position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%);
+      z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      pointer-events: none; color: #066163; font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 0.12em; opacity: 0.75; transition: opacity 0.4s ease;
+    }
+    .scroll-hint.is-gone { opacity: 0; }
+    .scroll-hint-mouse {
+      width: 22px; height: 34px; border: 2px solid #05686b; border-radius: 12px;
+      position: relative;
+    }
+    .scroll-hint-mouse::after {
+      content: ""; position: absolute; top: 7px; left: 50%; width: 4px; height: 4px;
+      margin-left: -2px; border-radius: 50%; background: #dce395;
+      box-shadow: 0 0 8px #dce395;
+      animation: hint-dot 1.4s ease-in-out infinite;
+    }
+    @keyframes hint-dot {
+      0% { transform: translateY(0); opacity: 1; }
+      70% { transform: translateY(10px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 0; }
+    }
+    .story-panel { height: 140vh; }
+    .story-panel-inner {
+      padding: 28px 22px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.42);
+      border: 1px solid rgba(5,104,107,0.1);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      box-shadow: 0 24px 60px rgba(5,104,107,0.1);
+    }
+    .story-title {
+      font-size: clamp(2rem, 5.2vw, 3.6rem) !important;
+    }
+    .ticker {
+      transform: skewY(-0.4deg);
+    }
+
     .build-badge {
       position: fixed;
       z-index: 99998;
@@ -679,6 +746,8 @@
 </head>
 <body>
   <div class="fx-mesh" aria-hidden="true"></div>
+  <div class="fx-grain" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
   <div class="fx-blob a" aria-hidden="true"></div>
   <div class="fx-blob b" aria-hidden="true"></div>
   <div class="fx-blob c" aria-hidden="true"></div>
@@ -688,7 +757,7 @@
     <span></span><span></span><span></span><span></span>
   </div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V8b · قاب متعادل</div>
+  <div class="build-badge" aria-hidden="true">V9 · حس Whist</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -880,12 +949,12 @@
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V8 پالت برند + اسکراب دراماتیک · بدون کارت و جدول</p>
+    <p>دمو آبادیس · V9 حس Whist · پالت برند · بدون کارت و جدول</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V8b</a>
-  <script type="module" src="./scrub-theater.js?v=8b"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V9</a>
+  <script type="module" src="./scrub-theater.js?v=9"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
@@ -936,18 +1005,25 @@
       updateChrome();
 
       const blobs = Array.from(document.querySelectorAll('.fx-blob'));
-      let px = 0, py = 0, tx = 0, ty = 0;
+      const glow = document.getElementById('cursorGlow');
+      const hint = document.getElementById('scrollHint');
+      let px = 0, py = 0, tx = 0, ty = 0, gx = window.innerWidth/2, gy = window.innerHeight/2, tgx = gx, tgy = gy;
       window.addEventListener('pointermove', (e) => {
-        tx = (e.clientX / window.innerWidth - 0.5) * 28;
-        ty = (e.clientY / window.innerHeight - 0.5) * 18;
+        tx = (e.clientX / window.innerWidth - 0.5) * 36;
+        ty = (e.clientY / window.innerHeight - 0.5) * 24;
+        tgx = e.clientX; tgy = e.clientY;
       }, { passive: true });
       (function parallax() {
-        px += (tx - px) * 0.06;
-        py += (ty - py) * 0.06;
+        px += (tx - px) * 0.08;
+        py += (ty - py) * 0.08;
+        gx += (tgx - gx) * 0.12;
+        gy += (tgy - gy) * 0.12;
         blobs.forEach((b, i) => {
-          const m = 0.45 + i * 0.2;
+          const m = 0.55 + i * 0.22;
           b.style.translate = (px * m).toFixed(2) + 'px ' + (py * m).toFixed(2) + 'px';
         });
+        if (glow) { glow.style.left = gx + 'px'; glow.style.top = gy + 'px'; }
+        if (hint) hint.classList.toggle('is-gone', window.scrollY > 48);
         requestAnimationFrame(parallax);
       })();
     })();
