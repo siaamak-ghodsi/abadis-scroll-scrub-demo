@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V7b" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -105,9 +105,9 @@
     }
     @keyframes blob-float {
       0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-      25% { transform: translate(48px, -36px) scale(1.14) rotate(5deg); }
-      50% { transform: translate(-32px, 30px) scale(0.92) rotate(-3deg); }
-      75% { transform: translate(24px, 18px) scale(1.08) rotate(2deg); }
+      25% { transform: translate(72px, -52px) scale(1.22) rotate(8deg); }
+      50% { transform: translate(-48px, 44px) scale(0.88) rotate(-6deg); }
+      75% { transform: translate(36px, 28px) scale(1.14) rotate(4deg); }
     }
     .fx-sparkles {
       position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
@@ -151,7 +151,7 @@
       display: flex;
       width: max-content;
       gap: 48px;
-      animation: ticker-move 22s linear infinite;
+      animation: ticker-move 16s linear infinite;
       padding-inline: 24px;
     }
     .ticker-track span { white-space: nowrap; color: #fff; }
@@ -242,6 +242,32 @@
       background: transparent;
       z-index: 1;
     }
+    .abadis-theater-sticky::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 58%, transparent 35%, rgba(5,104,107,0.07) 100%),
+        radial-gradient(ellipse 55% 40% at 50% 72%, rgba(220,227,149,0.12), transparent 70%);
+    }
+    .abadis-theater-sticky::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 11%;
+      width: min(340px, 55vw);
+      height: 28px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(5,104,107,0.22), transparent 70%);
+      filter: blur(10px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.85;
+    }
+    #abadis-scrub-canvas { position: relative; z-index: 0; }
     #abadis-scrub-canvas {
       display: block;
       width: 100%;
@@ -255,12 +281,12 @@
       pointer-events: none;
       z-index: 4;
       direction: rtl;
-      background: linear-gradient(180deg, rgba(243,250,250,0.82) 0%, rgba(243,250,250,0.35) 55%, rgba(243,250,250,0) 100%);
+      background: linear-gradient(180deg, rgba(243,250,250,0.72) 0%, rgba(243,250,250,0.22) 50%, rgba(243,250,250,0) 100%);
     }
     .abadis-theater-caption {
       position: absolute;
       left: 50%;
-      top: 96px;
+      top: 88px;
       bottom: auto;
       width: min(740px, 90vw);
       text-align: center;
@@ -281,6 +307,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      filter: drop-shadow(0 1px 0 rgba(243,250,250,0.9));
     }
     .abadis-theater-caption-sub {
       margin: 0;
@@ -661,7 +688,7 @@
     <span></span><span></span><span></span><span></span>
   </div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V7 · محصول در قاب</div>
+  <div class="build-badge" aria-hidden="true">V8 · اسکراب زنده‌تر</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -853,12 +880,12 @@
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V7 پالت برند + اسکراب فعال · بدون کارت و جدول</p>
+    <p>دمو آبادیس · V8 پالت برند + اسکراب دراماتیک · بدون کارت و جدول</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V7b</a>
-  <script type="module" src="./scrub-theater.js?v=7b"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V8</a>
+  <script type="module" src="./scrub-theater.js?v=8"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
@@ -907,6 +934,22 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
       updateChrome();
+
+      const blobs = Array.from(document.querySelectorAll('.fx-blob'));
+      let px = 0, py = 0, tx = 0, ty = 0;
+      window.addEventListener('pointermove', (e) => {
+        tx = (e.clientX / window.innerWidth - 0.5) * 28;
+        ty = (e.clientY / window.innerHeight - 0.5) * 18;
+      }, { passive: true });
+      (function parallax() {
+        px += (tx - px) * 0.06;
+        py += (ty - py) * 0.06;
+        blobs.forEach((b, i) => {
+          const m = 0.45 + i * 0.2;
+          b.style.translate = (px * m).toFixed(2) + 'px ' + (py * m).toFixed(2) + 'px';
+        });
+        requestAnimationFrame(parallax);
+      })();
     })();
   </script>
 </body>
