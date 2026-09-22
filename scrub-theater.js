@@ -79,7 +79,7 @@ function boot() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x061416);
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 24 : 28, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : 28, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -201,7 +201,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.58 : 1.08); /* closer / larger on light */
+    state.fitDist = dist * (lightTheme ? 0.82 : 1.08); /* pull back — product was too large */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -266,7 +266,7 @@ function boot() {
 
     const elev =
       state.radius *
-      ((lightTheme ? 0.38 : 0.2) -
+      ((lightTheme ? 0.28 : 0.2) -
         0.03 * sep -
         FLOW_TILT * lookBias -
         0.14 * fillE -
@@ -276,7 +276,7 @@ function boot() {
     const cy =
       state.center.y +
       state.radius *
-        ((lightTheme ? 0.26 : 0.07) - 0.12 * lookBias - 0.1 * fillE);
+        ((lightTheme ? 0.18 : 0.07) - 0.12 * lookBias - 0.1 * fillE);
     const cz = state.center.z;
 
     camera.position.set(
@@ -670,8 +670,8 @@ function boot() {
     }
 
     /* Intro scale-in (~0.94→1) then fill push (~+8%) */
-    const introScale = 0.9 + 0.1 * introE;
-    const fillScale = 1 + 0.1 * fillE;
+    const introScale = 0.92 + 0.08 * introE;
+    const fillScale = 1 + 0.05 * fillE;
     const s = introScale * fillScale;
     product.scale.set(s, s, s);
     /* Soft idle float when assembled — Whist breath */
