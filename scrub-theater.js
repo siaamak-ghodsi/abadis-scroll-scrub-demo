@@ -48,10 +48,10 @@ const captionEls = Array.from(
 
 /* Longer exclusive bands — less frantic caption swapping */
 const CAPTION_RANGES = [
-  { start: 0.0, end: 0.24 },
-  { start: 0.22, end: 0.5 },
-  { start: 0.48, end: 0.74 },
-  { start: 0.72, end: 1.0 },
+  { start: 0.0, end: 0.16 },
+  { start: 0.12, end: 0.42 },
+  { start: 0.38, end: 0.66 },
+  { start: 0.62, end: 1.0 },
 ];
 
 if (!canvas || !stageEl) {
@@ -179,9 +179,10 @@ function boot() {
       const o = captionOpacity(t, range.start, range.end);
       const el = captionEls[i];
       el.style.opacity = o.toFixed(3);
-      const y = (1 - o) * 18;
-      const sc = 0.94 + o * 0.06;
+      const y = (1 - o) * 28;
+      const sc = 0.9 + o * 0.1;
       el.style.transform = `translate(-50%, ${y}px) scale(${sc.toFixed(3)})`;
+      el.style.filter = o > 0.05 ? `blur(${((1 - o) * 6).toFixed(2)}px)` : 'blur(8px)';
       el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
     }
   }
@@ -251,7 +252,7 @@ function boot() {
     const lookBias = flowE * 0.55 + fillE * 0.75;
     /* Explode owns most of the yaw arc; hold through rejoin */
     const yawDrive = easeInOutCubic(
-      smoothstep(0.12, 0.38, t) * (1 - 0.35 * smoothstep(0.38, 0.55, t))
+      smoothstep(0.08, 0.34, t) * (1 - 0.35 * smoothstep(0.34, 0.48, t))
     );
     const yaw = THREE.MathUtils.lerp(CAM_YAW0, CAM_YAW1, yawDrive);
 
@@ -643,12 +644,12 @@ function boot() {
      * Stream 0.48–0.72: look into port; dramatic drawRange
      * Fill   0.62–1.0 : assertive liquid; push-in; product +~8%
      */
-    const introE = easeOutCubic(smoothstep(0.0, 0.12, t));
-    const open = easeInOutCubic(smoothstep(0.12, 0.38, t));
-    const rejoin = easeInOutCubic(smoothstep(0.38, 0.55, t));
+    const introE = easeOutCubic(smoothstep(0.0, 0.08, t));
+    const open = easeInOutCubic(smoothstep(0.08, 0.34, t));
+    const rejoin = easeInOutCubic(smoothstep(0.34, 0.48, t));
     const sep = open * (1 - rejoin);
-    const flowE = easeInOutCubic(smoothstep(0.48, 0.72, t));
-    const fillE = easeInOutCubic(smoothstep(0.62, 1.0, t));
+    const flowE = easeInOutCubic(smoothstep(0.42, 0.68, t));
+    const fillE = easeInOutCubic(smoothstep(0.58, 1.0, t));
 
     if (state.lid) {
       state.lid.position.set(
@@ -750,12 +751,18 @@ function boot() {
     /* Heavy scrub lerp — keep smooth, avoid jitter */
     const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
     const k = softScrub
-      ? (fast ? 0.1 : 0.055)
-      : (fast ? 0.28 : 0.14);
+      ? (fast ? 0.12 : 0.06)
+      : (fast ? 0.38 : 0.2);
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
-    product.rotation.set(0, Math.sin(clock.getElapsedTime() * 0.35) * 0.04 * (1 - Math.min(1, state.smoothT * 2)), 0);
+    const idle = 1 - Math.min(1, state.smoothT * 1.6);
+    const et = clock.getElapsedTime();
+    product.rotation.set(
+      Math.sin(et * 0.55) * 0.025 * idle,
+      Math.sin(et * 0.42) * 0.08 * idle + Math.sin(et * 0.9) * 0.012,
+      Math.sin(et * 0.33) * 0.015 * idle
+    );
   }
 
   window.addEventListener('scroll', applyFrame, { passive: true });
