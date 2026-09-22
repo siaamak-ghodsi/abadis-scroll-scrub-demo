@@ -685,16 +685,16 @@ function boot() {
     /* Light drama: key + rim ramp with flow/fill */
     if (state.keyLight) {
       state.keyLight.intensity = lightTheme
-        ? 1.05 + flowE * 0.12 + fillE * 0.18
+        ? 1.45 + flowE * 0.2 + fillE * 0.25
         : 0.85 + flowE * 0.35 + fillE * 0.45;
     }
     if (state.rimLight) {
       state.rimLight.intensity = lightTheme
-        ? 0.38 + flowE * 0.12 + fillE * 0.1
+        ? 0.75 + flowE * 0.2 + fillE * 0.18
         : 0.85 + flowE * 0.4 + fillE * 0.25;
     }
     renderer.toneMappingExposure = lightTheme
-      ? 1.05 + flowE * 0.03 + fillE * 0.04
+      ? 1.28 + flowE * 0.06 + fillE * 0.08
       : 0.9 + flowE * 0.06 + fillE * 0.08;
 
     if (progressFill) progressFill.style.width = Math.round(t * 100) + '%';
