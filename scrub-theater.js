@@ -62,7 +62,7 @@ if (!canvas || !stageEl) {
 
 function boot() {
   const lightTheme = stageEl.dataset.theme === 'light';
-  const softScrub = stageEl.dataset.scrub === 'soft' || lightTheme;
+  const softScrub = stageEl.dataset.scrub === 'soft'; /* light theme no longer forces ultra-soft */
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -73,7 +73,7 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lightTheme ? 1.08 : 0.92;
+  renderer.toneMappingExposure = lightTheme ? 1.18 : 0.92;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
@@ -85,17 +85,17 @@ function boot() {
   pmrem.compileEquirectangularShader();
 
   if (lightTheme) {
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xd8dde3, 0.78));
-    var key = new THREE.DirectionalLight(0xffffff, 1.05);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xc5d0d4, 0.55));
+    var key = new THREE.DirectionalLight(0xffffff, 1.25);
     key.position.set(0.45, 1.8, 1.15);
     scene.add(key);
-    var fill = new THREE.DirectionalLight(0xc5d0d8, 0.42);
+    var fill = new THREE.DirectionalLight(0xb8c8d0, 0.35);
     fill.position.set(-1.1, 0.55, 0.45);
     scene.add(fill);
-    var rim = new THREE.DirectionalLight(0x8fd4d5, 0.38);
+    var rim = new THREE.DirectionalLight(0x2ec4c6, 0.55);
     rim.position.set(0.2, 0.7, -1.1);
     scene.add(rim);
-    var rimBrand = new THREE.DirectionalLight(0x066163, 0.22);
+    var rimBrand = new THREE.DirectionalLight(0x066163, 0.4);
     rimBrand.position.set(-0.55, 0.45, -0.85);
     scene.add(rimBrand);
   } else {
@@ -196,7 +196,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.92 : 1.08);
+    state.fitDist = dist * (lightTheme ? 0.78 : 1.08); /* closer / larger on light */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -741,12 +741,12 @@ function boot() {
     /* Heavy scrub lerp — keep smooth, avoid jitter */
     const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
     const k = softScrub
-      ? (fast ? 0.055 : 0.028)
-      : (fast ? 0.1 : 0.05);
+      ? (fast ? 0.08 : 0.045)
+      : (fast ? 0.16 : 0.09);
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
-    product.position.set(0, 0, 0);
+    product.position.set(0, lightTheme ? 0.06 : 0, 0);
     product.rotation.set(0, 0, 0);
   }
 
