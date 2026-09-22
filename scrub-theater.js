@@ -14,21 +14,21 @@ const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
 
 /* Dramatic separation — Apple film + OR theater */
-const LID_UP = 0.2;
-const BODY_DOWN = 0.24;
-const X_SPLIT = 0.085;
-const LID_TILT_X = THREE.MathUtils.degToRad(10);
-const LID_TILT_Z = THREE.MathUtils.degToRad(-6);
+const LID_UP = 0.3;
+const BODY_DOWN = 0.34;
+const X_SPLIT = 0.125;
+const LID_TILT_X = THREE.MathUtils.degToRad(16);
+const LID_TILT_Z = THREE.MathUtils.degToRad(-10);
 
 /* Camera: wider yaw during explode; port-drop on stream; push-in on fill */
-const CAM_YAW0 = THREE.MathUtils.degToRad(38);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-32);
-const DOLLY_IN = 0.18;
-const FLOW_DOLLY = 0.16;
-const FLOW_TILT = 0.11;
-const FILL_PUSH = 0.1;
-const DUTCH_MAX = THREE.MathUtils.degToRad(1.6);
-const INTRO_FAR = 0.14; /* start farther for subtle dolly-in */
+const CAM_YAW0 = THREE.MathUtils.degToRad(48);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-44);
+const DOLLY_IN = 0.26;
+const FLOW_DOLLY = 0.2;
+const FLOW_TILT = 0.14;
+const FILL_PUSH = 0.14;
+const DUTCH_MAX = THREE.MathUtils.degToRad(2.4);
+const INTRO_FAR = 0.2; /* start farther for subtle dolly-in */
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
@@ -73,31 +73,34 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lightTheme ? 1.18 : 0.92;
+  renderer.toneMappingExposure = lightTheme ? 1.34 : 0.92;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x061416);
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 26 : 28, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 24 : 28, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
 
   if (lightTheme) {
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xc5d0d4, 0.55));
-    var key = new THREE.DirectionalLight(0xffffff, 1.25);
-    key.position.set(0.45, 1.8, 1.15);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xb8c8cc, 0.72));
+    var key = new THREE.DirectionalLight(0xffffff, 1.55);
+    key.position.set(0.55, 2.05, 1.35);
     scene.add(key);
-    var fill = new THREE.DirectionalLight(0xb8c8d0, 0.35);
-    fill.position.set(-1.1, 0.55, 0.45);
+    var fill = new THREE.DirectionalLight(0xc5d8de, 0.48);
+    fill.position.set(-1.25, 0.65, 0.55);
     scene.add(fill);
-    var rim = new THREE.DirectionalLight(0x2ec4c6, 0.55);
-    rim.position.set(0.2, 0.7, -1.1);
+    var rim = new THREE.DirectionalLight(0x2ec4c6, 0.85);
+    rim.position.set(0.25, 0.85, -1.25);
     scene.add(rim);
-    var rimBrand = new THREE.DirectionalLight(0x066163, 0.4);
-    rimBrand.position.set(-0.55, 0.45, -0.85);
+    var rimBrand = new THREE.DirectionalLight(0x066163, 0.62);
+    rimBrand.position.set(-0.65, 0.5, -0.95);
     scene.add(rimBrand);
+    var bounce = new THREE.DirectionalLight(0xdce395, 0.28);
+    bounce.position.set(0.1, -0.8, 0.6);
+    scene.add(bounce);
   } else {
     scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
     var key = new THREE.DirectionalLight(0xf4faff, 0.85);
@@ -176,7 +179,9 @@ function boot() {
       const o = captionOpacity(t, range.start, range.end);
       const el = captionEls[i];
       el.style.opacity = o.toFixed(3);
-      el.style.transform = `translate(-50%, ${(1 - o) * 14}px)`;
+      const y = (1 - o) * 18;
+      const sc = 0.94 + o * 0.06;
+      el.style.transform = `translate(-50%, ${y}px) scale(${sc.toFixed(3)})`;
       el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
     }
   }
@@ -196,7 +201,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.68 : 1.08); /* closer / larger on light */
+    state.fitDist = dist * (lightTheme ? 0.58 : 1.08); /* closer / larger on light */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -211,7 +216,7 @@ function boot() {
       for (const m of mats) {
         if (!m) continue;
         m.side = THREE.DoubleSide;
-        if ('envMapIntensity' in m) m.envMapIntensity = 1.05;
+        if ('envMapIntensity' in m) m.envMapIntensity = lightTheme ? 1.45 : 1.05;
         if ('transparent' in m && m.opacity < 1) {
           m.transparent = false;
           m.opacity = 1;
@@ -261,7 +266,7 @@ function boot() {
 
     const elev =
       state.radius *
-      ((lightTheme ? 0.34 : 0.2) -
+      ((lightTheme ? 0.38 : 0.2) -
         0.03 * sep -
         FLOW_TILT * lookBias -
         0.14 * fillE -
@@ -271,7 +276,7 @@ function boot() {
     const cy =
       state.center.y +
       state.radius *
-        ((lightTheme ? 0.22 : 0.07) - 0.12 * lookBias - 0.1 * fillE);
+        ((lightTheme ? 0.26 : 0.07) - 0.12 * lookBias - 0.1 * fillE);
     const cz = state.center.z;
 
     camera.position.set(
@@ -665,10 +670,13 @@ function boot() {
     }
 
     /* Intro scale-in (~0.94→1) then fill push (~+8%) */
-    const introScale = 0.94 + 0.06 * introE;
-    const fillScale = 1 + 0.08 * fillE;
+    const introScale = 0.9 + 0.1 * introE;
+    const fillScale = 1 + 0.1 * fillE;
     const s = introScale * fillScale;
     product.scale.set(s, s, s);
+    /* Soft idle float when assembled — Whist breath */
+    const breath = (1 - sep) * (1 - flowE * 0.5) * Math.sin(clock.getElapsedTime() * 1.15) * 0.006;
+    product.position.y = (lightTheme ? 0.025 : 0) + breath;
 
     placeCamera(t, sep, flowE, fillE, introE);
     updateStream(flowE);
@@ -742,13 +750,12 @@ function boot() {
     /* Heavy scrub lerp — keep smooth, avoid jitter */
     const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
     const k = softScrub
-      ? (fast ? 0.08 : 0.045)
-      : (fast ? 0.16 : 0.09);
+      ? (fast ? 0.1 : 0.055)
+      : (fast ? 0.28 : 0.14);
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
-    product.position.set(0, lightTheme ? 0.02 : 0, 0);
-    product.rotation.set(0, 0, 0);
+    product.rotation.set(0, Math.sin(clock.getElapsedTime() * 0.35) * 0.04 * (1 - Math.min(1, state.smoothT * 2)), 0);
   }
 
   window.addEventListener('scroll', applyFrame, { passive: true });
