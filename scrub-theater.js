@@ -196,7 +196,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.78 : 1.08); /* closer / larger on light */
+    state.fitDist = dist * (lightTheme ? 0.68 : 1.08); /* closer / larger on light */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -261,7 +261,7 @@ function boot() {
 
     const elev =
       state.radius *
-      (0.2 -
+      ((lightTheme ? 0.34 : 0.2) -
         0.03 * sep -
         FLOW_TILT * lookBias -
         0.14 * fillE -
@@ -270,7 +270,8 @@ function boot() {
     const cx = state.center.x;
     const cy =
       state.center.y +
-      state.radius * (0.07 - 0.12 * lookBias - 0.1 * fillE);
+      state.radius *
+        ((lightTheme ? 0.22 : 0.07) - 0.12 * lookBias - 0.1 * fillE);
     const cz = state.center.z;
 
     camera.position.set(
@@ -746,7 +747,7 @@ function boot() {
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
-    product.position.set(0, lightTheme ? 0.06 : 0, 0);
+    product.position.set(0, lightTheme ? 0.02 : 0, 0);
     product.rotation.set(0, 0, 0);
   }
 
