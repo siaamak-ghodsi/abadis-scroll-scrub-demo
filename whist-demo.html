@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V6" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V7" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -134,18 +134,18 @@
       40%, 60% { opacity: 1; transform: scale(1.35); }
     }
     .ticker {
-      position: sticky;
-      top: 72px;
-      z-index: 90;
+      position: relative;
+      z-index: 2;
       overflow: hidden;
       border: none;
+      pointer-events: none;
       background: linear-gradient(90deg, #066163, #05686b 40%, #0e7475 70%, #015f61);
       color: #dce395;
       font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 0.04em;
       padding: 8px 0;
-      box-shadow: 0 10px 28px rgba(5, 104, 107, 0.28);
+      box-shadow: none;
     }
     .ticker-track {
       display: flex;
@@ -240,6 +240,7 @@
       width: 100%;
       overflow: hidden;
       background: transparent;
+      z-index: 1;
     }
     #abadis-scrub-canvas {
       display: block;
@@ -250,16 +251,16 @@
     .abadis-theater-captions {
       position: absolute;
       left: 0; right: 0; bottom: 0;
-      height: 42%;
+      height: 28%;
       pointer-events: none;
       z-index: 4;
       direction: rtl;
-      background: linear-gradient(180deg, rgba(243,250,250,0) 0%, rgba(232,243,243,0.5) 35%, rgba(243,250,250,0.94) 100%);
+      background: linear-gradient(180deg, rgba(243,250,250,0) 0%, rgba(243,250,250,0.25) 45%, rgba(243,250,250,0.72) 100%);
     }
     .abadis-theater-caption {
       position: absolute;
       left: 50%;
-      bottom: 78px;
+      bottom: 56px;
       width: min(740px, 90vw);
       text-align: center;
       opacity: 0;
@@ -350,26 +351,21 @@
       width: min(840px, 100%);
       text-align: center;
       opacity: 0;
-      transform: translateY(48px) scale(0.94) rotateX(8deg);
-      filter: blur(10px);
+      transform: translateY(36px) scale(0.97);
       transform-origin: center bottom;
       transition:
-        opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.95s cubic-bezier(0.16, 1, 0.3, 1),
-        filter 0.95s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: opacity, transform, filter;
-      perspective: 800px;
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
     }
     .story-panel.is-active .story-panel-inner {
       opacity: 1;
       transform: none;
-      filter: blur(0);
     }
     .story-panel.is-leaving .story-panel-inner {
       opacity: 0;
-      transform: translateY(-40px) scale(1.02);
-      filter: blur(8px);
-      transition-duration: 0.5s;
+      transform: translateY(-28px) scale(1.01);
+      transition-duration: 0.45s;
     }
 
     .story-kicker {
@@ -664,7 +660,7 @@
     <span></span><span></span><span></span><span></span>
   </div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V6 · پالت برند آبادیس</div>
+  <div class="build-badge" aria-hidden="true">V7 · اسکراب درست شد</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -684,7 +680,7 @@
     </div>
   </div>
 
-  <section class="abadis-theater" id="abadis-scrub" data-theme="light" data-scrub="soft" aria-label="Product Theater">
+  <section class="abadis-theater" id="abadis-scrub" data-theme="light" data-scrub="snappy" aria-label="Product Theater">
     <div class="abadis-theater-sticky">
       <canvas id="abadis-scrub-canvas"></canvas>
       <div class="abadis-theater-loading" id="abadisScrubLoading">در حال آماده‌سازی محصول…</div>
@@ -856,36 +852,46 @@
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V6 پالت برند · بدون کارت و جدول</p>
+    <p>دمو آبادیس · V7 پالت برند + اسکراب فعال · بدون کارت و جدول</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V6</a>
-  <script type="module" src="./scrub-theater.js"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V7</a>
+  <script type="module" src="./scrub-theater.js?v=7"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
       const header = document.getElementById('siteHeader');
       const progress = document.getElementById('scrollProgress');
 
-      function update() {
-        const mid = window.innerHeight * 0.42;
+      function setActivePanel() {
+        const mid = window.innerHeight * 0.45;
+        let best = null;
+        let bestDist = Infinity;
         for (const panel of panels) {
           const rect = panel.getBoundingClientRect();
-          const stickyH = Math.min(window.innerHeight, rect.height);
-          const enter = rect.top <= mid && rect.bottom >= mid + stickyH * 0.15;
-          const leaving = rect.bottom < mid + stickyH * 0.35 && rect.bottom > 0;
-          panel.classList.toggle('is-active', enter);
-          panel.classList.toggle('is-leaving', !enter && leaving);
+          const center = rect.top + Math.min(window.innerHeight, rect.height) * 0.45;
+          const dist = Math.abs(center - mid);
+          const visible = rect.bottom > window.innerHeight * 0.15 && rect.top < window.innerHeight * 0.85;
+          panel.classList.toggle('is-leaving', !visible && rect.bottom < mid && rect.bottom > -40);
+          if (visible && dist < bestDist) {
+            bestDist = dist;
+            best = panel;
+          }
         }
-        if (header) {
-          header.classList.toggle('is-solid', window.scrollY > 24);
+        for (const panel of panels) {
+          panel.classList.toggle('is-active', panel === best);
         }
+      }
+
+      function updateChrome() {
+        if (header) header.classList.toggle('is-solid', window.scrollY > 24);
         if (progress) {
           const max = document.documentElement.scrollHeight - window.innerHeight;
           const p = max > 0 ? (window.scrollY / max) * 100 : 0;
           progress.style.width = p.toFixed(2) + '%';
         }
+        setActivePanel();
       }
 
       let ticking = false;
@@ -893,13 +899,13 @@
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(() => {
-          update();
+          updateChrome();
           ticking = false;
         });
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
-      update();
+      updateChrome();
     })();
   </script>
 </body>
