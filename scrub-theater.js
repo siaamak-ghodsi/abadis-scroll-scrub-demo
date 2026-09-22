@@ -13,22 +13,22 @@ const PARTS_URL = './abadis-scrub-parts.glb';
 const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
 
-/* Dramatic separation — Apple film + OR theater */
-const LID_UP = 0.3;
-const BODY_DOWN = 0.34;
-const X_SPLIT = 0.125;
-const LID_TILT_X = THREE.MathUtils.degToRad(16);
-const LID_TILT_Z = THREE.MathUtils.degToRad(-10);
+/* Cinematic separation — OR film */
+const LID_UP = 0.42;
+const BODY_DOWN = 0.48;
+const X_SPLIT = 0.18;
+const LID_TILT_X = THREE.MathUtils.degToRad(22);
+const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
 
-/* Camera: wider yaw during explode; port-drop on stream; push-in on fill */
-const CAM_YAW0 = THREE.MathUtils.degToRad(48);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-44);
-const DOLLY_IN = 0.26;
-const FLOW_DOLLY = 0.2;
-const FLOW_TILT = 0.14;
-const FILL_PUSH = 0.14;
-const DUTCH_MAX = THREE.MathUtils.degToRad(2.4);
-const INTRO_FAR = 0.2; /* start farther for subtle dolly-in */
+/* Camera: wide yaw, hard dutch, deep dolly */
+const CAM_YAW0 = THREE.MathUtils.degToRad(58);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-52);
+const DOLLY_IN = 0.34;
+const FLOW_DOLLY = 0.28;
+const FLOW_TILT = 0.2;
+const FILL_PUSH = 0.2;
+const DUTCH_MAX = THREE.MathUtils.degToRad(4.2);
+const INTRO_FAR = 0.32; /* start farther for cinematic dolly-in */
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
@@ -73,13 +73,16 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lightTheme ? 1.34 : 0.92;
+  renderer.toneMappingExposure = lightTheme ? 1.34 : 1.08;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x061416);
+  scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x030a0b);
+  if (!lightTheme) {
+    scene.fog = new THREE.FogExp2(0x030a0b, 0.22);
+  }
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : 28, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : 30, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -102,19 +105,23 @@ function boot() {
     bounce.position.set(0.1, -0.8, 0.6);
     scene.add(bounce);
   } else {
-    scene.add(new THREE.HemisphereLight(0xc8e8e8, 0x061416, 0.35));
-    var key = new THREE.DirectionalLight(0xf4faff, 0.85);
-    key.position.set(0.55, 1.55, 1.05);
+    scene.add(new THREE.HemisphereLight(0x9fd8d8, 0x020608, 0.28));
+    var key = new THREE.DirectionalLight(0xffffff, 1.35);
+    key.position.set(0.7, 2.1, 1.4);
     scene.add(key);
-    var fill = new THREE.DirectionalLight(0x7ab8b8, 0.22);
-    fill.position.set(-1.0, 0.45, 0.35);
+    var fill = new THREE.DirectionalLight(0x2ec4c6, 0.35);
+    fill.position.set(-1.3, 0.5, 0.5);
     scene.add(fill);
-    var rim = new THREE.DirectionalLight(0x2ec4c6, 0.85);
-    rim.position.set(0.15, 0.55, -1.15);
+    var rim = new THREE.DirectionalLight(0xdce395, 1.15);
+    rim.position.set(0.2, 0.6, -1.35);
     scene.add(rim);
-    var rimBrand = new THREE.DirectionalLight(0x066163, 0.45);
-    rimBrand.position.set(-0.55, 0.4, -0.9);
+    var rimBrand = new THREE.DirectionalLight(0x05686b, 0.9);
+    rimBrand.position.set(-0.7, 0.55, -1.0);
     scene.add(rimBrand);
+    var spot = new THREE.SpotLight(0xdce395, 1.4, 8, Math.PI / 7, 0.45, 1.2);
+    spot.position.set(0.15, 2.4, 1.6);
+    scene.add(spot);
+    scene.add(spot.target);
   }
 
   const product = new THREE.Group();
@@ -202,7 +209,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.82 : 1.08); /* pull back — product was too large */
+    state.fitDist = dist * (lightTheme ? 0.82 : 0.78); /* dark: hero-sized, not huge */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -217,7 +224,7 @@ function boot() {
       for (const m of mats) {
         if (!m) continue;
         m.side = THREE.DoubleSide;
-        if ('envMapIntensity' in m) m.envMapIntensity = lightTheme ? 1.45 : 1.05;
+        if ('envMapIntensity' in m) m.envMapIntensity = lightTheme ? 1.45 : 1.55;
         if ('transparent' in m && m.opacity < 1) {
           m.transparent = false;
           m.opacity = 1;
@@ -687,16 +694,16 @@ function boot() {
     if (state.keyLight) {
       state.keyLight.intensity = lightTheme
         ? 1.45 + flowE * 0.2 + fillE * 0.25
-        : 0.85 + flowE * 0.35 + fillE * 0.45;
+        : 1.15 + flowE * 0.45 + fillE * 0.55;
     }
     if (state.rimLight) {
       state.rimLight.intensity = lightTheme
         ? 0.75 + flowE * 0.2 + fillE * 0.18
-        : 0.85 + flowE * 0.4 + fillE * 0.25;
+        : 0.95 + flowE * 0.55 + fillE * 0.4;
     }
     renderer.toneMappingExposure = lightTheme
       ? 1.28 + flowE * 0.06 + fillE * 0.08
-      : 0.9 + flowE * 0.06 + fillE * 0.08;
+      : 1.0 + flowE * 0.12 + fillE * 0.16;
 
     if (progressFill) progressFill.style.width = Math.round(t * 100) + '%';
     applyCaptions(t);
@@ -751,8 +758,8 @@ function boot() {
     /* Heavy scrub lerp — keep smooth, avoid jitter */
     const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
     const k = softScrub
-      ? (fast ? 0.12 : 0.06)
-      : (fast ? 0.38 : 0.2);
+      ? (fast ? 0.14 : 0.07)
+      : (fast ? 0.48 : 0.26);
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
