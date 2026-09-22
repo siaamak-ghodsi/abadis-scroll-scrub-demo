@@ -77,7 +77,7 @@ function boot() {
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(lightTheme ? 0xf3f6ff : 0x061416);
+  scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x061416);
 
   const camera = new THREE.PerspectiveCamera(lightTheme ? 26 : 28, 1, 0.01, 40);
 
