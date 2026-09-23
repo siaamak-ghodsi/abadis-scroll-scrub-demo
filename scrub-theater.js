@@ -1,8 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V25 clinical scrub
+ * Abadis Product Theater — WHIST-BRAND-V27
  * Dark mint stage (default) or light whist skin via data-theme="light".
- * Narrative beats: intro → explode → rejoin → clinical teal stream.
+ * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
+ * V27: kill end-phase clinical straw/stream into port; quiet assemble end.
  * V25: tight scrub (بدون گیر) — critical damp, no endDamp/catch-up lag.
  */
 import * as THREE from 'three';
@@ -50,12 +51,12 @@ const captionEls = Array.from(
     Number(b.getAttribute('data-caption'))
 );
 
-/* Beats: intro → explode → rejoin → stream */
+/* Beats: intro → explode → rejoin → assembled settle (no straw) */
 const CAPTION_RANGES = [
   { start: 0.0, end: 0.16 },   /* intro */
   { start: 0.12, end: 0.40 },  /* explode */
   { start: 0.34, end: 0.54 },  /* rejoin — seats with soft assemble */
-  { start: 0.48, end: 0.92 },  /* clinical stream on assembled product */
+  { start: 0.48, end: 0.92 },  /* assembled product — no suction tube */
 ];
 
 if (!canvas || !stageEl) {
@@ -751,8 +752,8 @@ function boot() {
      * Intro   0–0.12 : locked, soft scale-in / gentle dolly
      * Explode 0.10–0.40: sep + lid tilt (anticipatory), soft yaw
      * Rejoin  0.34–0.50: shared easeOut — lid+body seat together
-     * Stream  0.48–0.92: teal clinical suction tube → bag
      * Settle  0.48–0.62: soft assemble ease (invisible lock, no pop)
+     * V27: no Stream beat — straw / port ring removed
      */
     const introE = easeOutCubic(smoothstep(0.0, 0.10, t));
 
@@ -779,10 +780,8 @@ function boot() {
     sepBody *= 1 - assembleE;
     sep = Math.max(sepLid, sepBody);
 
-    /* Stream grows as product seats; soft fade at end — teal only */
-    const flowE =
-      easeInOutCirc(smoothstep(0.48, 0.72, t)) *
-      (1 - 0.85 * smoothstep(0.88, 0.98, t));
+    /* V27: no end-phase suction tube — scrub ends on assembled product */
+    const flowE = 0;
 
     /* One-shot impact wobble — never reboost every frame (V23 bug) */
     if (sep > state.peakSep) state.peakSep = sep;
@@ -854,7 +853,7 @@ function boot() {
     state.handheld.z += (n3 * handTarget - state.handheld.z) * Math.min(1, dt * 3.6);
 
     placeCamera(t, sep, flowE, introE, handTarget);
-    updateStream(flowE);
+    /* V27: updateStream disabled — no straw / port ring */
 
     const lightBreath = 1 + 0.035 * Math.sin(et * 0.85) * still;
     if (state.keyLight) {
@@ -922,7 +921,7 @@ function boot() {
       root.updateMatrixWorld(true);
       sizeCanvas();
       fitCamera(new THREE.Box3().setFromObject(product));
-      createClinicalStream(lid, body);
+      /* V27: no clinical straw / suction tube into port */
       state.ready = true;
       if (loadingEl) loadingEl.classList.add('hide');
       applyTheatre(0, 1 / 60);
