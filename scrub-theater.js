@@ -117,7 +117,7 @@ function boot() {
     rimBrand = new THREE.DirectionalLight(0x066163, 0.62);
     rimBrand.position.set(-0.65, 0.5, -0.95);
     scene.add(rimBrand);
-    bounce = new THREE.DirectionalLight(0xdce395, 0.28);
+    bounce = new THREE.DirectionalLight(0x2ec4c6, 0.22);
     bounce.position.set(0.1, -0.8, 0.6);
     scene.add(bounce);
   } else {
@@ -135,13 +135,13 @@ function boot() {
     const underFill = new THREE.DirectionalLight(0x8ec8cc, 0.55);
     underFill.position.set(0.2, -1.2, 0.8);
     scene.add(underFill);
-    rim = new THREE.DirectionalLight(0xdce395, 1.15);
+    rim = new THREE.DirectionalLight(0x2ec4c6, 0.95);
     rim.position.set(0.2, 0.6, -1.35);
     scene.add(rim);
-    rimBrand = new THREE.DirectionalLight(0x05686b, 0.9);
+    rimBrand = new THREE.DirectionalLight(0x0e7475, 0.85);
     rimBrand.position.set(-0.7, 0.55, -1.0);
     scene.add(rimBrand);
-    spot = new THREE.SpotLight(0xdce395, 1.4, 8, Math.PI / 7, 0.45, 1.2);
+    spot = new THREE.SpotLight(0xa8d5d6, 1.05, 8, Math.PI / 7, 0.45, 1.2);
     spot.position.set(0.15, 2.4, 1.6);
     scene.add(spot);
     scene.add(spot.target);
