@@ -90,7 +90,7 @@ function boot() {
     scene.fog = new THREE.FogExp2(0x030a0b, 0.22);
   }
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 40 : 42, 1, 0.01, 60);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 42 : 44, 1, 0.01, 80);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -274,16 +274,37 @@ function boot() {
     renderer.setSize(w, h, false);
   }
 
+  function frameMul() {
+    /* Whist-wide framing; mobile portrait makes product look huge — push much farther */
+    const w = window.innerWidth || 1;
+    const h = window.innerHeight || 1;
+    const aspect = w / h;
+    const narrow = w < 820;
+    const portrait = aspect < 0.85;
+    let mul = lightTheme ? 4.2 : 4.6; /* desktop base — farther than V13e */
+    if (narrow) mul *= 1.55;
+    if (portrait) mul *= 1.35;
+    if (w < 480) mul *= 1.25; /* small phones */
+    return mul;
+  }
+
   function fitCamera(box) {
     box.getCenter(state.center);
     box.getSize(_tmpSize);
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 3.4 : 3.7); /* much farther — Whist hero air */
+    state.fitDist = dist * frameMul();
     camera.near = Math.max(0.005, dist / 100);
-    camera.far = dist * 40;
+    camera.far = Math.max(dist * 80, state.fitDist * 4);
     camera.updateProjectionMatrix();
+  }
+
+  function refitIfReady() {
+    sizeCanvas();
+    if (state.ready) {
+      fitCamera(new THREE.Box3().setFromObject(product));
+    }
   }
 
   function prepareMaterials(root) {
@@ -1234,7 +1255,7 @@ function boot() {
     }
   })();
 
-  window.addEventListener('resize', sizeCanvas);
+  window.addEventListener('resize', refitIfReady);
 
   function applyFrame(dt) {
     const nextTarget = scrubProgress();
