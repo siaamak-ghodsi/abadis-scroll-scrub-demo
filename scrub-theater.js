@@ -15,9 +15,9 @@ const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
 
 /* Cinematic separation — OR film */
-const LID_UP = 0.42;
-const BODY_DOWN = 0.48;
-const X_SPLIT = 0.18;
+const LID_UP = 0.58;
+const BODY_DOWN = 0.64;
+const X_SPLIT = 0.26;
 const LID_TILT_X = THREE.MathUtils.degToRad(22);
 const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
 
@@ -87,10 +87,10 @@ function boot() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x030a0b);
   if (!lightTheme) {
-    scene.fog = new THREE.FogExp2(0x030a0b, 0.22);
+    scene.fog = new THREE.FogExp2(0x030a0b, 0.04); /* density synced in fitCamera */
   }
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 42 : 44, 1, 0.01, 80);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 34 : 36, 1, 0.01, 80);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -275,17 +275,22 @@ function boot() {
   }
 
   function frameMul() {
-    /* Whist-wide framing; mobile portrait makes product look huge — push much farther */
+    /* Whist-wide but capped — extreme mul + FogExp2 made product vanish (broken anim) */
     const w = window.innerWidth || 1;
     const h = window.innerHeight || 1;
     const aspect = w / h;
-    const narrow = w < 820;
-    const portrait = aspect < 0.85;
-    let mul = lightTheme ? 4.2 : 4.6; /* desktop base — farther than V13e */
-    if (narrow) mul *= 1.55;
-    if (portrait) mul *= 1.35;
-    if (w < 480) mul *= 1.25; /* small phones */
-    return mul;
+    let mul = lightTheme ? 2.35 : 2.55; /* desktop: small in frame, still readable */
+    if (w < 820) mul = lightTheme ? 3.15 : 3.35; /* tablet/phone */
+    if (aspect < 0.85) mul *= 1.18; /* portrait boost */
+    if (w < 480) mul *= 1.12;
+    return Math.min(mul, 4.2); /* hard cap — beyond this fog/anim die */
+  }
+
+  function syncFogToDistance() {
+    if (!scene.fog || !scene.fog.isFogExp2) return;
+    /* Keep similar visual fog at any fitDist: density ~ c / fitDist */
+    const fd = Math.max(state.fitDist, 0.35);
+    scene.fog.density = THREE.MathUtils.clamp(0.085 / fd, 0.006, 0.07);
   }
 
   function fitCamera(box) {
@@ -295,9 +300,10 @@ function boot() {
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
     state.fitDist = dist * frameMul();
-    camera.near = Math.max(0.005, dist / 100);
-    camera.far = Math.max(dist * 80, state.fitDist * 4);
+    camera.near = Math.max(0.01, state.fitDist / 250);
+    camera.far = Math.max(state.fitDist * 8, dist * 100);
     camera.updateProjectionMatrix();
+    syncFogToDistance();
   }
 
   function refitIfReady() {
