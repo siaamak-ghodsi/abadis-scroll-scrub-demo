@@ -1,9 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V22 clinical scrub
+ * Abadis Product Theater — WHIST-BRAND-V23 clinical scrub
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → clinical teal stream.
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
- * V22: hard assemble lock t>=0.72; earlier rejoin; spring end snap.
+ * V23: quieter idle / port ring for client pitch; assemble lock retained.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -735,14 +735,13 @@ function boot() {
     }
 
     if (ring) {
+      /* V23: static port accent during flow — no heartbeat pulse */
       ring.visible = true;
       const pulse =
         smoothstep(0.02, 0.18, flowE) * (1 - smoothstep(0.72, 0.98, flowE));
-      const beat = 0.78 + 0.22 * Math.sin(clock.getElapsedTime() * 2.2);
-      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.5, 0, 0.65);
-      ring.material.emissiveIntensity = pulse * beat * 0.9;
-      const s = 1 + pulse * 0.045 * beat;
-      ring.scale.set(s, s, s);
+      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.42, 0, 0.55);
+      ring.material.emissiveIntensity = pulse * 0.55;
+      ring.scale.set(1, 1, 1);
       ring.material.color.setHex(0x066163);
     }
   }
@@ -976,10 +975,11 @@ function boot() {
     if (!state.ready) return;
     applyTheatre(state.smoothT, dt);
 
+    /* V23: quieter idle float for pitch — ~40% prior amplitude */
     const idle = 1 - Math.min(1, state.smoothT * 1.6);
     const still = 1 - THREE.MathUtils.clamp(state.scrollSpeed * 28, 0, 1);
     const et = clock.getElapsedTime();
-    const idleAmp = idle * (0.4 + 0.6 * still);
+    const idleAmp = idle * (0.4 + 0.6 * still) * 0.4;
     product.rotation.set(
       Math.sin(et * 0.48) * 0.022 * idleAmp,
       Math.sin(et * 0.38) * 0.07 * idleAmp + Math.sin(et * 0.85) * 0.01,
