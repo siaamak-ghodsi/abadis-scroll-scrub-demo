@@ -1,8 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V33
+ * Abadis Product Theater — WHIST-BRAND-V34
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
+ * V34: fixed camera — never refit from exploded AABB; debounce resize; clamp dolly; lower mobile frameMul.
  * V33: yaw sens = 2π / viewport width — one edge-to-edge drag ≈ full turn; easier touch rotate + longer inertia coast.
  * V32: lid photo-match teal #0f3c48 (opaque molded plastic, no brand glow).
  * V31: buttery rotate — smoothed follow + inertia coast; quieter idle while drag.
@@ -33,7 +34,10 @@ const DOLLY_IN = 0.26;
 const FLOW_DOLLY = 0.22;
 const FLOW_TILT = 0.14;
 const DUTCH_MAX = THREE.MathUtils.degToRad(3.2);
-const INTRO_FAR = 0.22;
+const INTRO_FAR = 0.12;
+/* V34: never dolly farther than this × fitDist (mobile / desktop) */
+const DOLLY_MUL_MAX_MOBILE = 1.12;
+const DOLLY_MUL_MAX_DESKTOP = 1.18;
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
@@ -275,10 +279,10 @@ function boot() {
   }
 
   function frameMul() {
-    /* Enough air to see FULL liner (lid+bag), not so far the body ghosts away */
+    /* V34: tighter mobile framing so max-explode stays readable */
     const w = window.innerWidth || 1;
-    if (w < 480) return lightTheme ? 1.65 : 1.75;
-    if (w < 820) return lightTheme ? 1.5 : 1.6;
+    if (w < 480) return lightTheme ? 1.4 : 1.5;
+    if (w < 820) return lightTheme ? 1.35 : 1.45;
     return lightTheme ? 1.3 : 1.4;
   }
 
@@ -306,11 +310,67 @@ function boot() {
     syncFogToDistance();
   }
 
-  function refitIfReady() {
-    sizeCanvas();
-    if (state.ready) {
+  /**
+   * V34: fit from assembled rest poses only.
+   * Never measure the live exploded AABB — lid/body separation inflates the
+   * world box and would yank fitDist (sudden far zoom on phone chrome resize).
+   */
+  function fitAssembled() {
+    if (!state.lid || !state.body) {
       fitCamera(new THREE.Box3().setFromObject(product));
+      return;
     }
+    const lidPos = state.lid.position.clone();
+    const bodyPos = state.body.position.clone();
+    const lidRot = state.lid.rotation.clone();
+    const bodyRot = state.body.rotation.clone();
+    const prodScale = product.scale.clone();
+    const prodY = product.position.y;
+
+    state.lid.position.copy(state.lidBase);
+    state.body.position.copy(state.bodyBase);
+    state.lid.rotation.copy(state.lidBaseRot);
+    state.body.rotation.copy(state.bodyBaseRot);
+    product.scale.set(1, 1, 1);
+    product.position.y = lightTheme ? 0.025 : 0;
+    product.updateMatrixWorld(true);
+
+    fitCamera(new THREE.Box3().setFromObject(product));
+
+    state.lid.position.copy(lidPos);
+    state.body.position.copy(bodyPos);
+    state.lid.rotation.copy(lidRot);
+    state.body.rotation.copy(bodyRot);
+    product.scale.copy(prodScale);
+    product.position.y = prodY;
+    product.updateMatrixWorld(true);
+  }
+
+  /* V34: debounce resize; ignore URL-bar / visualViewport spam mid-scroll */
+  const RESIZE_DEBOUNCE_MS = 120;
+  const RESIZE_MIN_DELTA = 8;
+  let resizeTimer = 0;
+  let lastFitW = 0;
+  let lastFitH = 0;
+
+  function refitIfReady() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const rect = stageEl.querySelector('.abadis-theater-sticky') || stageEl;
+      const w = Math.max(1, Math.floor(rect.clientWidth || window.innerWidth));
+      const h = Math.max(1, Math.floor(window.innerHeight));
+      if (
+        lastFitW > 0 &&
+        Math.abs(w - lastFitW) < RESIZE_MIN_DELTA &&
+        Math.abs(h - lastFitH) < RESIZE_MIN_DELTA
+      ) {
+        return;
+      }
+      lastFitW = w;
+      lastFitH = h;
+      sizeCanvas();
+      if (state.ready) fitAssembled();
+    }, RESIZE_DEBOUNCE_MS);
   }
 
   function prepareMaterials(root) {
@@ -501,7 +561,11 @@ function boot() {
     /* Soft dolly — sep + stream, never extreme pullback */
     const dollyEase =
       easeInOutQuint(sep) * 0.42 + easeInOutCirc(lookBias) * FLOW_DOLLY;
-    const dolly = state.fitDist * (1 + introFar - DOLLY_IN * dollyEase);
+    /* V34: hard ceiling so introFar + explode never yank past readable framing */
+    const maxMul =
+      (window.innerWidth || 1) < 820 ? DOLLY_MUL_MAX_MOBILE : DOLLY_MUL_MAX_DESKTOP;
+    const dollyMul = Math.min(1 + introFar - DOLLY_IN * dollyEase, maxMul);
+    const dolly = state.fitDist * dollyMul;
 
     const elev =
       state.radius *
@@ -977,7 +1041,12 @@ function boot() {
       paintLidBrandTeal(lid);
       root.updateMatrixWorld(true);
       sizeCanvas();
-      fitCamera(new THREE.Box3().setFromObject(product));
+      {
+        const rect = stageEl.querySelector('.abadis-theater-sticky') || stageEl;
+        lastFitW = Math.max(1, Math.floor(rect.clientWidth || window.innerWidth));
+        lastFitH = Math.max(1, Math.floor(window.innerHeight));
+      }
+      fitAssembled();
       /* V27: no clinical straw / suction tube into port */
       state.ready = true;
       if (loadingEl) loadingEl.classList.add('hide');
