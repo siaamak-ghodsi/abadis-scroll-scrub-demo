@@ -1,5 +1,5 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V27
+ * Abadis Product Theater — WHIST-BRAND-V29
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
