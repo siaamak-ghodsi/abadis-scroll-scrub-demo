@@ -1,5 +1,5 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V12 organic scrub
+ * Abadis Product Theater — WHIST-BRAND-V12b organic scrub
  * Dark mint stage (default) or light whist skin via data-theme="light"; continuous suction tube → bag fill.
  * Narrative beats: intro → explode → rejoin → stream → fill.
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
@@ -53,9 +53,9 @@ const captionEls = Array.from(
 /* Longer exclusive bands — cinematic, less frantic */
 const CAPTION_RANGES = [
   { start: 0.0, end: 0.17 },
-  { start: 0.13, end: 0.42 },
-  { start: 0.38, end: 0.62 },
-  { start: 0.58, end: 1.0 },
+  { start: 0.13, end: 0.40 },
+  { start: 0.36, end: 0.48 },
+  { start: 0.42, end: 0.90 },
 ];
 
 if (!canvas || !stageEl) {
@@ -180,6 +180,7 @@ function boot() {
     liquidFullH: 0.1,
     bloodLevel: 0,
     bloodVel: 0,
+    bodyShellMats: [], /* cached body GLB mats — translucent during blood */
     keyLight: key,
     rimLight: rim,
     /* secondary motion envelopes */
@@ -294,6 +295,59 @@ function boot() {
         }
       }
     });
+  }
+
+  /**
+   * Cache body shell materials (liner wall). Blood is a child mesh added later —
+   * without translucent walls the opaque milky plastic fully hides the column.
+   */
+  function cacheBodyShellMaterials(body) {
+    const cached = [];
+    body.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      /* Skip procedural liquid / meniscus if already parented */
+      if (o === state.liquid || o === state.liquidMeniscus) return;
+      if (o.name && /liquid|blood|meniscus/i.test(o.name)) return;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      for (const m of mats) {
+        if (!m) continue;
+        cached.push({
+          mat: m,
+          opacity: m.opacity ?? 1,
+          transparent: !!m.transparent,
+          depthWrite: m.depthWrite !== false,
+        });
+      }
+    });
+    state.bodyShellMats = cached;
+  }
+
+  /**
+   * Solid when empty (demo look); milky-translucent when blood fills so the
+   * red column is visible through the liner wall (real suction liners).
+   */
+  function applyBodyShellClarity(bloodLevel) {
+    const mats = state.bodyShellMats;
+    if (!mats || !mats.length) return;
+    const level = THREE.MathUtils.clamp(bloodLevel, 0, 1);
+    const seeThrough = level > 0.02;
+    /* Lerp opacity 0.55→0.38 as blood rises — denser wall when empty-ish */
+    const shellOp = THREE.MathUtils.lerp(0.55, 0.38, level);
+    for (const entry of mats) {
+      const m = entry.mat;
+      if (seeThrough) {
+        m.transparent = true;
+        m.opacity = shellOp;
+        m.depthWrite = false;
+        m.side = THREE.DoubleSide;
+        if ('depthWrite' in m) m.depthWrite = false;
+      } else {
+        m.transparent = entry.transparent;
+        m.opacity = entry.opacity;
+        m.depthWrite = entry.depthWrite;
+      }
+      m.needsUpdate = true;
+    }
   }
 
   function findNamed(root, name) {
@@ -587,7 +641,8 @@ function boot() {
     box.getSize(size);
     box.getCenter(center);
 
-    const radius = Math.min(size.x, size.z) * 0.38;
+    /* Slight cutaway boost — thicker column reads through milky liner */
+    const radius = Math.min(size.x, size.z) * 0.44;
     const height = size.y * 0.82;
     /* Extra height segs so top ring can wave / meniscus */
     const radialSegs = 48;
@@ -600,27 +655,28 @@ function boot() {
       heightSegs,
       false
     );
-    /* Clinical venous blood — deep crimson, viscous, not cartoon */
+    /* Dense venous blood — readable through translucent liner, not glassy */
     const mat = new THREE.MeshPhysicalMaterial({
-      color: 0x5c0a12,
-      emissive: 0x1a0406,
-      emissiveIntensity: 0.1,
+      color: 0x7a0f18,
+      emissive: 0x3a0810,
+      emissiveIntensity: 0.22,
       transparent: true,
       opacity: 0,
-      roughness: 0.48,
+      roughness: 0.55,
       metalness: 0.02,
-      transmission: 0.06,
-      thickness: 0.1,
-      ior: 1.4,
-      specularIntensity: 0.45,
-      clearcoat: 0.4,
-      clearcoatRoughness: 0.4,
-      depthWrite: false,
+      transmission: 0.01,
+      thickness: 0.2,
+      ior: 1.35,
+      specularIntensity: 0.35,
+      clearcoat: 0.25,
+      clearcoatRoughness: 0.45,
+      depthWrite: true,
       side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
+    mesh.renderOrder = 2;
     mesh.visible = false;
 
     /* Cache base positions for surface deformation */
@@ -653,20 +709,21 @@ function boot() {
     /* Thin meniscus / surface disk — rides on top of blood column */
     const menGeo = new THREE.CircleGeometry(radius * 0.98, 48);
     const menMat = new THREE.MeshPhysicalMaterial({
-      color: 0x6e1018,
-      emissive: 0x2a080c,
-      emissiveIntensity: 0.15,
+      color: 0x9a1820,
+      emissive: 0x4a0c14,
+      emissiveIntensity: 0.28,
       transparent: true,
       opacity: 0,
       roughness: 0.28,
       metalness: 0.05,
-      clearcoat: 0.65,
-      clearcoatRoughness: 0.22,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.28,
       side: THREE.DoubleSide,
-      depthWrite: false,
+      depthWrite: true,
     });
     const meniscus = new THREE.Mesh(menGeo, menMat);
     meniscus.rotation.x = -Math.PI / 2;
+    meniscus.renderOrder = 3;
     meniscus.visible = false;
     meniscus.frustumCulled = false;
     mesh.add(meniscus);
@@ -762,6 +819,7 @@ function boot() {
         men.visible = false;
         men.material.opacity = 0;
       }
+      applyBodyShellClarity(0);
       return;
     }
     mesh.visible = true;
@@ -806,15 +864,19 @@ function boot() {
       mesh.geometry.computeVertexNormals();
     }
 
-    /* Deep venous opacity — denser in bulk, slight shimmer */
-    const op = 0.62 + level * 0.32 + Math.sin(et * 0.85) * 0.025;
-    mesh.material.opacity = THREE.MathUtils.clamp(op, 0, 0.95);
-    mesh.material.emissiveIntensity = 0.07 + level * 0.09;
+    /* Dense venous volume — readable through milky liner */
+    const op = 0.88 + level * 0.1 + Math.sin(et * 0.85) * 0.015;
+    mesh.material.opacity = THREE.MathUtils.clamp(op, 0.88, 0.98);
+    mesh.material.emissiveIntensity = 0.18 + level * 0.12;
+    mesh.material.transmission = 0.01;
+    mesh.material.depthWrite = true;
+    mesh.renderOrder = 2;
     const mix = 0.45 + 0.55 * Math.sin(et * 0.5);
+    /* #7a0f18 ↔ #9a1820 */
     mesh.material.color.setRGB(
-      (0x5c + (0x8b - 0x5c) * mix) / 255,
-      (0x0a + (0x15 - 0x0a) * mix) / 255,
-      (0x12 + (0x20 - 0x12) * mix) / 255
+      (0x7a + (0x9a - 0x7a) * mix) / 255,
+      (0x0f + (0x18 - 0x0f) * mix) / 255,
+      (0x18 + (0x20 - 0x18) * mix) / 255
     );
 
     if (men) {
@@ -823,13 +885,17 @@ function boot() {
       men.position.set(0, 0.5 + wave * 0.8, 0);
       const mWave = Math.sin(et * 1.6) * 0.012;
       men.scale.set(1 + mWave, 1 + mWave, 1);
-      men.material.opacity = THREE.MathUtils.clamp(0.35 + level * 0.4, 0, 0.78);
+      men.material.opacity = THREE.MathUtils.clamp(0.72 + level * 0.22, 0.7, 0.95);
+      men.material.depthWrite = true;
+      men.renderOrder = 3;
       men.material.color.setRGB(
-        (0x6e + (0x9a - 0x6e) * mix) / 255,
-        (0x10 + (0x1a - 0x10) * mix) / 255,
-        (0x18 + (0x28 - 0x18) * mix) / 255
+        (0x9a + (0xb0 - 0x9a) * mix) / 255,
+        (0x18 + (0x22 - 0x18) * mix) / 255,
+        (0x20 + (0x28 - 0x20) * mix) / 255
       );
     }
+
+    applyBodyShellClarity(level);
   }
 
   function applyTheatre(t, dt) {
@@ -837,8 +903,8 @@ function boot() {
      * Intro  0–0.12  : locked, scale-in / dolly from farther
      * Explode 0.12–0.38: sep + lid tilt (anticipatory), yaw swing
      * Rejoin 0.38–0.55: sep→0 with soft settle + micro-wobble
-     * Stream 0.48–0.72: look into port; smooth drawRange
-     * Fill   0.54–0.76: blood rises; 0.78–0.97 drains empty
+     * Stream 0.38–0.58: look into port; overlaps early fill
+     * Fill   0.42–0.62: blood rises; 0.66–0.88 drains empty
      */
     const introE = easeOutCubic(smoothstep(0.0, 0.09, t));
 
@@ -859,13 +925,14 @@ function boot() {
     const sepBody = Math.max(0, openBody * (1 - rejoinBody));
     const sep = Math.max(sepLid, sepBody);
 
-    const flowE = easeInOutQuint(smoothstep(0.43, 0.68, t)) * (1 - 0.55 * smoothstep(0.78, 0.95, t));
+    /* Stream overlaps start of fill briefly, then fades as blood takes focus */
+    const flowE = easeInOutQuint(smoothstep(0.38, 0.58, t)) * (1 - 0.7 * smoothstep(0.55, 0.72, t));
     /*
-     * Blood inside liner: fill → brief hold → visible drain (empty).
-     * fillE drives camera/light presence; bloodLevel is actual column height.
+     * Blood inside liner: earlier + longer fill/empty window.
+     * fillUp 0.42–0.62 · drain 0.66–0.88 · caption 3 ~0.42–0.90
      */
-    const fillUp = easeInOutCirc(smoothstep(0.54, 0.74, t));
-    const drain = easeInOutQuint(smoothstep(0.78, 0.97, t));
+    const fillUp = easeInOutCirc(smoothstep(0.42, 0.62, t));
+    const drain = easeInOutQuint(smoothstep(0.66, 0.88, t));
     const bloodLevel = Math.max(0, fillUp * (1 - drain));
     const draining = drain > 0.02 && bloodLevel < fillUp - 0.01;
     const fillE = bloodLevel; /* camera/light follow living blood column */
@@ -989,6 +1056,7 @@ function boot() {
       state.bodyBase.copy(body.position);
       state.lidBaseRot.copy(lid.rotation);
       state.bodyBaseRot.copy(body.rotation);
+      cacheBodyShellMaterials(body);
       root.updateMatrixWorld(true);
       sizeCanvas();
       fitCamera(new THREE.Box3().setFromObject(product));
