@@ -62,7 +62,9 @@ if (!canvas || !stageEl) {
 
 function boot() {
   const lightTheme = stageEl.dataset.theme === 'light';
-  const softScrub = stageEl.dataset.scrub === 'soft'; /* light theme no longer forces ultra-soft */
+  const scrubMode = stageEl.dataset.scrub || '';
+  const dreamScrub = scrubMode === 'dream';
+  const softScrub = scrubMode === 'soft' || dreamScrub;
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -73,16 +75,21 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lightTheme ? 1.34 : 1.08;
+  renderer.toneMappingExposure = lightTheme ? 1.34 : dreamScrub ? 0.96 : 1.08;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x030a0b);
+  scene.background = new THREE.Color(
+    lightTheme ? 0xf3fafa : dreamScrub ? 0x000000 : 0x030a0b
+  );
   if (!lightTheme) {
-    scene.fog = new THREE.FogExp2(0x030a0b, 0.22);
+    scene.fog = new THREE.FogExp2(
+      dreamScrub ? 0x000000 : 0x030a0b,
+      dreamScrub ? 0.34 : 0.22
+    );
   }
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : 30, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : dreamScrub ? 32 : 30, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -104,6 +111,25 @@ function boot() {
     var bounce = new THREE.DirectionalLight(0xdce395, 0.28);
     bounce.position.set(0.1, -0.8, 0.6);
     scene.add(bounce);
+  } else if (dreamScrub) {
+    /* Lynch void: hard key, lime rim, faint crimson fill */
+    scene.add(new THREE.HemisphereLight(0x4a6a6c, 0x050000, 0.16));
+    var key = new THREE.DirectionalLight(0xc8e8ea, 1.15);
+    key.position.set(0.55, 2.35, 1.55);
+    scene.add(key);
+    var fill = new THREE.DirectionalLight(0x6b1a1a, 0.22);
+    fill.position.set(-1.55, 0.35, 0.35);
+    scene.add(fill);
+    var rim = new THREE.DirectionalLight(0xdce395, 1.45);
+    rim.position.set(0.15, 0.45, -1.55);
+    scene.add(rim);
+    var rimBrand = new THREE.DirectionalLight(0x05686b, 0.55);
+    rimBrand.position.set(-0.85, 0.4, -1.15);
+    scene.add(rimBrand);
+    var spot = new THREE.SpotLight(0xdce395, 1.85, 9, Math.PI / 9, 0.55, 1.35);
+    spot.position.set(0.1, 2.7, 1.35);
+    scene.add(spot);
+    scene.add(spot.target);
   } else {
     scene.add(new THREE.HemisphereLight(0x9fd8d8, 0x020608, 0.28));
     var key = new THREE.DirectionalLight(0xffffff, 1.35);
@@ -186,10 +212,12 @@ function boot() {
       const o = captionOpacity(t, range.start, range.end);
       const el = captionEls[i];
       el.style.opacity = o.toFixed(3);
-      const y = (1 - o) * 28;
-      const sc = 0.9 + o * 0.1;
+      const drift = dreamScrub ? 42 : 28;
+      const y = (1 - o) * drift;
+      const sc = (dreamScrub ? 0.86 : 0.9) + o * (dreamScrub ? 0.14 : 0.1);
       el.style.transform = `translate(-50%, ${y}px) scale(${sc.toFixed(3)})`;
-      el.style.filter = o > 0.05 ? `blur(${((1 - o) * 6).toFixed(2)}px)` : 'blur(8px)';
+      const blurMax = dreamScrub ? 10 : 6;
+      el.style.filter = o > 0.05 ? `blur(${((1 - o) * blurMax).toFixed(2)}px)` : `blur(${dreamScrub ? 12 : 8}px)`;
       el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
     }
   }
@@ -209,7 +237,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.82 : 0.78); /* dark: hero-sized, not huge */
+    state.fitDist = dist * (lightTheme ? 0.82 : dreamScrub ? 0.8 : 0.78); /* dream: float in void */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -298,8 +326,8 @@ function boot() {
       cy - state.radius * (0.03 + 0.16 * flowE + 0.14 * fillE),
       cz
     );
-    const dutchAmp = flowE * (1 - fillE * 0.9) * 0.7;
-    camera.rotation.z += DUTCH_MAX * dutchAmp * Math.sin(flowE * Math.PI);
+    const dutchAmp = flowE * (1 - fillE * 0.9) * (dreamScrub ? 1.15 : 0.7);
+    camera.rotation.z += DUTCH_MAX * (dreamScrub ? 1.35 : 1) * dutchAmp * Math.sin(flowE * Math.PI);
   }
 
   async function loadEnvironment() {
@@ -756,20 +784,34 @@ function boot() {
   function applyFrame() {
     state.targetT = scrubProgress();
     /* Heavy scrub lerp — keep smooth, avoid jitter */
-    const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
-    const k = softScrub
-      ? (fast ? 0.14 : 0.07)
-      : (fast ? 0.48 : 0.26);
+    const delta = Math.abs(state.targetT - state.smoothT);
+    const fast = delta > (dreamScrub ? 0.05 : 0.08);
+    let k;
+    if (dreamScrub) {
+      k = fast ? 0.065 : 0.032; /* hypnotic catch-up */
+    } else if (softScrub) {
+      k = fast ? 0.14 : 0.07;
+    } else {
+      k = fast ? 0.48 : 0.26;
+    }
     state.smoothT += (state.targetT - state.smoothT) * k;
     if (!state.ready) return;
     applyTheatre(state.smoothT);
     const idle = 1 - Math.min(1, state.smoothT * 1.6);
     const et = clock.getElapsedTime();
-    product.rotation.set(
-      Math.sin(et * 0.55) * 0.025 * idle,
-      Math.sin(et * 0.42) * 0.08 * idle + Math.sin(et * 0.9) * 0.012,
-      Math.sin(et * 0.33) * 0.015 * idle
-    );
+    if (dreamScrub) {
+      product.rotation.set(
+        Math.sin(et * 0.22) * 0.035 * idle,
+        Math.sin(et * 0.18) * 0.1 * idle + Math.sin(et * 0.41) * 0.02,
+        Math.sin(et * 0.15) * 0.028 * idle
+      );
+    } else {
+      product.rotation.set(
+        Math.sin(et * 0.55) * 0.025 * idle,
+        Math.sin(et * 0.42) * 0.08 * idle + Math.sin(et * 0.9) * 0.012,
+        Math.sin(et * 0.33) * 0.015 * idle
+      );
+    }
   }
 
   window.addEventListener('scroll', applyFrame, { passive: true });
