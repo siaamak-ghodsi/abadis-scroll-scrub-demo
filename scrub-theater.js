@@ -22,8 +22,8 @@ const LID_TILT_X = THREE.MathUtils.degToRad(22);
 const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
 
 /* Camera: wide yaw, soft dutch, deep dolly */
-const CAM_YAW0 = THREE.MathUtils.degToRad(58);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-52);
+const CAM_YAW0 = THREE.MathUtils.degToRad(38);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-34);
 const DOLLY_IN = 0.03;
 const FLOW_DOLLY = 0.02;
 const FLOW_TILT = 0.2;
@@ -275,30 +275,32 @@ function boot() {
   }
 
   function frameMul() {
-    /* Whist-wide but capped — extreme mul + FogExp2 made product vanish (broken anim) */
+    /* Extra air after aspect-correct fit — Whist small hero, not vanishing */
     const w = window.innerWidth || 1;
-    const h = window.innerHeight || 1;
-    const aspect = w / h;
-    let mul = lightTheme ? 2.35 : 2.55; /* desktop: small in frame, still readable */
-    if (w < 820) mul = lightTheme ? 3.15 : 3.35; /* tablet/phone */
-    if (aspect < 0.85) mul *= 1.18; /* portrait boost */
-    if (w < 480) mul *= 1.12;
-    return Math.min(mul, 4.2); /* hard cap — beyond this fog/anim die */
+    let mul = lightTheme ? 1.55 : 1.65; /* desktop */
+    if (w < 820) mul = lightTheme ? 1.85 : 2.0;
+    if (w < 480) mul = lightTheme ? 2.15 : 2.35;
+    return mul;
   }
 
   function syncFogToDistance() {
     if (!scene.fog || !scene.fog.isFogExp2) return;
-    /* Keep similar visual fog at any fitDist: density ~ c / fitDist */
     const fd = Math.max(state.fitDist, 0.35);
-    scene.fog.density = THREE.MathUtils.clamp(0.085 / fd, 0.006, 0.07);
+    scene.fog.density = THREE.MathUtils.clamp(0.09 / fd, 0.008, 0.06);
   }
 
   function fitCamera(box) {
     box.getCenter(state.center);
     box.getSize(_tmpSize);
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
-    const dist =
-      state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
+    /* Three.js fov is VERTICAL — on portrait phones, fit to horizontal FOV
+       or the product fills the width and looks huge (user screenshot). */
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const aspect = Math.max(0.2, camera.aspect || window.innerWidth / window.innerHeight);
+    const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * aspect);
+    const distV = state.radius / Math.sin(vFov * 0.5);
+    const distH = state.radius / Math.sin(hFov * 0.5);
+    const dist = Math.max(distV, distH);
     state.fitDist = dist * frameMul();
     camera.near = Math.max(0.01, state.fitDist / 250);
     camera.far = Math.max(state.fitDist * 8, dist * 100);
@@ -338,7 +340,7 @@ function boot() {
    */
   function convertBodyToLinerPlastic(body) {
     const cached = [];
-    const peColor = new THREE.Color(0xe8f0f0);
+    const peColor = new THREE.Color(lightTheme ? 0xe8f0f0 : 0xc5d8dc);
     body.traverse((o) => {
       if (!o.isMesh || !o.material) return;
       if (o === state.liquid || o === state.liquidSurface || o === state.liquidFoam) return;
@@ -369,7 +371,7 @@ function boot() {
         pm.roughness = THREE.MathUtils.clamp(pm.roughness * 0.85 + 0.08, 0.36, 0.48);
         pm.metalness = 0;
         pm.transparent = true;
-        pm.opacity = lightTheme ? 0.62 : 0.55;
+        pm.opacity = lightTheme ? 0.78 : 0.82;
         pm.depthWrite = false;
         pm.side = THREE.DoubleSide;
         pm.clearcoat = 0.32;
@@ -377,7 +379,7 @@ function boot() {
         pm.envMapIntensity = lightTheme ? 1.7 : 1.9;
         /* Mild transmission = plastic thickness; opacity keeps milky PE body */
         if ('transmission' in pm) {
-          pm.transmission = lightTheme ? 0.28 : 0.22;
+          pm.transmission = lightTheme ? 0.14 : 0.08;
           pm.thickness = 0.04;
           pm.ior = 1.42;
         }
@@ -466,18 +468,23 @@ function boot() {
     const cy =
       state.center.y +
       state.radius *
-        ((lightTheme ? 0.18 : 0.07) - 0.12 * lookBias - 0.1 * fillE) +
+        ((lightTheme ? 0.1 : 0.02) - 0.08 * lookBias - 0.06 * fillE) +
       hy;
     const cz = state.center.z + hz;
 
+    /* Portrait: look slightly ABOVE product so it sits mid-frame under captions
+       (screenshot showed lid stuck under ticker with empty lower 2/3). */
+    const portrait = (camera.aspect || 1) < 0.9;
+    const yLookBias = state.radius * (portrait ? 0.72 : 0.12);
+
     camera.position.set(
       cx + Math.sin(yaw) * dolly,
-      cy + elev,
+      cy + elev + (portrait ? state.radius * 0.15 : 0),
       cz + Math.cos(yaw) * dolly
     );
     camera.lookAt(
       cx,
-      cy - state.radius * (0.02 + 0.08 * flowE + 0.08 * fillE),
+      cy + yLookBias - state.radius * (0.02 + 0.06 * flowE + 0.06 * fillE),
       cz
     );
     /* Gentle dutch that eases in/out with flow */
