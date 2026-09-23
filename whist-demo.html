@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V22" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V23" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -59,22 +59,18 @@
         radial-gradient(760px 520px at 20% 88%, rgba(8, 118, 115, 0.18), transparent 52%),
         linear-gradient(160deg, #f3fafa 0%, #e8f3f3 45%, #eef6f0 100%);
       background-size: 140% 140%;
-      animation: mesh-shift 12s ease-in-out infinite alternate;
-    }
-    @keyframes mesh-shift {
-      0% { filter: saturate(1.05) brightness(1.02); transform: scale(1); background-position: 0% 20%; }
-      100% { filter: saturate(1.2) brightness(1.05); transform: scale(1.06); background-position: 100% 80%; }
+      /* V23: static mesh — no infinite shift for pitch */
     }
     .fx-blob {
+      display: none !important; /* V23: remove busy floating blobs for pitch */
       position: fixed;
       border-radius: 50%;
       filter: blur(40px);
-      opacity: 0.7;
+      opacity: 0;
       pointer-events: none;
       z-index: 0;
       mix-blend-mode: normal;
-      animation: blob-float 10s ease-in-out infinite;
-      will-change: transform;
+      animation: none;
     }
     .fx-blob.a {
       width: 420px; height: 420px;
@@ -104,13 +100,8 @@
       animation-duration: 13s;
       opacity: 0.55;
     }
-    @keyframes blob-float {
-      0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-      25% { transform: translate(72px, -52px) scale(1.22) rotate(8deg); }
-      50% { transform: translate(-48px, 44px) scale(0.88) rotate(-6deg); }
-      75% { transform: translate(36px, 28px) scale(1.14) rotate(4deg); }
-    }
     .fx-sparkles {
+      display: none !important; /* V23: no sparkles for pitch */
       position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     }
     .fx-sparkles span {
@@ -119,7 +110,7 @@
       border-radius: 50%;
       background: #a8d5d6;
       box-shadow: 0 0 8px 2px rgba(46, 196, 198, 0.45), 0 0 16px rgba(5, 104, 107, 0.25);
-      animation: sparkle 4s ease-in-out infinite;
+      animation: none;
       opacity: 0;
     }
     .fx-sparkles span:nth-child(1) { top: 12%; left: 18%; animation-delay: 0s; }
@@ -130,10 +121,6 @@
     .fx-sparkles span:nth-child(6) { top: 34%; left: 52%; animation-delay: 2.1s; }
     .fx-sparkles span:nth-child(7) { top: 88%; left: 68%; animation-delay: 1.4s; background: #087673; }
     .fx-sparkles span:nth-child(8) { top: 8%; left: 48%; animation-delay: 2.6s; background: #a8d5d6; }
-    @keyframes sparkle {
-      0%, 100% { opacity: 0; transform: scale(0.4); }
-      40%, 60% { opacity: 0.55; transform: scale(1.1); }
-    }
     .ticker {
       position: relative;
       z-index: 2;
@@ -214,16 +201,13 @@
       border-radius: 980px;
       text-decoration: none;
       box-shadow: 0 8px 22px rgba(5, 104, 107, 0.22);
-      animation: btn-shine 4s ease infinite;
+      animation: none; /* V23: static chrome */
+      background-position: 30% 50%;
       transition: transform 0.35s ease, box-shadow 0.35s ease;
     }
     .header-link:hover {
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 12px 28px rgba(1, 95, 97, 0.35);
-    }
-    @keyframes btn-shine {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
     }
     @media (max-width: 640px) { .brand-logo { height: 30px; } }
 
@@ -306,15 +290,12 @@
       text-wrap: balance;
       background: linear-gradient(105deg, #066163 0%, #05686b 40%, #0e7475 70%, #015f61 100%);
       background-size: 180% 100%;
-      animation: title-sheen 5.5s ease-in-out infinite;
+      background-position: 40% 50%;
+      animation: none; /* V23: static title gradient */
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       filter: drop-shadow(0 2px 12px rgba(5,104,107,0.18));
-    }
-    @keyframes title-sheen {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
     }
     .abadis-theater-caption-sub {
       margin: 0 auto;
@@ -360,12 +341,9 @@
       border-radius: 99px;
       background: linear-gradient(90deg, #066163, #05686b, #a8d5d6);
       background-size: 200% 100%;
-      animation: bar-flow 2.4s linear infinite;
+      background-position: 0% 50%;
+      animation: none; /* V23: static progress fill */
       box-shadow: 0 0 16px rgba(5, 104, 107, 0.45);
-    }
-    @keyframes bar-flow {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
     }
     @media (max-width: 700px) {
       .abadis-theater { height: 680vh; }
@@ -401,14 +379,14 @@
         transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: opacity, transform;
     }
-    .story-panel.is-active .story-panel-inner {
+    .story-panel.is-active .story-panel-inner,
+    .story-panel.is-revealed .story-panel-inner {
       opacity: 1;
       transform: none;
     }
+    /* V23: no leave thrash — once revealed stays visible */
     .story-panel.is-leaving .story-panel-inner {
-      opacity: 0;
-      transform: translateY(-28px) scale(1.01);
-      transition-duration: 0.45s;
+      /* kept for compat; reveal-once path skips is-leaving */
     }
 
     .story-kicker {
@@ -429,7 +407,8 @@
       transition: opacity 0.7s ease 0.05s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
       box-shadow: 0 10px 28px rgba(5, 104, 107, 0.3);
     }
-    .story-panel.is-active .story-kicker {
+    .story-panel.is-active .story-kicker,
+    .story-panel.is-revealed .story-kicker {
       opacity: 1;
       transform: none;
     }
@@ -439,11 +418,7 @@
       border-radius: 50%;
       background: #a8d5d6;
       box-shadow: 0 0 10px #a8d5d6;
-      animation: pulse-dot 1.4s ease infinite;
-    }
-    @keyframes pulse-dot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.6; }
+      animation: none; /* V23: no pulsing kicker dot */
     }
 
     .story-title {
@@ -462,15 +437,13 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: title-flow 8s ease infinite;
+      background-position: 30% 50%;
+      animation: none; /* V23: static story title */
     }
-    .story-panel.is-active .story-title {
+    .story-panel.is-active .story-title,
+    .story-panel.is-revealed .story-title {
       opacity: 1;
       transform: none;
-    }
-    @keyframes title-flow {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
     }
 
     .story-sub {
@@ -485,7 +458,8 @@
       transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.24s,
                   transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.24s;
     }
-    .story-panel.is-active .story-sub {
+    .story-panel.is-active .story-sub,
+    .story-panel.is-revealed .story-sub {
       opacity: 1;
       transform: none;
     }
@@ -506,9 +480,13 @@
       color: transparent;
       filter: drop-shadow(0 12px 40px rgba(5, 104, 107, 0.3));
     }
-    .story-panel.is-active .story-giant {
+    .story-panel.is-active .story-giant,
+    .story-panel.is-revealed .story-giant {
       opacity: 1;
       transform: none;
+    }
+    /* V23: giant-pop only on first reveal */
+    .story-panel.is-revealed:not(.is-popped) .story-giant {
       animation: giant-pop 1.1s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes giant-pop {
@@ -540,7 +518,8 @@
       transition-delay: var(--d, 0ms);
       padding: 10px 0;
     }
-    .story-panel.is-active .story-codes li {
+    .story-panel.is-active .story-codes li,
+    .story-panel.is-revealed .story-codes li {
       opacity: 1;
       transform: none;
     }
@@ -579,14 +558,16 @@
       background-clip: text;
       color: transparent;
     }
-    .story-panel.is-active .story-uses li {
+    .story-panel.is-active .story-uses li,
+    .story-panel.is-revealed .story-uses li {
       opacity: 1;
       transform: none;
     }
     .story-panel:nth-child(even) .story-uses li {
       transform: translateX(-40px);
     }
-    .story-panel:nth-child(even).is-active .story-uses li {
+    .story-panel:nth-child(even).is-active .story-uses li,
+    .story-panel:nth-child(even).is-revealed .story-uses li {
       transform: none;
     }
 
@@ -596,7 +577,8 @@
       transform: translateY(20px) scale(0.94);
       transition: opacity 0.7s ease 0.35s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
     }
-    .story-panel.is-active .story-cta {
+    .story-panel.is-active .story-cta,
+    .story-panel.is-revealed .story-cta {
       opacity: 1;
       transform: none;
     }
@@ -611,34 +593,10 @@
       font-size: 0.95rem;
       text-decoration: none;
       box-shadow: 0 14px 40px rgba(1, 95, 97, 0.35);
-      animation: btn-shine 3.5s ease infinite;
+      animation: none; /* V23: static CTA */
+      background-position: 30% 50%;
     }
     .story-cta a:hover { filter: brightness(1.08); }
-
-    /* Floating accent ring on active panels */
-    .story-ring {
-      position: absolute;
-      width: min(420px, 70vw);
-      height: min(420px, 70vw);
-      border-radius: 50%;
-      border: 1.5px solid transparent;
-      background:
-        linear-gradient(var(--bg), var(--bg)) padding-box,
-        linear-gradient(120deg, rgba(5,104,107,0.55), rgba(14,116,117,0.5), rgba(46,196,198,0.65)) border-box;
-      opacity: 0;
-      transform: scale(0.7) rotate(0deg);
-      pointer-events: none;
-      z-index: -1;
-      transition: opacity 0.8s ease, transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .story-panel.is-active .story-ring {
-      opacity: 0.55;
-      transform: scale(1) rotate(25deg);
-      animation: ring-spin 22s linear infinite;
-    }
-    @keyframes ring-spin {
-      to { transform: scale(1) rotate(385deg); }
-    }
 
     .site-footer {
       padding: 56px 24px 80px;
@@ -669,7 +627,8 @@
       z-index: 200;
       background: linear-gradient(90deg, #066163, #05686b, #0e7475, #a8d5d6, #05686b);
       background-size: 300% 100%;
-      animation: bar-flow 2.2s linear infinite;
+      background-position: 0% 50%;
+      animation: none; /* V23: static top progress */
       box-shadow: 0 0 14px rgba(5, 104, 107, 0.55);
       pointer-events: none;
     }
@@ -738,7 +697,8 @@
       border-radius: 980px;
       background: linear-gradient(120deg, #066163, #05686b 50%, #0e7475);
       background-size: 200% 200%;
-      animation: btn-shine 3.2s ease infinite;
+      background-position: 40% 50%;
+      animation: none; /* V23: static badge */
       box-shadow: 0 10px 24px rgba(5, 104, 107, 0.35);
       border: 1px solid rgba(46, 196, 198, 0.22);
       pointer-events: none;
@@ -850,10 +810,6 @@
       background: none !important;
     }
     .story-codes .code { color: #e8f3f3 !important; }
-    .story-ring {
-      border-color: rgba(46,196,198,0.25) !important;
-      box-shadow: 0 0 60px rgba(5,104,107,0.35);
-    }
     .story-cta a {
       background: linear-gradient(120deg, #015f61, #05686b 50%, #066163) !important;
       color: #e8f3f3 !important;
@@ -875,16 +831,8 @@
   <div class="fx-mesh" aria-hidden="true"></div>
   <div class="fx-grain" aria-hidden="true"></div>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
-  <div class="fx-blob a" aria-hidden="true"></div>
-  <div class="fx-blob b" aria-hidden="true"></div>
-  <div class="fx-blob c" aria-hidden="true"></div>
-  <div class="fx-blob d" aria-hidden="true"></div>
-  <div class="fx-sparkles" aria-hidden="true">
-    <span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span>
-  </div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V22 · اتصال درست</div>
+  <div class="build-badge" aria-hidden="true">V23 · ارائه</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -938,7 +886,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">محصول</span>
           <h2 class="story-title">کیسه ساکشن ۲ لیتری</h2>
@@ -949,7 +896,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">حجم</span>
           <p class="story-giant">۲<span class="story-giant-unit">لیتر تکی</span></p>
@@ -960,7 +906,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">مشخصات</span>
           <h2 class="story-title">پودر ژل‌کننده</h2>
@@ -971,7 +916,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">ایمنی</span>
           <h2 class="story-title">فیلتر هیدروفوبیک</h2>
@@ -982,7 +926,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">سازگاری</span>
           <h2 class="story-title">همه دستگاه‌های ساکشن</h2>
@@ -993,7 +936,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">ابعاد</span>
           <p class="story-giant">۱۱<span class="story-giant-unit">سانتی‌متر قطر</span></p>
@@ -1003,7 +945,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">ابعاد</span>
           <p class="story-giant">۲۴٫۵<span class="story-giant-unit">سانتی‌متر ارتفاع</span></p>
@@ -1013,7 +954,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">موارد مصرف</span>
           <ul class="story-uses">
@@ -1030,7 +970,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">کد محصول</span>
           <h2 class="story-title">پنج واریانت</h2>
@@ -1062,7 +1001,6 @@
 
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
-        <div class="story-ring" aria-hidden="true"></div>
         <div class="story-panel-inner">
           <span class="story-kicker">راهنما</span>
           <h2 class="story-title">نحوه استفاده</h2>
@@ -1077,36 +1015,38 @@
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V22 اتصال درست · پالت برند · بدون کارت و جدول</p>
+    <p>دمو آبادیس · V23 ارائه · پالت برند · بدون کارت و جدول</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V22</a>
-  <script type="module" src="./scrub-theater.js?v=22"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V23</a>
+  <script type="module" src="./scrub-theater.js?v=23"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
       const header = document.getElementById('siteHeader');
       const progress = document.getElementById('scrollProgress');
 
-      function setActivePanel() {
-        const mid = window.innerHeight * 0.45;
-        let best = null;
-        let bestDist = Infinity;
-        for (const panel of panels) {
-          const rect = panel.getBoundingClientRect();
-          const center = rect.top + Math.min(window.innerHeight, rect.height) * 0.45;
-          const dist = Math.abs(center - mid);
-          const visible = rect.bottom > window.innerHeight * 0.15 && rect.top < window.innerHeight * 0.85;
-          panel.classList.toggle('is-leaving', !visible && rect.bottom < mid && rect.bottom > -40);
-          if (visible && dist < bestDist) {
-            bestDist = dist;
-            best = panel;
+      /* V23: reveal once — IntersectionObserver sticks; no leave/re-enter thrash */
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const panel = entry.target;
+            if (!panel.classList.contains('is-revealed')) {
+              panel.classList.add('is-revealed', 'is-active');
+              requestAnimationFrame(() => {
+                panel.classList.add('is-popped');
+              });
+            } else {
+              panel.classList.add('is-active');
+            }
+            io.unobserve(panel);
           }
-        }
-        for (const panel of panels) {
-          panel.classList.toggle('is-active', panel === best);
-        }
+        }, { threshold: 0.28, rootMargin: '0px 0px -12% 0px' });
+        panels.forEach((p) => io.observe(p));
+      } else {
+        panels.forEach((p) => p.classList.add('is-revealed', 'is-active', 'is-popped'));
       }
 
       function updateChrome() {
@@ -1116,7 +1056,8 @@
           const p = max > 0 ? (window.scrollY / max) * 100 : 0;
           progress.style.width = p.toFixed(2) + '%';
         }
-        setActivePanel();
+        const hint = document.getElementById('scrollHint');
+        if (hint) hint.classList.toggle('is-gone', window.scrollY > 48);
       }
 
       let ticking = false;
@@ -1132,27 +1073,17 @@
       window.addEventListener('resize', onScroll, { passive: true });
       updateChrome();
 
-      const blobs = Array.from(document.querySelectorAll('.fx-blob'));
+      /* V23: soft cursor glow only — no blob parallax */
       const glow = document.getElementById('cursorGlow');
-      const hint = document.getElementById('scrollHint');
-      let px = 0, py = 0, tx = 0, ty = 0, gx = window.innerWidth/2, gy = window.innerHeight/2, tgx = gx, tgy = gy;
+      let gx = window.innerWidth / 2, gy = window.innerHeight / 2, tgx = gx, tgy = gy;
       window.addEventListener('pointermove', (e) => {
-        tx = (e.clientX / window.innerWidth - 0.5) * 36;
-        ty = (e.clientY / window.innerHeight - 0.5) * 24;
         tgx = e.clientX; tgy = e.clientY;
       }, { passive: true });
-      (function parallax() {
-        px += (tx - px) * 0.08;
-        py += (ty - py) * 0.08;
+      (function followGlow() {
         gx += (tgx - gx) * 0.12;
         gy += (tgy - gy) * 0.12;
-        blobs.forEach((b, i) => {
-          const m = 0.55 + i * 0.22;
-          b.style.translate = (px * m).toFixed(2) + 'px ' + (py * m).toFixed(2) + 'px';
-        });
         if (glow) { glow.style.left = gx + 'px'; glow.style.top = gy + 'px'; }
-        if (hint) hint.classList.toggle('is-gone', window.scrollY > 48);
-        requestAnimationFrame(parallax);
+        requestAnimationFrame(followGlow);
       })();
     })();
   </script>
