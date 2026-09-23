@@ -1,8 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V29
+ * Abadis Product Theater — WHIST-BRAND-V30
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
+ * V30: finger/mouse drag rotate (hybrid touch) + lid brand teal #066163.
  * V27: kill end-phase clinical straw/stream into port; quiet assemble end.
  * V25: tight scrub (بدون گیر) — critical damp, no endDamp/catch-up lag.
  */
@@ -378,6 +379,43 @@ function boot() {
       o.renderOrder = 1;
     });
     state.bodyShellMats = cached;
+  }
+
+  /**
+   * Force lid (درپوش) to Abadis primary brand teal #066163.
+   * Plastic finish — not chrome. Bag/body stays milky (untouched).
+   */
+  function paintLidBrandTeal(lid) {
+    if (!lid) return;
+    const TEAL = 0x066163;
+    lid.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      const next = [];
+      for (const m of mats) {
+        if (!m) {
+          next.push(m);
+          continue;
+        }
+        const pm = m.clone();
+        if ('map' in pm) pm.map = null;
+        if ('color' in pm) pm.color.setHex(TEAL);
+        if ('emissive' in pm) {
+          pm.emissive.setHex(TEAL);
+          pm.emissiveIntensity = 0.06;
+        }
+        if ('metalness' in pm) pm.metalness = 0.08;
+        if ('roughness' in pm) pm.roughness = 0.42;
+        if ('envMapIntensity' in pm) pm.envMapIntensity = lightTheme ? 1.2 : 1.35;
+        if ('transparent' in pm) {
+          pm.transparent = false;
+          pm.opacity = 1;
+        }
+        pm.needsUpdate = true;
+        next.push(pm);
+      }
+      o.material = Array.isArray(o.material) ? next : next[0];
+    });
   }
 
   function findNamed(root, name) {
@@ -918,6 +956,7 @@ function boot() {
       state.lidBaseRot.copy(lid.rotation);
       state.bodyBaseRot.copy(body.rotation);
       convertBodyToLinerPlastic(body);
+      paintLidBrandTeal(lid);
       root.updateMatrixWorld(true);
       sizeCanvas();
       fitCamera(new THREE.Box3().setFromObject(product));
@@ -932,6 +971,111 @@ function boot() {
   })();
 
   window.addEventListener('resize', refitIfReady);
+
+  /* —— V30: hybrid pointer rotate (mouse + one-finger) ——
+   * Mouse left-drag always rotates. Touch: after ~8px, if mostly
+   * horizontal (|dx| > |dy| * 0.85) capture + rotate; else let page scroll.
+   */
+  let userYaw = 0;
+  let userPitch = 0;
+  const PITCH_MAX = 0.35;
+  const DRAG_SENS = 0.005;
+  const DRAG_THRESH = 8;
+  const HORIZ_RATIO = 0.85;
+  const drag = {
+    active: false,
+    rotateMode: false,
+    decided: false,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+  };
+
+  function endDrag(e) {
+    if (drag.pointerId != null && e.pointerId !== drag.pointerId) return;
+    if (drag.rotateMode && drag.pointerId != null) {
+      try {
+        canvas.releasePointerCapture(drag.pointerId);
+      } catch (_) {
+        /* already released */
+      }
+    }
+    drag.active = false;
+    drag.rotateMode = false;
+    drag.decided = false;
+    drag.pointerId = null;
+  }
+
+  canvas.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      drag.active = true;
+      drag.pointerId = e.pointerId;
+      drag.startX = drag.lastX = e.clientX;
+      drag.startY = drag.lastY = e.clientY;
+      if (e.pointerType === 'mouse') {
+        /* Desktop: left-button drag always rotates; wheel still scrolls */
+        drag.rotateMode = true;
+        drag.decided = true;
+        canvas.setPointerCapture(e.pointerId);
+      } else {
+        /* Touch: wait for direction before capturing */
+        drag.rotateMode = false;
+        drag.decided = false;
+      }
+    },
+    { passive: true }
+  );
+
+  canvas.addEventListener(
+    'pointermove',
+    (e) => {
+      if (!drag.active || e.pointerId !== drag.pointerId) return;
+      const x = e.clientX;
+      const y = e.clientY;
+      if (!drag.decided) {
+        const tdx = x - drag.startX;
+        const tdy = y - drag.startY;
+        if (Math.hypot(tdx, tdy) < DRAG_THRESH) return;
+        drag.decided = true;
+        if (Math.abs(tdx) > Math.abs(tdy) * HORIZ_RATIO) {
+          drag.rotateMode = true;
+          try {
+            canvas.setPointerCapture(e.pointerId);
+          } catch (_) {
+            /* ignore */
+          }
+        } else {
+          /* Mostly vertical — do not capture; allow page scroll / scrub */
+          drag.active = false;
+          drag.rotateMode = false;
+          drag.pointerId = null;
+          return;
+        }
+      }
+      if (!drag.rotateMode) return;
+      e.preventDefault();
+      const dx = x - drag.lastX;
+      const dy = y - drag.lastY;
+      drag.lastX = x;
+      drag.lastY = y;
+      userYaw += dx * DRAG_SENS;
+      userPitch = THREE.MathUtils.clamp(
+        userPitch + dy * DRAG_SENS,
+        -PITCH_MAX,
+        PITCH_MAX
+      );
+    },
+    { passive: false }
+  );
+
+  canvas.addEventListener('pointerup', endDrag, { passive: true });
+  canvas.addEventListener('pointercancel', endDrag, { passive: true });
+  canvas.addEventListener('lostpointercapture', endDrag, { passive: true });
+
 
   function applyFrame(dt) {
     let nextTarget = scrubProgress();
@@ -972,9 +1116,17 @@ function boot() {
     const still = 1 - THREE.MathUtils.clamp(state.scrollSpeed * 28, 0, 1);
     const et = clock.getElapsedTime();
     const idleAmp = idle * (0.4 + 0.6 * still) * 0.4;
+    /* Soft-return pitch only when not actively rotating; keep yaw */
+    if (!drag.rotateMode) {
+      userPitch += (0 - userPitch) * (1 - Math.exp(-1.6 * dt));
+      if (Math.abs(userPitch) < 0.0004) userPitch = 0;
+    }
+    /* userYaw / userPitch layered on top of idle float */
     product.rotation.set(
-      Math.sin(et * 0.48) * 0.022 * idleAmp,
-      Math.sin(et * 0.38) * 0.07 * idleAmp + Math.sin(et * 0.85) * 0.01,
+      Math.sin(et * 0.48) * 0.022 * idleAmp + userPitch,
+      Math.sin(et * 0.38) * 0.07 * idleAmp +
+        Math.sin(et * 0.85) * 0.01 +
+        userYaw,
       Math.sin(et * 0.29) * 0.014 * idleAmp
     );
   }
