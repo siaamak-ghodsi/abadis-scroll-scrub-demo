@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V26" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V27" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -671,10 +671,11 @@
       padding: 28px 22px;
       border-radius: 28px;
       background: rgba(255,255,255,0.42);
-      border: 1px solid rgba(5,104,107,0.1);
+      border: none;
+      outline: none;
       backdrop-filter: blur(16px) saturate(140%);
       -webkit-backdrop-filter: blur(16px) saturate(140%);
-      box-shadow: 0 24px 60px rgba(5,104,107,0.1);
+      box-shadow: none; /* V27: no حاشیه / framed-card rim */
     }
     .story-title {
       font-size: clamp(2rem, 5.2vw, 3.6rem) !important;
@@ -781,8 +782,9 @@
     }
     .story-panel-inner {
       background: rgba(6,20,22,0.72) !important;
-      border: 1px solid rgba(46,196,198,0.14) !important;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.45) !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important; /* V27: بدون حاشیه — readable panel, no frame */
       color: #e8f3f3;
     }
     .story-title {
@@ -830,7 +832,7 @@
   <div class="fx-grain" aria-hidden="true"></div>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V26 · فونت کلمه</div>
+  <div class="build-badge" aria-hidden="true">V27 · بدون حاشیه</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -869,8 +871,8 @@
           <p class="abadis-theater-caption-sub">مونتاژ نرم در و مخزن</p>
         </div>
         <div class="abadis-theater-caption" data-caption="3">
-          <p class="abadis-theater-caption-title">جریان مکش</p>
-          <p class="abadis-theater-caption-sub">از پورت تا داخل کیسه · سیال کلینیکال</p>
+          <p class="abadis-theater-caption-title">محصول آماده</p>
+          <p class="abadis-theater-caption-sub">مونتاژ کامل · آماده استفاده</p>
         </div>
       </div>
       <div class="abadis-theater-hud" aria-hidden="true">
@@ -1013,12 +1015,12 @@
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V26 فونت کلمه · پالت برند · بدون کارت و جدول</p>
+    <p>دمو آبادیس · V27 بدون حاشیه · پالت برند · فونت کلمه</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V26</a>
-  <script type="module" src="./scrub-theater.js?v=23"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V27</a>
+  <script type="module" src="./scrub-theater.js?v=27"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
