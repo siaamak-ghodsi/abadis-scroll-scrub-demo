@@ -81,7 +81,7 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lightTheme ? 1.34 : 1.08;
+  renderer.toneMappingExposure = lightTheme ? 1.34 : 1.22;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
@@ -120,13 +120,17 @@ function boot() {
     bounce.position.set(0.1, -0.8, 0.6);
     scene.add(bounce);
   } else {
-    scene.add(new THREE.HemisphereLight(0x9fd8d8, 0x020608, 0.28));
-    key = new THREE.DirectionalLight(0xffffff, 1.35);
+    scene.add(new THREE.HemisphereLight(0xc8ecec, 0x0a1820, 0.62));
+    key = new THREE.DirectionalLight(0xffffff, 1.55);
     key.position.set(0.7, 2.1, 1.4);
     scene.add(key);
-    fill = new THREE.DirectionalLight(0x2ec4c6, 0.35);
+    fill = new THREE.DirectionalLight(0xa8d8dc, 0.85);
     fill.position.set(-1.3, 0.5, 0.5);
     scene.add(fill);
+    /* Soft front fill so the PE bag body is readable, not a black void */
+    const frontFill = new THREE.DirectionalLight(0xe8f4f4, 0.7);
+    frontFill.position.set(0.1, 0.4, 2.2);
+    scene.add(frontFill);
     rim = new THREE.DirectionalLight(0xdce395, 1.15);
     rim.position.set(0.2, 0.6, -1.35);
     scene.add(rim);
@@ -285,7 +289,7 @@ function boot() {
   function syncFogToDistance() {
     if (!scene.fog || !scene.fog.isFogExp2) return;
     const fd = Math.max(state.fitDist, 0.35);
-    scene.fog.density = THREE.MathUtils.clamp(0.1 / fd, 0.012, 0.12);
+    scene.fog.density = THREE.MathUtils.clamp(0.07 / fd, 0.008, 0.08);
   }
 
   function fitCamera(box) {
@@ -363,25 +367,35 @@ function boot() {
           pm.roughness = typeof m.roughness === 'number' ? m.roughness : 0.42;
           pm.metalness = typeof m.metalness === 'number' ? m.metalness : 0.0;
         }
-        /* Readable milky PE bag — must read as FULL liner silhouette on dark bg.
-         * Earlier 0.7 opacity + high transmission + depthWrite:false made the
-         * body vanish so only the lid showed (user: تصویر ساکشن کامل نیست). */
-        pm.color.lerp(peColor, 0.55);
-        pm.color.offsetHSL(0.04, 0.04, -0.02);
-        pm.roughness = THREE.MathUtils.clamp(pm.roughness * 0.85 + 0.1, 0.38, 0.52);
+        /* Bright milky PE — user said body still invisible on dark bg (V16).
+         * Force light plastic color; keep slight translucency for blood. */
+        pm.color.copy(peColor);
+        if (!lightTheme) {
+          pm.color.setHex(0xdceaea);
+          pm.color.offsetHSL(0.06, 0.06, 0.02);
+        } else {
+          pm.color.offsetHSL(0.03, 0.04, 0.02);
+        }
+        pm.roughness = THREE.MathUtils.clamp(
+          (typeof pm.roughness === 'number' ? pm.roughness : 0.42) * 0.7 + 0.22,
+          0.4,
+          0.55
+        );
         pm.metalness = 0;
         pm.transparent = true;
-        /* Opaque enough to see the conical bag; still translucent for blood */
-        pm.opacity = lightTheme ? 0.88 : 0.9;
+        pm.opacity = lightTheme ? 0.92 : 0.96;
         pm.depthWrite = true;
         pm.side = THREE.DoubleSide;
-        pm.clearcoat = 0.28;
-        pm.clearcoatRoughness = 0.42;
-        pm.envMapIntensity = lightTheme ? 1.55 : 1.7;
+        pm.clearcoat = 0.35;
+        pm.clearcoatRoughness = 0.35;
+        pm.envMapIntensity = lightTheme ? 1.6 : 2.0;
+        /* Tiny emissive so bag reads even in underexposed areas */
+        pm.emissive = new THREE.Color(lightTheme ? 0x0a2020 : 0x1a4044);
+        pm.emissiveIntensity = lightTheme ? 0.04 : 0.18;
         if ('transmission' in pm) {
-          pm.transmission = lightTheme ? 0.1 : 0.08;
-          pm.thickness = 0.035;
-          pm.ior = 1.42;
+          pm.transmission = lightTheme ? 0.08 : 0.04;
+          pm.thickness = 0.03;
+          pm.ior = 1.4;
         }
         pm.needsUpdate = true;
         next.push(pm);
