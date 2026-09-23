@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V11" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V12" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -743,453 +743,108 @@
       direction: rtl;
     }
 
-    /* ===== V11 LYNCH / TWIN PEAKS ===== */
-    :root {
-      --lynch-void: #000000;
-      --lynch-void-soft: #050505;
-      --lynch-blood: #0a0000;
-      --lynch-crimson: #6b0f1a;
-      --lynch-crimson-deep: #3a080e;
-      --lynch-velvet: #4a0a12;
-      --lynch-cream: #f2ebe0;
-      --lynch-cream-dim: #c8bdb0;
-      --lime: #dce395;
-      --abadis: #05686b;
-      --abadis-deep: #066163;
-      --abadis-btn: #015f61;
-      --abadis-mid: #0e7475;
-      --abadis-bright: #087673;
-    }
+    /* ===== V12 ORGANIC CINEMATIC DARK (V10 look) ===== */
     body {
-      background: #000 !important;
-      color: var(--lynch-cream) !important;
-      animation: crt-flicker 7.5s ease-in-out infinite;
+      background: #030a0b !important;
+      color: #e8f3f3 !important;
     }
-    @keyframes crt-flicker {
-      0%, 100% { opacity: 1; }
-      48% { opacity: 1; }
-      49% { opacity: 0.97; }
-      50% { opacity: 1; }
-      72% { opacity: 0.985; }
-      73% { opacity: 1; }
-    }
-
-    /* Near-total black void — no cheerful mesh */
     .fx-mesh {
       background:
-        radial-gradient(ellipse 55% 45% at 50% 42%, rgba(5,104,107,0.12), transparent 62%),
-        radial-gradient(ellipse 40% 35% at 50% 55%, rgba(220,227,149,0.04), transparent 70%),
-        linear-gradient(180deg, #000 0%, #050505 50%, #0a0000 100%) !important;
-      animation: none !important;
-      filter: none !important;
-      transform: none !important;
+        radial-gradient(900px 600px at 12% 18%, rgba(5,104,107,0.45), transparent 60%),
+        radial-gradient(800px 520px at 88% 12%, rgba(220,227,149,0.18), transparent 55%),
+        radial-gradient(700px 500px at 70% 90%, rgba(14,116,117,0.35), transparent 55%),
+        linear-gradient(165deg, #030a0b 0%, #061416 45%, #0a2224 100%) !important;
     }
-
-    /* Letterbox cinematic bars */
-    .letterbox-top,
-    .letterbox-bottom {
-      position: fixed;
-      left: 0; right: 0;
-      height: clamp(28px, 5.5vh, 56px);
-      z-index: 120;
-      pointer-events: none;
-      background: #000;
-      box-shadow: 0 0 40px 12px #000;
-    }
-    .letterbox-top { top: 0; }
-    .letterbox-bottom { bottom: 0; }
-
-    /* Red velvet curtains — left / right, breathing */
-    .lynch-curtain {
-      position: fixed;
-      top: 0; bottom: 0;
-      width: min(18vw, 220px);
-      z-index: 80;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .lynch-curtain.left { left: 0; }
-    .lynch-curtain.right { right: 0; }
-    .lynch-curtain::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          #2a060c 0px,
-          #5c1018 8px,
-          #3a080e 16px,
-          #6b1220 24px,
-          #2a060c 32px
-        );
-      box-shadow:
-        inset -40px 0 60px rgba(0,0,0,0.65),
-        inset 0 0 80px rgba(0,0,0,0.5);
-      opacity: 0.92;
-      transform-origin: top center;
-      animation: curtain-breathe 9s ease-in-out infinite;
-    }
-    .lynch-curtain.right::before {
-      box-shadow:
-        inset 40px 0 60px rgba(0,0,0,0.65),
-        inset 0 0 80px rgba(0,0,0,0.5);
-      animation-delay: -4.5s;
-    }
-    .lynch-curtain::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.55) 0%,
-        transparent 18%,
-        transparent 82%,
-        rgba(0,0,0,0.7) 100%
-      );
-      pointer-events: none;
-    }
-    @keyframes curtain-breathe {
-      0%, 100% { transform: scaleX(1) skewY(0deg); filter: brightness(0.95); }
-      50% { transform: scaleX(1.035) skewY(0.4deg); filter: brightness(1.05); }
-    }
-    @media (max-width: 700px) {
-      .lynch-curtain { width: min(12vw, 72px); opacity: 0.85; }
-    }
-
-    /* Twin Peaks zigzag floor band at sticky theater bottom */
-    .abadis-theater-sticky .zigzag-floor {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 48px;
-      z-index: 3;
-      pointer-events: none;
-      opacity: 0.55;
-      background:
-        repeating-linear-gradient(
-          135deg,
-          #0a0a0a 0px,
-          #0a0a0a 14px,
-          #e8e4dc 14px,
-          #e8e4dc 28px
-        );
-      mask-image: linear-gradient(180deg, transparent 0%, #000 40%, #000 100%);
-      -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 40%, #000 100%);
-      box-shadow: 0 -20px 40px rgba(0,0,0,0.8);
-    }
-
-    /* Soft volumetric spotlight cone over canvas */
-    .abadis-theater-sticky .spot-cone {
-      position: absolute;
-      left: 50%;
-      top: 8%;
-      width: min(70vw, 640px);
-      height: 78%;
-      transform: translateX(-50%);
-      z-index: 1;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse 42% 18% at 50% 0%, rgba(220,227,149,0.22), transparent 70%),
-        linear-gradient(180deg,
-          rgba(220,227,149,0.07) 0%,
-          rgba(5,104,107,0.08) 28%,
-          rgba(5,104,107,0.03) 55%,
-          transparent 100%);
-      clip-path: polygon(38% 0%, 62% 0%, 92% 100%, 8% 100%);
-      mix-blend-mode: screen;
-      opacity: 0.7;
-      animation: spot-pulse 8s ease-in-out infinite;
-    }
-    @keyframes spot-pulse {
-      0%, 100% { opacity: 0.55; }
-      50% { opacity: 0.78; }
-    }
-
-    /* Heavy film grain */
-    .fx-grain {
-      opacity: 0.15 !important;
-      mix-blend-mode: soft-light !important;
-      z-index: 95;
-    }
-
-    /* Hide cheerful blobs / sparkles — replaced by fog & embers */
-    .fx-blob, .fx-sparkles { display: none !important; }
-
-    /* Slow smoke / fog wisps */
-    .fx-fog {
-      position: fixed;
-      inset: 0;
-      z-index: 4;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .fx-fog .wisp {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(48px);
-      opacity: 0.18;
-      background: radial-gradient(circle, rgba(8,118,115,0.35), rgba(5,104,107,0.08) 45%, transparent 70%);
-      animation: fog-drift 28s ease-in-out infinite;
-      will-change: transform;
-    }
-    .fx-fog .wisp.a { width: 520px; height: 280px; top: 18%; left: -8%; animation-duration: 32s; }
-    .fx-fog .wisp.b { width: 460px; height: 260px; top: 55%; right: -10%; animation-delay: -12s; animation-duration: 36s;
-      background: radial-gradient(circle, rgba(107,15,26,0.22), transparent 70%); }
-    .fx-fog .wisp.c { width: 380px; height: 220px; bottom: 8%; left: 30%; animation-delay: -20s; animation-duration: 40s;
-      background: radial-gradient(circle, rgba(220,227,149,0.1), transparent 70%); }
-    @keyframes fog-drift {
-      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.12; }
-      33% { transform: translate(40px, -28px) scale(1.12); opacity: 0.22; }
-      66% { transform: translate(-30px, 18px) scale(0.94); opacity: 0.16; }
-    }
-
-    /* Sparse dying embers — lime dots that linger */
-    .fx-embers {
-      position: fixed; inset: 0; z-index: 5; pointer-events: none; overflow: hidden;
-    }
-    .fx-embers span {
-      position: absolute;
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: #dce395;
-      box-shadow: 0 0 8px 2px rgba(220,227,149,0.55);
-      opacity: 0;
-      animation: ember-linger 9s ease-in-out infinite;
-    }
-    .fx-embers span:nth-child(1) { top: 22%; left: 18%; animation-delay: 0s; }
-    .fx-embers span:nth-child(2) { top: 38%; left: 72%; animation-delay: 2.1s; }
-    .fx-embers span:nth-child(3) { top: 64%; left: 28%; animation-delay: 4.4s; width: 2px; height: 2px; }
-    .fx-embers span:nth-child(4) { top: 48%; left: 88%; animation-delay: 1.2s; }
-    .fx-embers span:nth-child(5) { top: 78%; left: 55%; animation-delay: 5.8s; width: 2px; height: 2px; }
-    .fx-embers span:nth-child(6) { top: 14%; left: 46%; animation-delay: 3.3s; }
-    @keyframes ember-linger {
-      0%, 100% { opacity: 0; transform: translateY(0) scale(0.5); }
-      15% { opacity: 0.85; transform: translateY(-8px) scale(1); }
-      55% { opacity: 0.35; transform: translateY(-28px) scale(0.8); }
-      85% { opacity: 0; transform: translateY(-48px) scale(0.3); }
-    }
-
+    .fx-grain { opacity: 0.07; mix-blend-mode: soft-light; }
     .cursor-glow {
-      background: radial-gradient(circle, rgba(220,227,149,0.12) 0%, rgba(5,104,107,0.08) 40%, transparent 70%) !important;
-      mix-blend-mode: screen !important;
-      opacity: 0.45 !important;
-      width: 200px !important; height: 200px !important;
+      background: radial-gradient(circle, rgba(220,227,149,0.28) 0%, rgba(5,104,107,0.18) 42%, transparent 70%);
+      mix-blend-mode: screen;
     }
-
-    /* Ticker — crimson/black crawl, cream/lime text, slower */
-    .ticker {
-      background: linear-gradient(90deg, #1a0408, #3a080e 40%, #1a0408 80%, #0a0000) !important;
-      color: #dce395 !important;
-      box-shadow: 0 0 30px rgba(107,15,26,0.4);
-      border-top: 1px solid rgba(107,15,26,0.5);
-      border-bottom: 1px solid rgba(107,15,26,0.35);
-      transform: none !important;
-      letter-spacing: 0.22em !important;
-      font-weight: 600 !important;
-      padding: 10px 0 !important;
-    }
-    .ticker-track {
-      animation-duration: 42s !important;
-      gap: 72px !important;
-    }
-    .ticker-track span { color: #f2ebe0 !important; letter-spacing: 0.28em; }
-    .ticker-track span:nth-child(odd) { color: #dce395 !important; }
-    .ticker-track span:nth-child(3n) { color: #c8bdb0 !important; opacity: 0.85; }
-
-    /* Ghostly header */
     .site-header.is-solid {
-      background: rgba(10,0,0,0.78) !important;
-      backdrop-filter: blur(16px) saturate(90%);
-      border-bottom: 1px solid rgba(107,15,26,0.35);
-    }
-    .brand-logo {
-      filter: grayscale(0.35) brightness(0.78) drop-shadow(0 0 10px rgba(220,227,149,0.35)) !important;
-      opacity: 0.88;
-    }
-    .brand-logo-link:hover .brand-logo {
-      filter: grayscale(0.15) brightness(0.9) drop-shadow(0 0 14px rgba(220,227,149,0.5)) !important;
-      transform: scale(1.02);
+      background: rgba(3,10,11,0.72) !important;
+      backdrop-filter: blur(18px) saturate(140%);
     }
     .header-link {
-      color: #f2ebe0 !important;
-      background: linear-gradient(120deg, #3a080e, #6b0f1a 55%, #3a080e) !important;
-      box-shadow: 0 6px 22px rgba(0,0,0,0.55) !important;
-      animation: none !important;
-      border: 1px solid rgba(242,235,224,0.12);
+      color: #030a0b !important;
+      background: linear-gradient(120deg, #dce395, #e8efb0 55%, #dce395) !important;
     }
-    .header-link:hover {
-      box-shadow: 0 8px 28px rgba(107,15,26,0.45) !important;
-      filter: brightness(1.08);
+    .brand-logo {
+      filter: drop-shadow(0 6px 18px rgba(220,227,149,0.25)) brightness(1.05);
     }
-
-    /* Longer hypnotic theater */
-    .abadis-theater { height: 900vh !important; }
-    @media (max-width: 700px) {
-      .abadis-theater { height: 860vh !important; }
+    .ticker {
+      background: linear-gradient(90deg, #015f61, #05686b 35%, #0e7475 65%, #066163) !important;
+      box-shadow: 0 0 40px rgba(5,104,107,0.35);
     }
-
-    .abadis-theater-sticky {
-      background: #000 !important;
-    }
+    .abadis-theater { height: 840vh !important; }
     .abadis-theater-sticky::before {
       background:
-        linear-gradient(180deg, rgba(0,0,0,0.85) 0%, transparent 22%),
-        linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 28%),
-        radial-gradient(ellipse 60% 48% at 50% 52%, transparent 25%, rgba(0,0,0,0.72) 100%) !important;
-      box-shadow: inset 0 80px 90px -50px #000, inset 0 -90px 100px -50px #000;
+        linear-gradient(180deg, rgba(3,10,11,0.55) 0%, transparent 28%),
+        linear-gradient(0deg, rgba(3,10,11,0.65) 0%, transparent 32%),
+        radial-gradient(ellipse 65% 50% at 50% 55%, transparent 30%, rgba(0,0,0,0.45) 100%) !important;
+      box-shadow: inset 0 48px 60px -40px #000, inset 0 -64px 70px -40px #000;
     }
     .abadis-theater-sticky::after {
-      background: radial-gradient(ellipse, rgba(5,104,107,0.18), transparent 70%) !important;
-      bottom: 16%;
-      opacity: 0.7;
-      filter: blur(14px);
+      background: radial-gradient(ellipse, rgba(220,227,149,0.22), transparent 70%) !important;
+      bottom: 14%;
+      opacity: 1;
     }
-
-    /* Captions — cream with soft neon teal glow, dreamlike */
     .abadis-theater-captions {
-      background: linear-gradient(180deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.25) 50%, transparent 100%) !important;
-      height: 40%;
+      background: linear-gradient(180deg, rgba(3,10,11,0.75) 0%, rgba(3,10,11,0.2) 55%, transparent 100%) !important;
+      height: 38%;
     }
     .abadis-theater-caption-title {
-      background: none !important;
-      -webkit-background-clip: unset !important;
-      background-clip: unset !important;
-      color: #f2ebe0 !important;
-      -webkit-text-fill-color: #f2ebe0 !important;
-      letter-spacing: 0.08em !important;
-      font-weight: 700 !important;
-      text-shadow:
-        0 0 18px rgba(5,104,107,0.55),
-        0 0 40px rgba(8,118,115,0.35),
-        0 2px 24px rgba(0,0,0,0.8);
-      filter: none !important;
-      animation: none !important;
-      font-size: clamp(1.75rem, 4.2vw, 3.1rem) !important;
+      background: linear-gradient(105deg, #ffffff 0%, #dce395 40%, #2ec4c6 100%) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      filter: drop-shadow(0 8px 28px rgba(220,227,149,0.25));
+      font-size: clamp(1.9rem, 4.6vw, 3.4rem) !important;
     }
     .abadis-theater-caption-sub {
-      color: #c8bdb0 !important;
-      background: rgba(10,0,0,0.45) !important;
-      border: 1px solid rgba(5,104,107,0.28) !important;
-      box-shadow: 0 0 24px rgba(5,104,107,0.15), 0 12px 40px rgba(0,0,0,0.5);
-      letter-spacing: 0.12em;
-      font-weight: 500 !important;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      color: #dce395 !important;
+      background: rgba(5,104,107,0.35) !important;
+      border: 1px solid rgba(220,227,149,0.28) !important;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
     }
-    .abadis-theater-loading { color: #a89f92 !important; }
-    .abadis-theater-err { background: #000 !important; color: #c45c6a !important; }
-    .abadis-theater-track { background: rgba(242,235,224,0.08) !important; }
-    .abadis-theater-fill {
-      background: linear-gradient(90deg, #6b0f1a, #05686b, #dce395) !important;
-      box-shadow: 0 0 14px rgba(220,227,149,0.35);
-    }
-
-    .scroll-hint { color: #a89f92 !important; opacity: 0.45 !important; }
-    .scroll-hint-mouse { border-color: #6b0f1a !important; }
-
-    /* Scroll progress — thin crimson → teal neon */
+    .abadis-theater-loading { color: #a8d4d5 !important; }
+    .scroll-hint { color: #dce395 !important; }
+    .scroll-hint-mouse { border-color: #dce395 !important; }
     .scroll-progress {
-      background: linear-gradient(90deg, #6b0f1a, #8b1a1a, #05686b, #0e7475) !important;
-      height: 2px !important;
-      box-shadow: 0 0 12px rgba(107,15,26,0.7), 0 0 20px rgba(5,104,107,0.4);
-      animation: none !important;
+      background: linear-gradient(90deg, #066163, #2ec4c6, #dce395, #05686b) !important;
+      height: 4px;
+      box-shadow: 0 0 18px rgba(220,227,149,0.55);
     }
-
     .build-badge {
-      color: #f2ebe0 !important;
-      background: linear-gradient(120deg, #3a080e, #6b0f1a) !important;
-      border: 1px solid rgba(220,227,149,0.25);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.6);
-      animation: none !important;
-      letter-spacing: 0.08em;
+      color: #030a0b !important;
+      background: linear-gradient(120deg, #dce395, #e8efb0) !important;
     }
-
-    /* Story panels — dark velvet lodge cards */
     .story-panel-inner {
-      background: linear-gradient(165deg, rgba(26,8,12,0.92), rgba(10,0,0,0.88)) !important;
-      border: 1px solid rgba(107,15,26,0.45) !important;
-      border-top: 1px solid rgba(220,227,149,0.12) !important;
-      box-shadow:
-        0 30px 80px rgba(0,0,0,0.7),
-        inset 0 1px 0 rgba(242,235,224,0.06) !important;
-      color: #f2ebe0;
-      border-radius: 12px !important;
-      backdrop-filter: blur(10px) !important;
-      position: relative;
-    }
-    .story-panel-inner::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 12%; right: 12%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(139,26,26,0.7), transparent);
-      pointer-events: none;
+      background: rgba(6,20,22,0.72) !important;
+      border: 1px solid rgba(220,227,149,0.14) !important;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45) !important;
+      color: #e8f3f3;
     }
     .story-title {
-      color: #f2ebe0 !important;
+      color: #fff !important;
       background: none !important;
-      -webkit-text-fill-color: #f2ebe0 !important;
-      letter-spacing: 0.04em !important;
-      text-shadow: 0 0 24px rgba(5,104,107,0.25);
-      animation: none !important;
+      -webkit-text-fill-color: #fff !important;
     }
-    .story-sub, .story-codes .meta, .story-giant-unit {
-      color: #a89f92 !important;
-    }
-    .story-uses li {
-      color: #c8bdb0 !important;
-      background: none !important;
-      -webkit-text-fill-color: #c8bdb0 !important;
-    }
+    .story-sub, .story-codes .meta, .story-uses li { color: #a8d4d5 !important; }
     .story-kicker {
-      background: transparent !important;
+      background: linear-gradient(120deg, #05686b, #015f61) !important;
       color: #dce395 !important;
-      border: 1px solid rgba(107,15,26,0.6);
-      box-shadow: none !important;
-      letter-spacing: 0.22em !important;
     }
-    .story-kicker::before {
-      background: #6b0f1a !important;
-      box-shadow: 0 0 8px #6b0f1a !important;
-      animation: none !important;
-    }
-    .story-giant {
-      color: #dce395 !important;
-      -webkit-text-fill-color: #dce395 !important;
-      background: none !important;
-      filter: drop-shadow(0 0 30px rgba(220,227,149,0.2)) !important;
-      animation: none !important;
-    }
-    .story-codes .code {
-      color: #dce395 !important;
-      background: rgba(107,15,26,0.35) !important;
-      box-shadow: none !important;
-    }
+    .story-giant { color: #dce395 !important; }
+    .story-codes .code { color: #dce395 !important; }
     .story-ring {
-      border-color: rgba(107,15,26,0.3) !important;
-      box-shadow: 0 0 50px rgba(5,104,107,0.15);
-      opacity: 0.25 !important;
-      animation: none !important;
-    }
-    .story-panel.is-active .story-ring {
-      opacity: 0.3 !important;
-      transform: scale(1) !important;
-      animation: none !important;
+      border-color: rgba(220,227,149,0.25) !important;
+      box-shadow: 0 0 60px rgba(5,104,107,0.35);
     }
     .story-cta a {
-      background: linear-gradient(120deg, #3a080e, #6b0f1a) !important;
-      color: #f2ebe0 !important;
-      border: 1px solid rgba(220,227,149,0.2);
-      box-shadow: 0 12px 36px rgba(0,0,0,0.5);
-      animation: none !important;
+      background: linear-gradient(120deg, #dce395, #e8efb0) !important;
+      color: #030a0b !important;
     }
-    .site-footer { color: #6a5f58 !important; border: none; }
-    .demo-chip {
-      background: #1a0408 !important;
-      color: #dce395 !important;
-      border: 1px solid rgba(107,15,26,0.5);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    }
+    .site-footer { color: #6a9094 !important; border: none; }
+    .demo-chip { background: #05686b; color: #dce395; }
     a { color: #dce395; }
 
 
@@ -1198,22 +853,17 @@
 <body>
   <div class="fx-mesh" aria-hidden="true"></div>
   <div class="fx-grain" aria-hidden="true"></div>
-  <div class="letterbox-top" aria-hidden="true"></div>
-  <div class="letterbox-bottom" aria-hidden="true"></div>
-  <div class="lynch-curtain left" aria-hidden="true"></div>
-  <div class="lynch-curtain right" aria-hidden="true"></div>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
-  <div class="fx-fog" aria-hidden="true">
-    <div class="wisp a"></div>
-    <div class="wisp b"></div>
-    <div class="wisp c"></div>
-  </div>
-  <div class="fx-embers" aria-hidden="true">
-    <span></span><span></span><span></span>
-    <span></span><span></span><span></span>
+  <div class="fx-blob a" aria-hidden="true"></div>
+  <div class="fx-blob b" aria-hidden="true"></div>
+  <div class="fx-blob c" aria-hidden="true"></div>
+  <div class="fx-blob d" aria-hidden="true"></div>
+  <div class="fx-sparkles" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
   </div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V11 · لینچ</div>
+  <div class="build-badge" aria-hidden="true">V12 · اسکراب انسانی</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -1226,18 +876,16 @@
   </header>
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track">
-      <span>ساکشن‌لاینر · ۲ لیتر</span><span>····</span><span>فیلتر هیدروفوبیک</span><span>····</span><span>پودر ژل‌کننده</span><span>····</span><span>آبادیس مد</span>
-      <span>ساکشن‌لاینر · ۲ لیتر</span><span>····</span><span>فیلتر هیدروفوبیک</span><span>····</span><span>پودر ژل‌کننده</span><span>····</span><span>آبادیس مد</span>
-      <span>ساکشن‌لاینر · ۲ لیتر</span><span>····</span><span>فیلتر هیدروفوبیک</span><span>····</span><span>پودر ژل‌کننده</span><span>····</span><span>آبادیس مد</span>
-      <span>ساکشن‌لاینر · ۲ لیتر</span><span>····</span><span>فیلتر هیدروفوبیک</span><span>····</span><span>پودر ژل‌کننده</span><span>····</span><span>آبادیس مد</span>
+      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
+      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
+      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
+      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
     </div>
   </div>
 
-  <section class="abadis-theater" id="abadis-scrub" data-theme="dark" data-scrub="dream" aria-label="Product Theater">
+  <section class="abadis-theater" id="abadis-scrub" data-theme="dark" data-scrub="organic" aria-label="Product Theater">
     <div class="abadis-theater-sticky">
       <canvas id="abadis-scrub-canvas"></canvas>
-      <div class="spot-cone" aria-hidden="true"></div>
-      <div class="zigzag-floor" aria-hidden="true"></div>
       <div class="abadis-theater-loading" id="abadisScrubLoading">در حال آماده‌سازی محصول…</div>
       <div class="abadis-theater-err" id="abadisScrubErr"></div>
       <div class="abadis-theater-captions" aria-hidden="true">
@@ -1254,8 +902,8 @@
           <p class="abadis-theater-caption-sub">از پورت تا داخل کیسه</p>
         </div>
         <div class="abadis-theater-caption" data-caption="3">
-          <p class="abadis-theater-caption-title">پر شدن تا ظرفیت ۲ لیتر</p>
-          <p class="abadis-theater-caption-sub">فیلتر هیدروفوبیک · پودر ژل‌کننده</p>
+          <p class="abadis-theater-caption-title">پر و خالی شدن کیسه</p>
+          <p class="abadis-theater-caption-sub">نمایش تزئینی جریان خون · ۲ لیتر</p>
         </div>
       </div>
       <div class="abadis-theater-hud" aria-hidden="true">
@@ -1263,6 +911,7 @@
       </div>
     </div>
   </section>
+
 
   <div class="story" id="story">
 
@@ -1407,12 +1056,12 @@
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V11 لینچ · پرده مخمل · دانه فیلم · بدون کارت و جدول</p>
+    <p>دمو آبادیس · V12 اسکراب انسانی · پالت برند · بدون کارت و جدول</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V11</a>
-  <script type="module" src="./scrub-theater.js?v=11"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V12</a>
+  <script type="module" src="./scrub-theater.js?v=12"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
@@ -1462,7 +1111,7 @@
       window.addEventListener('resize', onScroll, { passive: true });
       updateChrome();
 
-      const blobs = Array.from(document.querySelectorAll('.fx-fog .wisp'));
+      const blobs = Array.from(document.querySelectorAll('.fx-blob'));
       const glow = document.getElementById('cursorGlow');
       const hint = document.getElementById('scrollHint');
       let px = 0, py = 0, tx = 0, ty = 0, gx = window.innerWidth/2, gy = window.innerHeight/2, tgx = gx, tgy = gy;
@@ -1486,5 +1135,7 @@
       })();
     })();
   </script>
+
+
 </body>
 </html>
