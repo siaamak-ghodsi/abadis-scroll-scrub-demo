@@ -24,10 +24,10 @@ const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
 /* Camera: wide yaw, soft dutch, deep dolly */
 const CAM_YAW0 = THREE.MathUtils.degToRad(58);
 const CAM_YAW1 = THREE.MathUtils.degToRad(-52);
-const DOLLY_IN = 0.12;
-const FLOW_DOLLY = 0.08;
+const DOLLY_IN = 0.06;
+const FLOW_DOLLY = 0.04;
 const FLOW_TILT = 0.2;
-const FILL_PUSH = 0.05; /* Whist: almost no zoom-in */
+const FILL_PUSH = 0.02;
 const DUTCH_MAX = THREE.MathUtils.degToRad(4.2);
 const INTRO_FAR = 0.12;
 
@@ -90,7 +90,7 @@ function boot() {
     scene.fog = new THREE.FogExp2(0x030a0b, 0.22);
   }
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 32 : 34, 1, 0.01, 40);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 36 : 38, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -280,7 +280,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 1.55 : 1.72); /* Whist-wide: product small in frame */
+    state.fitDist = dist * (lightTheme ? 2.05 : 2.25); /* even wider Whist air */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
