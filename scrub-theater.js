@@ -1,9 +1,10 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V31
+ * Abadis Product Theater — WHIST-BRAND-V32
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
  * V31: buttery rotate — smoothed follow + inertia coast; quieter idle while drag.
+ * V32: lid photo-match teal #0f3c48 (opaque molded plastic, no brand glow).
  * V30: finger/mouse drag rotate (hybrid touch) + lid brand teal #066163.
  * V27: kill end-phase clinical straw/stream into port; quiet assemble end.
  * V25: tight scrub (بدون گیر) — critical damp, no endDamp/catch-up lag.
@@ -383,12 +384,15 @@ function boot() {
   }
 
   /**
-   * Force lid (درپوش) to Abadis primary brand teal #066163.
-   * Plastic finish — not chrome. Bag/body stays milky (untouched).
+   * Paint lid (درپوش) to match real Abadis product photo teal #0f3c48
+   * (median of lid pixels; cooler/darker than UI brand #066163).
+   * Opaque injection-molded plastic — no map, no brand emissive glow.
+   * Bag/body stays milky (untouched). UI chrome keeps brand hex.
    */
   function paintLidBrandTeal(lid) {
     if (!lid) return;
-    const TEAL = 0x066163;
+    /* Photo-sampled lid plastic (not UI brand #066163) */
+    const TEAL = 0x0f3c48;
     lid.traverse((o) => {
       if (!o.isMesh || !o.material) return;
       const mats = Array.isArray(o.material) ? o.material : [o.material];
@@ -398,20 +402,32 @@ function boot() {
           next.push(m);
           continue;
         }
-        const pm = m.clone();
+        /* Prefer MeshPhysicalMaterial for subtle plastic clearcoat sheen */
+        let pm;
+        if (typeof THREE.MeshPhysicalMaterial === 'function') {
+          pm = new THREE.MeshPhysicalMaterial();
+          if (m.color) pm.color.copy(m.color);
+          if (m.normalMap) pm.normalMap = m.normalMap;
+          if (m.normalScale) pm.normalScale.copy(m.normalScale);
+          pm.clearcoat = 0.12;
+          pm.clearcoatRoughness = 0.4;
+        } else {
+          pm = m.clone();
+        }
         if ('map' in pm) pm.map = null;
         if ('color' in pm) pm.color.setHex(TEAL);
         if ('emissive' in pm) {
-          pm.emissive.setHex(TEAL);
-          pm.emissiveIntensity = 0.06;
+          pm.emissive.setHex(0x000000);
+          pm.emissiveIntensity = 0;
         }
-        if ('metalness' in pm) pm.metalness = 0.08;
-        if ('roughness' in pm) pm.roughness = 0.42;
-        if ('envMapIntensity' in pm) pm.envMapIntensity = lightTheme ? 1.2 : 1.35;
+        if ('metalness' in pm) pm.metalness = 0.035;
+        if ('roughness' in pm) pm.roughness = 0.52;
+        if ('envMapIntensity' in pm) pm.envMapIntensity = lightTheme ? 0.95 : 1.05;
         if ('transparent' in pm) {
           pm.transparent = false;
           pm.opacity = 1;
         }
+        if ('depthWrite' in pm) pm.depthWrite = true;
         pm.needsUpdate = true;
         next.push(pm);
       }
