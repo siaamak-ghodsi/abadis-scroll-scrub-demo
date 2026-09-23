@@ -81,7 +81,7 @@ function boot() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lightTheme ? 1.34 : 1.22;
+  renderer.toneMappingExposure = lightTheme ? 1.34 : 1.28;
   renderer.shadowMap.enabled = false;
 
   const scene = new THREE.Scene();
@@ -127,10 +127,13 @@ function boot() {
     fill = new THREE.DirectionalLight(0xa8d8dc, 0.85);
     fill.position.set(-1.3, 0.5, 0.5);
     scene.add(fill);
-    /* Soft front fill so the PE bag body is readable, not a black void */
-    const frontFill = new THREE.DirectionalLight(0xe8f4f4, 0.7);
-    frontFill.position.set(0.1, 0.4, 2.2);
+    /* Strong front + side fill so milky bag body reads clearly */
+    const frontFill = new THREE.DirectionalLight(0xf2fafa, 1.35);
+    frontFill.position.set(0.05, 0.55, 2.4);
     scene.add(frontFill);
+    const underFill = new THREE.DirectionalLight(0x8ec8cc, 0.55);
+    underFill.position.set(0.2, -1.2, 0.8);
+    scene.add(underFill);
     rim = new THREE.DirectionalLight(0xdce395, 1.15);
     rim.position.set(0.2, 0.6, -1.35);
     scene.add(rim);
@@ -336,13 +339,14 @@ function boot() {
   }
 
   /**
-   * Convert body shell to always-on milky translucent PE/PVC liner plastic.
-   * Blood must be readable through the wall at all times — no ghost-mode toggle.
-   * Lid stays solid teal (handled separately in prepareMaterials / GLB).
+   * Body must read as a FULL bright milky PE bag on dark backgrounds.
+   * GLB shares one atlas with the lid — body UVs often sample dark teal texels,
+   * so cloning-with-map keeps the bag black. Strip ALL maps; solid plastic only.
+   * Lid keeps the baked teal texture untouched.
    */
   function convertBodyToLinerPlastic(body) {
     const cached = [];
-    const peColor = new THREE.Color(0xe8f0f0);
+    const pe = lightTheme ? 0xe8f3f3 : 0xd2e6e8;
     body.traverse((o) => {
       if (!o.isMesh || !o.material) return;
       if (o === state.liquid || o === state.liquidSurface || o === state.liquidFoam) return;
@@ -354,55 +358,31 @@ function boot() {
           next.push(m);
           continue;
         }
-        /* Prefer Physical for transmission/clearcoat; clone to avoid sharing with lid */
-        let pm;
-        if (m.isMeshPhysicalMaterial) {
-          pm = m.clone();
-        } else {
-          pm = new THREE.MeshPhysicalMaterial();
-          pm.color.copy(m.color || peColor);
-          if (m.map) pm.map = m.map;
-          if (m.normalMap) pm.normalMap = m.normalMap;
-          if (m.roughnessMap) pm.roughnessMap = m.roughnessMap;
-          pm.roughness = typeof m.roughness === 'number' ? m.roughness : 0.42;
-          pm.metalness = typeof m.metalness === 'number' ? m.metalness : 0.0;
-        }
-        /* Bright milky PE — user said body still invisible on dark bg (V16).
-         * Force light plastic color; keep slight translucency for blood. */
-        pm.color.copy(peColor);
-        if (!lightTheme) {
-          pm.color.setHex(0xdceaea);
-          pm.color.offsetHSL(0.06, 0.06, 0.02);
-        } else {
-          pm.color.offsetHSL(0.03, 0.04, 0.02);
-        }
-        pm.roughness = THREE.MathUtils.clamp(
-          (typeof pm.roughness === 'number' ? pm.roughness : 0.42) * 0.7 + 0.22,
-          0.4,
-          0.55
-        );
-        pm.metalness = 0;
-        pm.transparent = true;
-        pm.opacity = lightTheme ? 0.92 : 0.96;
-        pm.depthWrite = true;
-        pm.side = THREE.DoubleSide;
-        pm.clearcoat = 0.35;
-        pm.clearcoatRoughness = 0.35;
-        pm.envMapIntensity = lightTheme ? 1.6 : 2.0;
-        /* Tiny emissive so bag reads even in underexposed areas */
-        pm.emissive = new THREE.Color(lightTheme ? 0x0a2020 : 0x1a4044);
-        pm.emissiveIntensity = lightTheme ? 0.04 : 0.18;
-        if ('transmission' in pm) {
-          pm.transmission = lightTheme ? 0.08 : 0.04;
-          pm.thickness = 0.03;
-          pm.ior = 1.4;
-        }
+        /* Fresh Standard material — no map / no transmission darkening */
+        const pm = new THREE.MeshStandardMaterial({
+          color: pe,
+          roughness: 0.48,
+          metalness: 0,
+          transparent: true,
+          opacity: lightTheme ? 0.9 : 0.94,
+          depthWrite: true,
+          side: THREE.DoubleSide,
+          envMapIntensity: lightTheme ? 1.35 : 1.85,
+          emissive: new THREE.Color(lightTheme ? 0x102828 : 0x2a6064),
+          emissiveIntensity: lightTheme ? 0.06 : 0.32,
+        });
+        pm.map = null;
+        pm.normalMap = null;
+        pm.roughnessMap = null;
+        pm.metalnessMap = null;
+        pm.aoMap = null;
+        pm.emissiveMap = null;
         pm.needsUpdate = true;
         next.push(pm);
         cached.push(pm);
       }
       o.material = Array.isArray(o.material) ? next : next[0];
-      o.renderOrder = 1; /* shell after opaque lid bits, before blood */
+      o.renderOrder = 1;
     });
     state.bodyShellMats = cached;
   }
