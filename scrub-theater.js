@@ -1,9 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V23 clinical scrub
+ * Abadis Product Theater — WHIST-BRAND-V24 clinical scrub
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → clinical teal stream.
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
- * V23: quieter idle / port ring for client pitch; assemble lock retained.
+ * V24: soft settle assemble (جفت نرم) — no wobble reboost / hard lock pop.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -53,9 +53,9 @@ const captionEls = Array.from(
 /* Beats: intro → explode → rejoin → stream */
 const CAPTION_RANGES = [
   { start: 0.0, end: 0.16 },   /* intro */
-  { start: 0.12, end: 0.42 },  /* explode */
-  { start: 0.38, end: 0.58 },  /* rejoin */
-  { start: 0.52, end: 0.92 },  /* clinical stream */
+  { start: 0.12, end: 0.40 },  /* explode */
+  { start: 0.34, end: 0.54 },  /* rejoin — seats with soft assemble */
+  { start: 0.48, end: 0.92 },  /* clinical stream on assembled product */
 ];
 
 if (!canvas || !stageEl) {
@@ -154,10 +154,10 @@ function boot() {
 
   /* Spring presets — heavy object following the finger */
   const SPRING = organicScrub
-    ? { omega: 7.8, zeta: 0.92 } /* heavier, softer settle — less snappy */
+    ? { omega: 8.4, zeta: 1.12 } /* overdamped — smooth seat, no end overshoot */
     : softScrub
-      ? { omega: 5.0, zeta: 1.08 }
-      : { omega: 14.0, zeta: 1.0 }; /* snappy critically damped */
+      ? { omega: 5.2, zeta: 1.15 }
+      : { omega: 14.0, zeta: 1.05 }; /* snappy, lightly overdamped */
 
   const state = {
     ready: false,
@@ -400,7 +400,10 @@ function boot() {
    */
   function stepSpring(dt) {
     const omega = SPRING.omega;
-    const zeta = SPRING.zeta;
+    /* Extra damping near scrub end so sticky exit never overshoots */
+    const endDamp =
+      targetNearEnd() ? 1.35 : targetNearStart() ? 1.2 : 1;
+    const zeta = SPRING.zeta * endDamp;
     const x = state.smoothT;
     const v = state.velT;
     const target = state.targetT;
@@ -408,24 +411,40 @@ function boot() {
     const accel = -2 * zeta * omega * v - omega * omega * (x - target);
     let nv = v + accel * dt;
     let nx = x + nv * dt;
-    /* Soft clamp with bounce-in rather than hard clip */
+    /* Hard clamp — no bounce (bounce fought assemble near t=1) */
     if (nx < 0) {
       nx = 0;
-      nv *= -0.15;
+      nv = 0;
     } else if (nx > 1) {
       nx = 1;
-      nv *= -0.15;
+      nv = 0;
     }
-    /* End snap: kill residual velocity when nearly settled at bottom */
-    if (target >= 0.985 && Math.abs(nx - target) < 0.018 && Math.abs(nv) < 0.35) {
-      nx = target >= 0.995 ? 1 : target;
-      nv = 0;
-    } else if (target <= 0.015 && Math.abs(nx - target) < 0.018 && Math.abs(nv) < 0.35) {
-      nx = target <= 0.005 ? 0 : target;
-      nv = 0;
+    /* Soft end settle: kill residual when nearly there (no pop) */
+    if (target >= 0.97 && Math.abs(nx - target) < 0.028 && Math.abs(nv) < 0.55) {
+      nx = THREE.MathUtils.lerp(nx, target >= 0.995 ? 1 : target, 0.55);
+      nv *= 0.35;
+      if (Math.abs(nx - (target >= 0.995 ? 1 : target)) < 0.002) {
+        nx = target >= 0.995 ? 1 : target;
+        nv = 0;
+      }
+    } else if (target <= 0.03 && Math.abs(nx - target) < 0.028 && Math.abs(nv) < 0.55) {
+      nx = THREE.MathUtils.lerp(nx, target <= 0.005 ? 0 : target, 0.55);
+      nv *= 0.35;
+      if (Math.abs(nx - (target <= 0.005 ? 0 : target)) < 0.002) {
+        nx = target <= 0.005 ? 0 : target;
+        nv = 0;
+      }
     }
     state.velT = nv;
     state.smoothT = nx;
+  }
+
+  function targetNearEnd() {
+    return state.targetT >= 0.88 || (state.targetT > state.smoothT && state.targetT >= 0.72);
+  }
+
+  function targetNearStart() {
+    return state.targetT <= 0.12;
   }
 
   /**
@@ -750,9 +769,9 @@ function boot() {
     /*
      * Intro   0–0.12 : locked, soft scale-in / gentle dolly
      * Explode 0.10–0.40: sep + lid tilt (anticipatory), soft yaw
-     * Rejoin  0.38–0.54: sep→0 early so stream always shows assembled
-     * Stream  0.52–0.92: teal clinical suction tube → bag
-     * Lock    t>=0.72 : hard assemble — no float / tilt / wobble
+     * Rejoin  0.34–0.50: shared easeOut — lid+body seat together
+     * Stream  0.48–0.92: teal clinical suction tube → bag
+     * Settle  0.48–0.62: soft assemble ease (invisible lock, no pop)
      */
     const introE = easeOutCubic(smoothstep(0.0, 0.10, t));
 
@@ -766,73 +785,73 @@ function boot() {
     const openBody = organicScrub
       ? easeInOutCirc(smoothstep(0.10, 0.42, tBody))
       : easeInOutQuint(smoothstep(0.10, 0.40, tBody));
-    /* Finish rejoin by ~0.52–0.55 so stream phase is always assembled */
-    const rejoinLid = easeInOutCirc(smoothstep(0.38, 0.52, tLid));
-    const rejoinBody = easeInOutCirc(smoothstep(0.40, 0.54, tBody));
+    /* Shared rejoin on t — pieces meet; easeOut seats without mid-gap */
+    const rejoin = easeOutCubic(smoothstep(0.34, 0.50, t));
 
-    let sepLid = Math.max(0, openLid * (1 - rejoinLid));
-    let sepBody = Math.max(0, openBody * (1 - rejoinBody));
+    let sepLid = Math.max(0, openLid * (1 - rejoin));
+    let sepBody = Math.max(0, openBody * (1 - rejoin));
     let sep = Math.max(sepLid, sepBody);
 
-    /* Stream grows after rejoin begins; soft fade at end — teal only */
-    const flowE =
-      easeInOutCirc(smoothstep(0.50, 0.68, t)) *
-      (1 - 0.85 * smoothstep(0.82, 0.96, t));
+    /* Soft assemble ease — invisible lock; kills residual float gently */
+    const assembleE = easeOutCubic(smoothstep(0.48, 0.62, t));
+    sepLid *= 1 - assembleE;
+    sepBody *= 1 - assembleE;
+    sep = Math.max(sepLid, sepBody);
 
-    /* Hard assemble lock: smoothT drives theatre — force closed product */
-    const assembleLock = t >= 0.72;
-    if (assembleLock) {
-      sepLid = 0;
-      sepBody = 0;
-      sep = 0;
+    /* Stream grows as product seats; soft fade at end — teal only */
+    const flowE =
+      easeInOutCirc(smoothstep(0.48, 0.66, t)) *
+      (1 - 0.85 * smoothstep(0.84, 0.97, t));
+
+    /* One-shot impact wobble — never reboost every frame (V23 bug) */
+    if (sep > state.peakSep) state.peakSep = sep;
+    if (
+      sep < state.peakSep * 0.72 &&
+      state.peakSep > 0.4 &&
+      state.wobbleAmp < 0.04 &&
+      assembleE < 0.15
+    ) {
+      state.wobbleAmp = Math.min(0.18, state.peakSep * 0.22);
+    }
+    if (sep < 0.08 || assembleE > 0.35) {
+      state.wobbleAmp *= Math.exp(-10 * dt);
+      state.peakSep *= 0.92;
+    } else {
+      state.wobbleAmp *= Math.exp(-3.2 * dt);
+    }
+    if (assembleE > 0.92) {
       state.wobbleAmp = 0;
       state.peakSep = 0;
-    } else {
-      if (sep > state.peakSep) state.peakSep = sep;
-      if (sep < state.peakSep * 0.85 && state.peakSep > 0.35) {
-        state.wobbleAmp = Math.max(state.wobbleAmp, state.peakSep * 0.5);
-      }
-      if (sep < 0.05) state.peakSep *= 0.994;
-      state.wobbleAmp *= Math.exp(-2.4 * dt);
     }
 
     const et = clock.getElapsedTime();
-    const wobble = assembleLock
-      ? 0
-      : state.wobbleAmp *
-        Math.sin(et * 10.2) *
-        Math.exp(-state.wobbleAmp * 0.75);
+    const wobble =
+      state.wobbleAmp *
+      (1 - assembleE) *
+      Math.sin(et * 9.2) *
+      Math.exp(-state.wobbleAmp * 0.9);
 
+    /* Continuous pose — no hard copy-to-base cliff */
     if (state.lid) {
-      if (assembleLock) {
-        state.lid.position.copy(state.lidBase);
-        state.lid.rotation.copy(state.lidBaseRot);
-      } else {
-        const sL = sepLid + wobble * 0.32;
-        state.lid.position.set(
-          state.lidBase.x - X_SPLIT * sL,
-          state.lidBase.y + LID_UP * sL,
-          state.lidBase.z
-        );
-        state.lid.rotation.copy(state.lidBaseRot);
-        state.lid.rotation.x += LID_TILT_X * sL + wobble * 0.07;
-        state.lid.rotation.z += LID_TILT_Z * sL + wobble * 0.045;
-      }
+      const sL = Math.max(0, sepLid + wobble * 0.22);
+      state.lid.position.set(
+        state.lidBase.x - X_SPLIT * sL,
+        state.lidBase.y + LID_UP * sL,
+        state.lidBase.z
+      );
+      state.lid.rotation.copy(state.lidBaseRot);
+      state.lid.rotation.x += LID_TILT_X * sL + wobble * 0.045;
+      state.lid.rotation.z += LID_TILT_Z * sL + wobble * 0.03;
     }
     if (state.body) {
-      if (assembleLock) {
-        state.body.position.copy(state.bodyBase);
-        state.body.rotation.copy(state.bodyBaseRot);
-      } else {
-        const sB = sepBody - wobble * 0.18;
-        state.body.position.set(
-          state.bodyBase.x + X_SPLIT * Math.max(0, sB),
-          state.bodyBase.y - BODY_DOWN * Math.max(0, sB),
-          state.bodyBase.z
-        );
-        state.body.rotation.copy(state.bodyBaseRot);
-        state.body.rotation.z += wobble * -0.028;
-      }
+      const sB = Math.max(0, sepBody - wobble * 0.12);
+      state.body.position.set(
+        state.bodyBase.x + X_SPLIT * sB,
+        state.bodyBase.y - BODY_DOWN * sB,
+        state.bodyBase.z
+      );
+      state.body.rotation.copy(state.bodyBaseRot);
+      state.body.rotation.z += wobble * -0.018;
     }
 
     const introScale = 0.93 + 0.07 * introE;
@@ -951,17 +970,28 @@ function boot() {
 
     if (organicScrub || softScrub || snappyScrub) {
       /* Substep spring for stability on long frames */
-      const steps = dt > 0.032 ? 2 : 1;
+      const steps = dt > 0.032 ? 3 : dt > 0.022 ? 2 : 1;
       const h = dt / steps;
       for (let i = 0; i < steps; i++) stepSpring(h);
-      /* Final settle: near target at end of scrub, snap smoothT→1 */
-      const err = Math.abs(state.targetT - state.smoothT);
-      if (state.targetT >= 0.98 && err < 0.022) {
-        state.smoothT = 1;
-        state.velT = 0;
-      } else if (state.targetT <= 0.02 && err < 0.022) {
-        state.smoothT = 0;
-        state.velT = 0;
+      /* Soft catch-up near end so sticky→story handoff stays assembled */
+      const err = state.targetT - state.smoothT;
+      if (state.targetT >= 0.9 && err > 0) {
+        const pull = smoothstep(0.9, 1, state.targetT) * Math.min(1, dt * 9);
+        state.smoothT += err * pull;
+        state.velT *= 1 - pull * 0.85;
+      }
+      if (state.targetT >= 0.985 && Math.abs(state.targetT - state.smoothT) < 0.035) {
+        state.smoothT = THREE.MathUtils.lerp(state.smoothT, 1, Math.min(1, dt * 12));
+        if (Math.abs(1 - state.smoothT) < 0.0015) {
+          state.smoothT = 1;
+          state.velT = 0;
+        }
+      } else if (state.targetT <= 0.015 && Math.abs(state.targetT - state.smoothT) < 0.035) {
+        state.smoothT = THREE.MathUtils.lerp(state.smoothT, 0, Math.min(1, dt * 12));
+        if (Math.abs(state.smoothT) < 0.0015) {
+          state.smoothT = 0;
+          state.velT = 0;
+        }
       }
     } else {
       const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
@@ -975,7 +1005,7 @@ function boot() {
     if (!state.ready) return;
     applyTheatre(state.smoothT, dt);
 
-    /* V23: quieter idle float for pitch — ~40% prior amplitude */
+    /* V24: quieter idle float for pitch — ~40% prior amplitude */
     const idle = 1 - Math.min(1, state.smoothT * 1.6);
     const still = 1 - THREE.MathUtils.clamp(state.scrollSpeed * 28, 0, 1);
     const et = clock.getElapsedTime();
