@@ -1,9 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V24 clinical scrub
+ * Abadis Product Theater — WHIST-BRAND-V25 clinical scrub
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → clinical teal stream.
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
- * V24: soft settle assemble (جفت نرم) — no wobble reboost / hard lock pop.
+ * V25: tight scrub (بدون گیر) — critical damp, no endDamp/catch-up lag.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -152,12 +152,12 @@ function boot() {
   const _tmpSize = new THREE.Vector3();
   const clock = new THREE.Clock();
 
-  /* Spring presets — heavy object following the finger */
+  /* Spring presets — critically damped, tracks scroll tightly (V25) */
   const SPRING = organicScrub
-    ? { omega: 8.4, zeta: 1.12 } /* overdamped — smooth seat, no end overshoot */
+    ? { omega: 18.0, zeta: 1.0 } /* critical — 1:1-ish, no sticky lag */
     : softScrub
-      ? { omega: 5.2, zeta: 1.15 }
-      : { omega: 14.0, zeta: 1.05 }; /* snappy, lightly overdamped */
+      ? { omega: 12.0, zeta: 1.0 }
+      : { omega: 24.0, zeta: 0.95 }; /* snappy, lightly underdamped */
 
   const state = {
     ready: false,
@@ -395,15 +395,12 @@ function boot() {
   }
 
   /**
-   * Critically-/under-damped 2nd-order spring toward targetT.
-   * Feels like a heavy object following the finger with soft settle.
+   * Critically damped 2nd-order spring toward targetT (V25).
+   * Fast track — no endDamp / catch-up that caused mid-scroll hitch.
    */
   function stepSpring(dt) {
     const omega = SPRING.omega;
-    /* Extra damping near scrub end so sticky exit never overshoots */
-    const endDamp =
-      targetNearEnd() ? 1.35 : targetNearStart() ? 1.2 : 1;
-    const zeta = SPRING.zeta * endDamp;
+    const zeta = SPRING.zeta;
     const x = state.smoothT;
     const v = state.velT;
     const target = state.targetT;
@@ -411,40 +408,24 @@ function boot() {
     const accel = -2 * zeta * omega * v - omega * omega * (x - target);
     let nv = v + accel * dt;
     let nx = x + nv * dt;
-    /* Hard clamp — no bounce (bounce fought assemble near t=1) */
+    /* Soft clamp at bounds — kill velocity only when past edge */
     if (nx < 0) {
       nx = 0;
-      nv = 0;
+      nv = Math.max(0, nv);
     } else if (nx > 1) {
       nx = 1;
-      nv = 0;
+      nv = Math.min(0, nv);
     }
-    /* Soft end settle: kill residual when nearly there (no pop) */
-    if (target >= 0.97 && Math.abs(nx - target) < 0.028 && Math.abs(nv) < 0.55) {
-      nx = THREE.MathUtils.lerp(nx, target >= 0.995 ? 1 : target, 0.55);
-      nv *= 0.35;
-      if (Math.abs(nx - (target >= 0.995 ? 1 : target)) < 0.002) {
-        nx = target >= 0.995 ? 1 : target;
-        nv = 0;
-      }
-    } else if (target <= 0.03 && Math.abs(nx - target) < 0.028 && Math.abs(nv) < 0.55) {
-      nx = THREE.MathUtils.lerp(nx, target <= 0.005 ? 0 : target, 0.55);
-      nv *= 0.35;
-      if (Math.abs(nx - (target <= 0.005 ? 0 : target)) < 0.002) {
-        nx = target <= 0.005 ? 0 : target;
-        nv = 0;
-      }
+    /* Tiny residual snap only when both target + smooth are at extreme */
+    if (target >= 0.995 && nx > 0.992 && Math.abs(nv) < 0.8) {
+      nx = 1;
+      nv = 0;
+    } else if (target <= 0.005 && nx < 0.008 && Math.abs(nv) < 0.8) {
+      nx = 0;
+      nv = 0;
     }
     state.velT = nv;
     state.smoothT = nx;
-  }
-
-  function targetNearEnd() {
-    return state.targetT >= 0.88 || (state.targetT > state.smoothT && state.targetT >= 0.72);
-  }
-
-  function targetNearStart() {
-    return state.targetT <= 0.12;
   }
 
   /**
@@ -800,8 +781,8 @@ function boot() {
 
     /* Stream grows as product seats; soft fade at end — teal only */
     const flowE =
-      easeInOutCirc(smoothstep(0.48, 0.66, t)) *
-      (1 - 0.85 * smoothstep(0.84, 0.97, t));
+      easeInOutCirc(smoothstep(0.48, 0.72, t)) *
+      (1 - 0.85 * smoothstep(0.88, 0.98, t));
 
     /* One-shot impact wobble — never reboost every frame (V23 bug) */
     if (sep > state.peakSep) state.peakSep = sep;
@@ -955,9 +936,9 @@ function boot() {
 
   function applyFrame(dt) {
     let nextTarget = scrubProgress();
-    /* Guarantee full scrub at page bottom so spring can reach 1 */
-    if (nextTarget >= 0.985) nextTarget = 1;
-    else if (nextTarget <= 0.015) nextTarget = 0;
+    /* Soft edge only — avoid wide 0.015/0.985 cliffs that fought spring */
+    if (nextTarget >= 0.997) nextTarget = 1;
+    else if (nextTarget <= 0.003) nextTarget = 0;
     /* Estimate scroll speed for handheld / breath damping */
     const dTarget = Math.abs(nextTarget - state.prevTargetT);
     state.scrollSpeed = THREE.MathUtils.lerp(
@@ -973,39 +954,21 @@ function boot() {
       const steps = dt > 0.032 ? 3 : dt > 0.022 ? 2 : 1;
       const h = dt / steps;
       for (let i = 0; i < steps; i++) stepSpring(h);
-      /* Soft catch-up near end so sticky→story handoff stays assembled */
-      const err = state.targetT - state.smoothT;
-      if (state.targetT >= 0.9 && err > 0) {
-        const pull = smoothstep(0.9, 1, state.targetT) * Math.min(1, dt * 9);
-        state.smoothT += err * pull;
-        state.velT *= 1 - pull * 0.85;
-      }
-      if (state.targetT >= 0.985 && Math.abs(state.targetT - state.smoothT) < 0.035) {
-        state.smoothT = THREE.MathUtils.lerp(state.smoothT, 1, Math.min(1, dt * 12));
-        if (Math.abs(1 - state.smoothT) < 0.0015) {
-          state.smoothT = 1;
-          state.velT = 0;
-        }
-      } else if (state.targetT <= 0.015 && Math.abs(state.targetT - state.smoothT) < 0.035) {
-        state.smoothT = THREE.MathUtils.lerp(state.smoothT, 0, Math.min(1, dt * 12));
-        if (Math.abs(state.smoothT) < 0.0015) {
-          state.smoothT = 0;
-          state.velT = 0;
-        }
-      }
+      /* No catch-up pulls — spring alone tracks tightly (V25) */
     } else {
-      const fast = Math.abs(state.targetT - state.smoothT) > 0.08;
-      const k = fast ? 0.48 : 0.26;
-      state.smoothT += (state.targetT - state.smoothT) * k;
-      if (state.targetT >= 0.98 && Math.abs(state.targetT - state.smoothT) < 0.01) {
-        state.smoothT = 1;
+      /* Exponential lerp fallback — high k, continuous both directions */
+      const err = state.targetT - state.smoothT;
+      const k = 22;
+      state.smoothT += err * (1 - Math.exp(-k * dt));
+      if (Math.abs(state.targetT - state.smoothT) < 0.0004) {
+        state.smoothT = state.targetT;
       }
     }
 
     if (!state.ready) return;
     applyTheatre(state.smoothT, dt);
 
-    /* V24: quieter idle float for pitch — ~40% prior amplitude */
+    /* V25: quieter idle float — ~40% prior amplitude */
     const idle = 1 - Math.min(1, state.smoothT * 1.6);
     const still = 1 - THREE.MathUtils.clamp(state.scrollSpeed * 28, 0, 1);
     const et = clock.getElapsedTime();
