@@ -1,10 +1,11 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V32
+ * Abadis Product Theater — WHIST-BRAND-V33
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
- * V31: buttery rotate — smoothed follow + inertia coast; quieter idle while drag.
+ * V33: yaw sens = 2π / viewport width — one edge-to-edge drag ≈ full turn; easier touch rotate + longer inertia coast.
  * V32: lid photo-match teal #0f3c48 (opaque molded plastic, no brand glow).
+ * V31: buttery rotate — smoothed follow + inertia coast; quieter idle while drag.
  * V30: finger/mouse drag rotate (hybrid touch) + lid brand teal #066163.
  * V27: kill end-phase clinical straw/stream into port; quiet assemble end.
  * V25: tight scrub (بدون گیر) — critical damp, no endDamp/catch-up lag.
@@ -989,11 +990,13 @@ function boot() {
 
   window.addEventListener('resize', refitIfReady);
 
-  /* —— V31: hybrid pointer rotate (smoothed follow + inertia) ——
+  /* —— V33: hybrid pointer rotate (viewport yaw + inertia) ——
    * Mouse left-drag always rotates. Touch: after ~8px, if mostly
-   * horizontal (|dx| > |dy| * 0.85) capture + rotate; else let page scroll.
-   * Pointer deltas drive targetYaw/Pitch; displayed angles exp-lerp (~12 Hz).
-   * On release: coast with exponential friction (~0.5–0.8s), then soft pitch home.
+   * horizontal (|dx| > |dy| * 0.7) capture + rotate; once rotating, stay
+   * in rotate for that gesture (diagonal moves OK). Vertical still scrolls.
+   * Yaw sens sized so one viewport width ≈ one full turn (recomputed on resize).
+   * Pitch milder (~0.6×). Yaw unbounded (true continuous 360+ / multi-turn).
+   * On release: coast with gentler yaw friction so a fling covers a full turn.
    */
   let userYaw = 0;
   let userPitch = 0;
@@ -1001,16 +1004,23 @@ function boot() {
   let targetPitch = 0;
   let velYaw = 0;
   let velPitch = 0;
-  const PITCH_MAX = 0.35;
-  const DRAG_SENS = 0.005;
+  const PITCH_MAX = 0.5;
   const DRAG_THRESH = 8;
-  const HORIZ_RATIO = 0.85;
+  const HORIZ_RATIO = 0.7;
   /* Exp follow ~10–14 Hz — buttery, not laggy */
   const FOLLOW_HZ = 12;
-  /* Coast friction: ~e^(-5*t) → ~5% in ~0.6s */
-  const FRICTION_YAW = 5.0;
+  /* Coast friction: lower yaw friction so flung spin coasts through a full turn */
+  const FRICTION_YAW = 3.5;
   const FRICTION_PITCH = 6.2;
   const VEL_EPS = 0.018;
+
+  let yawSens = (Math.PI * 2) / Math.max(280, Math.min(window.innerWidth, 900));
+  let pitchSens = yawSens * 0.6;
+  function recomputeDragSens() {
+    yawSens = (Math.PI * 2) / Math.max(280, Math.min(window.innerWidth, 900));
+    pitchSens = yawSens * 0.6;
+  }
+  window.addEventListener('resize', recomputeDragSens);
   const drag = {
     active: false,
     rotateMode: false,
@@ -1107,8 +1117,8 @@ function boot() {
       const dy = y - drag.lastY;
       drag.lastX = x;
       drag.lastY = y;
-      const dYaw = dx * DRAG_SENS;
-      const dPitch = dy * DRAG_SENS;
+      const dYaw = dx * yawSens;
+      const dPitch = dy * pitchSens;
       targetYaw += dYaw;
       targetPitch = THREE.MathUtils.clamp(
         targetPitch + dPitch,
