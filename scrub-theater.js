@@ -24,12 +24,12 @@ const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
 /* Camera: wide yaw, soft dutch, deep dolly */
 const CAM_YAW0 = THREE.MathUtils.degToRad(58);
 const CAM_YAW1 = THREE.MathUtils.degToRad(-52);
-const DOLLY_IN = 0.34;
-const FLOW_DOLLY = 0.28;
+const DOLLY_IN = 0.22;
+const FLOW_DOLLY = 0.16;
 const FLOW_TILT = 0.2;
-const FILL_PUSH = 0.32;
+const FILL_PUSH = 0.1; /* keep product framed — less blood zoom-in */
 const DUTCH_MAX = THREE.MathUtils.degToRad(4.2);
-const INTRO_FAR = 0.32;
+const INTRO_FAR = 0.18;
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
@@ -280,7 +280,7 @@ function boot() {
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
     const dist =
       state.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5));
-    state.fitDist = dist * (lightTheme ? 0.82 : 0.8); /* dark: framed mid-canvas */
+    state.fitDist = dist * (lightTheme ? 1.05 : 1.18); /* pull back — full animation readable */
     camera.near = Math.max(0.005, dist / 100);
     camera.far = dist * 40;
     camera.updateProjectionMatrix();
@@ -409,7 +409,7 @@ function boot() {
    * Phase-aware camera with eased yaw/dolly arcs + handheld noise.
    */
   function placeCamera(t, sep, flowE, fillE, introE, handheldAmp) {
-    const lookBias = flowE * 0.55 + fillE * 0.75;
+    const lookBias = flowE * 0.35 + fillE * 0.35; /* milder look-down; stay wide */
     /* Smoother yaw: circ ease through explode, hold through rejoin */
     const yawRaw =
       smoothstep(0.08, 0.36, t) * (1 - 0.32 * smoothstep(0.36, 0.5, t));
@@ -426,9 +426,9 @@ function boot() {
       state.radius *
       ((lightTheme ? 0.28 : 0.2) -
         0.03 * sep -
-        FLOW_TILT * lookBias -
-        0.22 * fillE -
-        0.04 * (1 - introE));
+        FLOW_TILT * lookBias * 0.55 -
+        0.08 * fillE -
+        0.02 * (1 - introE));
 
     const et = clock.getElapsedTime();
     const hx = state.handheld.x * handheldAmp;
@@ -450,7 +450,7 @@ function boot() {
     );
     camera.lookAt(
       cx,
-      cy - state.radius * (0.03 + 0.16 * flowE + 0.22 * fillE),
+      cy - state.radius * (0.02 + 0.08 * flowE + 0.08 * fillE),
       cz
     );
     /* Gentle dutch that eases in/out with flow */
