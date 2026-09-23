@@ -275,11 +275,11 @@ function boot() {
   }
 
   function frameMul() {
-    /* Modest Whist air only — no extreme pullback (that broke V13f–V14b) */
+    /* Enough air to see FULL liner (lid+bag), not so far the body ghosts away */
     const w = window.innerWidth || 1;
-    if (w < 480) return lightTheme ? 1.95 : 2.1;
-    if (w < 820) return lightTheme ? 1.7 : 1.85;
-    return lightTheme ? 1.35 : 1.45;
+    if (w < 480) return lightTheme ? 1.65 : 1.75;
+    if (w < 820) return lightTheme ? 1.5 : 1.6;
+    return lightTheme ? 1.3 : 1.4;
   }
 
   function syncFogToDistance() {
@@ -363,22 +363,24 @@ function boot() {
           pm.roughness = typeof m.roughness === 'number' ? m.roughness : 0.42;
           pm.metalness = typeof m.metalness === 'number' ? m.metalness : 0.0;
         }
-        /* Warm milky PE — slight teal cast from brand env */
-        pm.color.lerp(peColor, 0.72);
-        pm.color.offsetHSL(0.02, -0.05, 0.04);
-        pm.roughness = THREE.MathUtils.clamp(pm.roughness * 0.85 + 0.08, 0.36, 0.48);
+        /* Readable milky PE bag — must read as FULL liner silhouette on dark bg.
+         * Earlier 0.7 opacity + high transmission + depthWrite:false made the
+         * body vanish so only the lid showed (user: تصویر ساکشن کامل نیست). */
+        pm.color.lerp(peColor, 0.55);
+        pm.color.offsetHSL(0.04, 0.04, -0.02);
+        pm.roughness = THREE.MathUtils.clamp(pm.roughness * 0.85 + 0.1, 0.38, 0.52);
         pm.metalness = 0;
         pm.transparent = true;
-        pm.opacity = lightTheme ? 0.7 : 0.72;
-        pm.depthWrite = false;
+        /* Opaque enough to see the conical bag; still translucent for blood */
+        pm.opacity = lightTheme ? 0.88 : 0.9;
+        pm.depthWrite = true;
         pm.side = THREE.DoubleSide;
-        pm.clearcoat = 0.32;
-        pm.clearcoatRoughness = 0.38;
-        pm.envMapIntensity = lightTheme ? 1.7 : 1.9;
-        /* Mild transmission = plastic thickness; opacity keeps milky PE body */
+        pm.clearcoat = 0.28;
+        pm.clearcoatRoughness = 0.42;
+        pm.envMapIntensity = lightTheme ? 1.55 : 1.7;
         if ('transmission' in pm) {
-          pm.transmission = lightTheme ? 0.28 : 0.22;
-          pm.thickness = 0.04;
+          pm.transmission = lightTheme ? 0.1 : 0.08;
+          pm.thickness = 0.035;
           pm.ior = 1.42;
         }
         pm.needsUpdate = true;
@@ -476,7 +478,8 @@ function boot() {
       cz + Math.cos(yaw) * dolly
     );
     const portrait = (camera.aspect || 1) < 0.9;
-    const yNudge = portrait ? state.radius * 0.45 : 0; /* sit under captions, not glued to top */
+    /* Mild only — large nudge shoved lid under header and hid the bag body */
+    const yNudge = portrait ? state.radius * 0.12 : 0;
     camera.lookAt(
       cx,
       cy + yNudge - state.radius * (0.03 + 0.12 * flowE + 0.14 * fillE),
