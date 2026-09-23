@@ -86,8 +86,9 @@ function boot() {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x030a0b);
+  /* No exp fog on dark theme — it crushed the bag into the background */
   if (!lightTheme) {
-    scene.fog = new THREE.FogExp2(0x030a0b, 0.05);
+    scene.fog = null;
   }
 
   const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : 30, 1, 0.01, 40);
@@ -339,14 +340,12 @@ function boot() {
   }
 
   /**
-   * Body must read as a FULL bright milky PE bag on dark backgrounds.
-   * GLB shares one atlas with the lid — body UVs often sample dark teal texels,
-   * so cloning-with-map keeps the bag black. Strip ALL maps; solid plastic only.
-   * Lid keeps the baked teal texture untouched.
+   * Force a clearly visible milky bag. Unlit BasicMaterial on dark theme so
+   * lighting/fog/ACES cannot crush it to black (V16–V18 still looked black).
+   * No atlas maps. Lid keeps baked teal texture.
    */
   function convertBodyToLinerPlastic(body) {
     const cached = [];
-    const pe = lightTheme ? 0xe8f3f3 : 0xd2e6e8;
     body.traverse((o) => {
       if (!o.isMesh || !o.material) return;
       if (o === state.liquid || o === state.liquidSurface || o === state.liquidFoam) return;
@@ -358,30 +357,37 @@ function boot() {
           next.push(m);
           continue;
         }
-        /* Fresh Standard material — no map / no transmission darkening */
-        const pm = new THREE.MeshStandardMaterial({
-          color: pe,
-          roughness: 0.48,
-          metalness: 0,
-          transparent: true,
-          opacity: lightTheme ? 0.9 : 0.94,
-          depthWrite: true,
-          side: THREE.DoubleSide,
-          envMapIntensity: lightTheme ? 1.35 : 1.85,
-          emissive: new THREE.Color(lightTheme ? 0x102828 : 0x2a6064),
-          emissiveIntensity: lightTheme ? 0.06 : 0.32,
-        });
+        let pm;
+        if (lightTheme) {
+          pm = new THREE.MeshStandardMaterial({
+            color: 0xe8f3f3,
+            roughness: 0.45,
+            metalness: 0,
+            transparent: true,
+            opacity: 0.9,
+            depthWrite: true,
+            side: THREE.DoubleSide,
+            envMapIntensity: 1.4,
+            emissive: new THREE.Color(0x102828),
+            emissiveIntensity: 0.08,
+          });
+        } else {
+          /* Unlit mint — always readable against #030a0b */
+          pm = new THREE.MeshBasicMaterial({
+            color: 0xb8d4d6,
+            transparent: true,
+            opacity: 0.88,
+            depthWrite: true,
+            side: THREE.DoubleSide,
+          });
+        }
         pm.map = null;
-        pm.normalMap = null;
-        pm.roughnessMap = null;
-        pm.metalnessMap = null;
-        pm.aoMap = null;
-        pm.emissiveMap = null;
         pm.needsUpdate = true;
         next.push(pm);
         cached.push(pm);
       }
       o.material = Array.isArray(o.material) ? next : next[0];
+      o.frustumCulled = false;
       o.renderOrder = 1;
     });
     state.bodyShellMats = cached;
