@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="abadis-demo-build" content="WHIST-BRAND-V27" />
+  <meta name="abadis-demo-build" content="WHIST-BRAND-V28" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   <title>کیسه ساکشن ۲ لیتری — دمو آبادیس</title>
@@ -825,6 +825,144 @@
     a:hover { color: #a8d5d6; }
 
 
+
+    /* V28: product-page exact content blocks */
+    .story-exact {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem) !important;
+      font-weight: 600 !important;
+      line-height: 1.85 !important;
+      letter-spacing: 0 !important;
+      text-align: right;
+      max-width: 52rem;
+      margin-inline: auto;
+    }
+    .story-exact strong { color: #e8f3f3; font-weight: 800; }
+    .howto-line a {
+      color: #2ec4c6 !important;
+      text-decoration: underline;
+      font-weight: 700;
+    }
+    .story-dims {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+      max-width: 28rem;
+      margin-inline: auto;
+      width: 100%;
+    }
+    .story-dims li {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(5,104,107,0.28);
+      font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+      font-weight: 700;
+      color: #e8f3f3;
+    }
+    .story-dims li span:last-child {
+      direction: ltr;
+      unicode-bidi: embed;
+      color: #a8d5d6;
+      font-weight: 800;
+    }
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 18px;
+      border-radius: 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+    table.codes {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      font-size: 0.88rem;
+      direction: rtl;
+    }
+    table.codes th {
+      text-align: right;
+      padding: 10px 12px;
+      background: rgba(5,104,107,0.55);
+      color: #e8f3f3;
+      font-weight: 800;
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(46,196,198,0.25);
+    }
+    table.codes td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(46,196,198,0.12);
+      color: #cfe8e8;
+      vertical-align: middle;
+    }
+    table.codes tr:nth-child(even) td { background: rgba(5,104,107,0.18); }
+    table.codes td.code {
+      font-weight: 800;
+      color: #e8f3f3;
+      direction: ltr;
+      unicode-bidi: embed;
+      font-variant-numeric: tabular-nums;
+    }
+    table.codes td.irc {
+      direction: ltr;
+      unicode-bidi: embed;
+      font-size: 0.78rem;
+      color: #a8d4d5;
+      font-variant-numeric: tabular-nums;
+    }
+    .lid-swatch {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.35);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      vertical-align: middle;
+    }
+    .lid-teal { background: #2a9a8f; }
+    .lid-yellow { background: #e8c84a; }
+    .lid-red { background: #c0392b; }
+    .pack-row {
+      display: grid;
+      gap: 16px;
+      margin-top: 12px;
+      max-width: 36rem;
+      margin-inline: auto;
+      width: 100%;
+    }
+    @media (min-width: 560px) {
+      .pack-row { grid-template-columns: 1fr 1fr; }
+    }
+    .pack-item {
+      padding: 18px 20px;
+      border-radius: 16px;
+      background: rgba(5,104,107,0.28);
+      text-align: center;
+    }
+    .pack-item .k {
+      display: block;
+      font-size: 0.85rem;
+      color: #a8d4d5;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .pack-item .v {
+      display: block;
+      font-weight: 800;
+      color: #e8f3f3;
+      font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+      direction: ltr;
+      unicode-bidi: embed;
+    }
+    .story-panel-wide .story-panel-inner {
+      max-width: min(960px, 94vw);
+    }
+    .story-panel-wide .story-title {
+      font-size: clamp(1.6rem, 3.6vw, 2.4rem) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -832,7 +970,7 @@
   <div class="fx-grain" aria-hidden="true"></div>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="build-badge" aria-hidden="true">V27 · بدون حاشیه</div>
+  <div class="build-badge" aria-hidden="true">V28 · متن محصول</div>
 
   <div class="site-wrap">
   <header class="site-header" id="siteHeader">
@@ -845,10 +983,10 @@
   </header>
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track">
-      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
-      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
-      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
-      <span>ساکشن‌لاینر ۲ لیتر</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>آبادیس مد</span>
+      <span>کیسه ساکشن ۲ لیتری</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>مخازن طبی آبادیس</span>
+      <span>کیسه ساکشن ۲ لیتری</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>مخازن طبی آبادیس</span>
+      <span>کیسه ساکشن ۲ لیتری</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>مخازن طبی آبادیس</span>
+      <span>کیسه ساکشن ۲ لیتری</span><span>فیلتر هیدروفوبیک</span><span>پودر ژل‌کننده</span><span>مخازن طبی آبادیس</span>
     </div>
   </div>
 
@@ -863,16 +1001,14 @@
           <p class="abadis-theater-caption-sub">مخازن طبی آبادیس</p>
         </div>
         <div class="abadis-theater-caption" data-caption="1">
-          <p class="abadis-theater-caption-title">جدا شدن قطعات</p>
-          <p class="abadis-theater-caption-sub">در، مخزن و اتصالات</p>
+          <p class="abadis-theater-caption-title">حجم ساکشن: ۲ لیتر در حالت تکی، تا ۸ لیتر در حالت سری یک ردیفه بر روی پایه</p>
         </div>
         <div class="abadis-theater-caption" data-caption="2">
-          <p class="abadis-theater-caption-title">اتصال مجدد</p>
-          <p class="abadis-theater-caption-sub">مونتاژ نرم در و مخزن</p>
+          <p class="abadis-theater-caption-title">دارای پودر ژل‌کننده، فیلتر هیدروفوبیک(جلوگیری از سر ریز مایعات)</p>
         </div>
         <div class="abadis-theater-caption" data-caption="3">
-          <p class="abadis-theater-caption-title">محصول آماده</p>
-          <p class="abadis-theater-caption-sub">مونتاژ کامل · آماده استفاده</p>
+          <p class="abadis-theater-caption-title">انواع فیلترهای کیسه‌های نهایی</p>
+          <p class="abadis-theater-caption-sub">فیلتر های استفاده شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد</p>
         </div>
       </div>
       <div class="abadis-theater-hud" aria-hidden="true">
@@ -889,7 +1025,7 @@
         <div class="story-panel-inner">
           <span class="story-kicker">محصول</span>
           <h2 class="story-title">کیسه ساکشن ۲ لیتری</h2>
-          <p class="story-sub">مخازن طبی آبادیس — طراحی‌شده برای ساکشن بیمارستانی امن و یکبارمصرف</p>
+          <p class="story-sub">مخازن طبی آبادیس</p>
         </div>
       </div>
     </section>
@@ -897,9 +1033,8 @@
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
-          <span class="story-kicker">حجم</span>
-          <p class="story-giant">۲<span class="story-giant-unit">لیتر تکی</span></p>
-          <p class="story-sub" style="margin-top:28px">تا ۸ لیتر در حالت سری یک ردیفه روی پایه</p>
+          <span class="story-kicker">حجم ساکشن</span>
+          <p class="story-sub story-exact"><strong>حجم ساکشن:</strong> ۲ لیتر در حالت تکی، تا ۸ لیتر در حالت سری یک ردیفه بر روی پایه</p>
         </div>
       </div>
     </section>
@@ -908,8 +1043,7 @@
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
           <span class="story-kicker">مشخصات</span>
-          <h2 class="story-title">پودر ژل‌کننده</h2>
-          <p class="story-sub">مایعات را به ژل تبدیل می‌کند و مدیریت ایمن‌تری می‌دهد</p>
+          <p class="story-sub story-exact"><strong>مشخصات:</strong> دارای پودر ژل‌کننده، فیلتر هیدروفوبیک(جلوگیری از سر ریز مایعات)، سازگار با کلیه دستگاه‌های ساکشن، دارای سیستم حفاظت از ساکشن مرکزی</p>
         </div>
       </div>
     </section>
@@ -917,9 +1051,9 @@
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
-          <span class="story-kicker">ایمنی</span>
-          <h2 class="story-title">فیلتر هیدروفوبیک</h2>
-          <p class="story-sub">جلوگیری از سرریز مایعات · سه نوع فیلتر کیسهٔ نهایی</p>
+          <span class="story-kicker">فیلتر</span>
+          <h2 class="story-title">انواع فیلترهای کیسه‌های نهایی</h2>
+          <p class="story-sub story-exact">فیلتر های استفاده شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد:</p>
         </div>
       </div>
     </section>
@@ -927,9 +1061,8 @@
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
-          <span class="story-kicker">سازگاری</span>
-          <h2 class="story-title">همه دستگاه‌های ساکشن</h2>
-          <p class="story-sub">به‌همراه سیستم حفاظت از ساکشن مرکزی</p>
+          <span class="story-kicker">راهنمای استفاده</span>
+          <p class="story-sub story-exact howto-line">برای مشاهده نحوه استفاده از کیسه ساکشن ها به این <a href="https://abadis-med.com/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%a7%d8%b3%d8%aa%d9%81%d8%a7%d8%af%d9%87-%da%a9%d8%a7%d8%b1%d8%a8%d8%b1-%d9%86%d9%87%d8%a7%db%8c%db%8c/" rel="noopener" target="_blank">صفحه</a> مراجعه نمایید .</p>
         </div>
       </div>
     </section>
@@ -937,8 +1070,76 @@
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
-          <span class="story-kicker">ابعاد</span>
-          <p class="story-giant">۱۱<span class="story-giant-unit">سانتی‌متر قطر</span></p>
+          <span class="story-kicker">ابعاد محصول</span>
+          <ul class="story-dims">
+            <li><span>قطر</span><span>11 سانتی متر</span></li>
+            <li><span>ارتفاع</span><span>24/5 سانتی متر</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-panel story-panel-wide" data-story>
+      <div class="story-panel-sticky">
+        <div class="story-panel-inner">
+          <span class="story-kicker">کدها</span>
+          <h2 class="story-title">کد محصول</h2>
+          <div class="table-wrap">
+            <table class="codes">
+              <thead>
+                <tr>
+                  <th>کد محصول</th>
+                  <th>IRC</th>
+                  <th>سایز</th>
+                  <th>نوع فیلتر</th>
+                  <th>پودر</th>
+                  <th>رنگ درب</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="code">۰۴۰۱۱۱۲</td>
+                  <td class="irc">9647935197253589</td>
+                  <td>دو لیتری</td>
+                  <td>هیدروفوبیک</td>
+                  <td>✓</td>
+                  <td><span class="lid-swatch lid-teal" title="رنگ درب"></span></td>
+                </tr>
+                <tr>
+                  <td class="code">۰۴۰۱۱۰۲</td>
+                  <td class="irc">5826314295044204</td>
+                  <td>دو لیتری</td>
+                  <td>×</td>
+                  <td>✓</td>
+                  <td><span class="lid-swatch lid-yellow" title="رنگ درب"></span></td>
+                </tr>
+                <tr>
+                  <td class="code">۰۴۰۱۰۱۲</td>
+                  <td class="irc">4383099410749165</td>
+                  <td>دو لیتری</td>
+                  <td>هیدروفوبیک</td>
+                  <td>×</td>
+                  <td><span class="lid-swatch lid-teal" title="رنگ درب"></span></td>
+                </tr>
+                <tr>
+                  <td class="code">0401132</td>
+                  <td class="irc">4111380328256244</td>
+                  <td>دو لیتری</td>
+                  <td>مکانیکی</td>
+                  <td>✓</td>
+                  <td><span class="lid-swatch lid-red" title="رنگ درب"></span></td>
+                </tr>
+                <tr>
+                  <td class="code">0401112</td>
+                  <td class="irc">9647935197253589</td>
+                  <td>دو لیتری</td>
+                  <td>CIF</td>
+                  <td>✓</td>
+                  <td><span class="lid-swatch lid-yellow" title="رنگ درب"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -946,8 +1147,17 @@
     <section class="story-panel" data-story>
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
-          <span class="story-kicker">ابعاد</span>
-          <p class="story-giant">۲۴٫۵<span class="story-giant-unit">سانتی‌متر ارتفاع</span></p>
+          <span class="story-kicker">بسته‌بندی</span>
+          <div class="pack-row">
+            <div class="pack-item">
+              <span class="k">تعداد در هر کارتن</span>
+              <span class="v">۴۵ عدد</span>
+            </div>
+            <div class="pack-item">
+              <span class="k">ابعاد کارتن</span>
+              <span class="v">۵۷/۵ * ۴۲/۵ *۴۴</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -956,10 +1166,11 @@
       <div class="story-panel-sticky">
         <div class="story-panel-inner">
           <span class="story-kicker">موارد مصرف</span>
+          <h2 class="story-title">موارد مصرف</h2>
           <ul class="story-uses">
             <li style="--d:0ms">ریه و آندوسکوپی</li>
             <li style="--d:80ms">گوارش</li>
-            <li style="--d:160ms">CCU / ICU</li>
+            <li style="--d:160ms">CCU/ICU</li>
             <li style="--d:240ms">عفونی</li>
             <li style="--d:320ms">بخش مردان</li>
             <li style="--d:400ms">بخش زنان</li>
@@ -968,59 +1179,15 @@
       </div>
     </section>
 
-    <section class="story-panel" data-story>
-      <div class="story-panel-sticky">
-        <div class="story-panel-inner">
-          <span class="story-kicker">کد محصول</span>
-          <h2 class="story-title">پنج واریانت</h2>
-          <ul class="story-codes">
-            <li style="--d:0ms">
-              <span class="code">۰۴۰۱۱۱۲</span> هیدروفوبیک · پودر
-              <span class="meta">IRC 9647935197253589</span>
-            </li>
-            <li style="--d:70ms">
-              <span class="code">۰۴۰۱۱۰۲</span> بدون فیلتر · پودر
-              <span class="meta">IRC 5826314295044204</span>
-            </li>
-            <li style="--d:140ms">
-              <span class="code">۰۴۰۱۰۱۲</span> هیدروفوبیک
-              <span class="meta">IRC 4383099410749165</span>
-            </li>
-            <li style="--d:210ms">
-              <span class="code">0401132</span> مکانیکی · پودر
-              <span class="meta">IRC 4111380328256244</span>
-            </li>
-            <li style="--d:280ms">
-              <span class="code">0401112</span> CIF · پودر
-              <span class="meta">IRC 9647935197253589</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="story-panel" data-story>
-      <div class="story-panel-sticky">
-        <div class="story-panel-inner">
-          <span class="story-kicker">راهنما</span>
-          <h2 class="story-title">نحوه استفاده</h2>
-          <p class="story-sub">ویدیو و راهنمای کامل روی سایت آبادیس</p>
-          <div class="story-cta">
-            <a href="https://abadis-med.com/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%a7%d8%b3%d8%aa%d9%81%d8%a7%d8%af%d9%87-%da%a9%d8%a7%d8%b1%d8%a8%d8%b1-%d9%86%d9%87%d8%a7%db%8c%db%8c/" rel="noopener" target="_blank">مشاهده راهنما</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </div>
 
   <footer class="site-footer">
-    <p>دمو آبادیس · V27 بدون حاشیه · پالت برند · فونت کلمه</p>
+    <p>دمو آبادیس · V28 متن محصول · پالت برند · فونت کلمه</p>
   </footer>
   </div>
 
-  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V27</a>
-  <script type="module" src="./scrub-theater.js?v=27"></script>
+  <a class="demo-chip" href="./product-2l.html">WHIST-BRAND-V28</a>
+  <script type="module" src="./scrub-theater.js?v=28"></script>
   <script>
     (function () {
       const panels = Array.from(document.querySelectorAll('[data-story]'));
