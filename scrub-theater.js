@@ -15,21 +15,21 @@ const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
 
 /* Cinematic separation — OR film */
-const LID_UP = 0.58;
-const BODY_DOWN = 0.64;
-const X_SPLIT = 0.26;
+const LID_UP = 0.42;
+const BODY_DOWN = 0.48;
+const X_SPLIT = 0.18;
 const LID_TILT_X = THREE.MathUtils.degToRad(22);
 const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
 
 /* Camera: wide yaw, soft dutch, deep dolly */
-const CAM_YAW0 = THREE.MathUtils.degToRad(38);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-34);
-const DOLLY_IN = 0.03;
-const FLOW_DOLLY = 0.02;
+const CAM_YAW0 = THREE.MathUtils.degToRad(58);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-52);
+const DOLLY_IN = 0.34;
+const FLOW_DOLLY = 0.28;
 const FLOW_TILT = 0.2;
-const FILL_PUSH = 0.01;
+const FILL_PUSH = 0.32;
 const DUTCH_MAX = THREE.MathUtils.degToRad(4.2);
-const INTRO_FAR = 0.08;
+const INTRO_FAR = 0.32;
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
@@ -87,10 +87,10 @@ function boot() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(lightTheme ? 0xf3fafa : 0x030a0b);
   if (!lightTheme) {
-    scene.fog = new THREE.FogExp2(0x030a0b, 0.04); /* density synced in fitCamera */
+    scene.fog = new THREE.FogExp2(0x030a0b, 0.05);
   }
 
-  const camera = new THREE.PerspectiveCamera(lightTheme ? 34 : 36, 1, 0.01, 80);
+  const camera = new THREE.PerspectiveCamera(lightTheme ? 28 : 30, 1, 0.01, 40);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
@@ -275,35 +275,33 @@ function boot() {
   }
 
   function frameMul() {
-    /* Extra air after aspect-correct fit — Whist small hero, not vanishing */
+    /* Modest Whist air only — no extreme pullback (that broke V13f–V14b) */
     const w = window.innerWidth || 1;
-    let mul = lightTheme ? 1.55 : 1.65; /* desktop */
-    if (w < 820) mul = lightTheme ? 1.85 : 2.0;
-    if (w < 480) mul = lightTheme ? 2.15 : 2.35;
-    return mul;
+    if (w < 480) return lightTheme ? 1.95 : 2.1;
+    if (w < 820) return lightTheme ? 1.7 : 1.85;
+    return lightTheme ? 1.35 : 1.45;
   }
 
   function syncFogToDistance() {
     if (!scene.fog || !scene.fog.isFogExp2) return;
     const fd = Math.max(state.fitDist, 0.35);
-    scene.fog.density = THREE.MathUtils.clamp(0.09 / fd, 0.008, 0.06);
+    scene.fog.density = THREE.MathUtils.clamp(0.1 / fd, 0.012, 0.12);
   }
 
   function fitCamera(box) {
     box.getCenter(state.center);
     box.getSize(_tmpSize);
     state.radius = Math.max(_tmpSize.x, _tmpSize.y, _tmpSize.z) * 0.5 || 0.15;
-    /* Three.js fov is VERTICAL — on portrait phones, fit to horizontal FOV
-       or the product fills the width and looks huge (user screenshot). */
+    /* fov is vertical — on portrait also fit width or product eats the phone */
     const vFov = THREE.MathUtils.degToRad(camera.fov);
-    const aspect = Math.max(0.2, camera.aspect || window.innerWidth / window.innerHeight);
+    const aspect = Math.max(0.25, camera.aspect || window.innerWidth / Math.max(window.innerHeight, 1));
     const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * aspect);
     const distV = state.radius / Math.sin(vFov * 0.5);
-    const distH = state.radius / Math.sin(hFov * 0.5);
+    const distH = state.radius / Math.sin(Math.max(hFov * 0.5, 0.05));
     const dist = Math.max(distV, distH);
     state.fitDist = dist * frameMul();
-    camera.near = Math.max(0.01, state.fitDist / 250);
-    camera.far = Math.max(state.fitDist * 8, dist * 100);
+    camera.near = Math.max(0.01, state.fitDist / 200);
+    camera.far = Math.max(state.fitDist * 6, dist * 50);
     camera.updateProjectionMatrix();
     syncFogToDistance();
   }
@@ -340,7 +338,7 @@ function boot() {
    */
   function convertBodyToLinerPlastic(body) {
     const cached = [];
-    const peColor = new THREE.Color(lightTheme ? 0xe8f0f0 : 0xc5d8dc);
+    const peColor = new THREE.Color(0xe8f0f0);
     body.traverse((o) => {
       if (!o.isMesh || !o.material) return;
       if (o === state.liquid || o === state.liquidSurface || o === state.liquidFoam) return;
@@ -371,7 +369,7 @@ function boot() {
         pm.roughness = THREE.MathUtils.clamp(pm.roughness * 0.85 + 0.08, 0.36, 0.48);
         pm.metalness = 0;
         pm.transparent = true;
-        pm.opacity = lightTheme ? 0.78 : 0.82;
+        pm.opacity = lightTheme ? 0.7 : 0.72;
         pm.depthWrite = false;
         pm.side = THREE.DoubleSide;
         pm.clearcoat = 0.32;
@@ -379,7 +377,7 @@ function boot() {
         pm.envMapIntensity = lightTheme ? 1.7 : 1.9;
         /* Mild transmission = plastic thickness; opacity keeps milky PE body */
         if ('transmission' in pm) {
-          pm.transmission = lightTheme ? 0.14 : 0.08;
+          pm.transmission = lightTheme ? 0.28 : 0.22;
           pm.thickness = 0.04;
           pm.ior = 1.42;
         }
@@ -438,7 +436,7 @@ function boot() {
    * Phase-aware camera with eased yaw/dolly arcs + handheld noise.
    */
   function placeCamera(t, sep, flowE, fillE, introE, handheldAmp) {
-    const lookBias = flowE * 0.35 + fillE * 0.35; /* milder look-down; stay wide */
+    const lookBias = flowE * 0.55 + fillE * 0.75;
     /* Smoother yaw: circ ease through explode, hold through rejoin */
     const yawRaw =
       smoothstep(0.08, 0.36, t) * (1 - 0.32 * smoothstep(0.36, 0.5, t));
@@ -455,9 +453,9 @@ function boot() {
       state.radius *
       ((lightTheme ? 0.28 : 0.2) -
         0.03 * sep -
-        FLOW_TILT * lookBias * 0.55 -
-        0.08 * fillE -
-        0.02 * (1 - introE));
+        FLOW_TILT * lookBias -
+        0.22 * fillE -
+        0.04 * (1 - introE));
 
     const et = clock.getElapsedTime();
     const hx = state.handheld.x * handheldAmp;
@@ -468,23 +466,20 @@ function boot() {
     const cy =
       state.center.y +
       state.radius *
-        ((lightTheme ? 0.1 : 0.02) - 0.08 * lookBias - 0.06 * fillE) +
+        ((lightTheme ? 0.18 : 0.07) - 0.12 * lookBias - 0.1 * fillE) +
       hy;
     const cz = state.center.z + hz;
 
-    /* Portrait: look slightly ABOVE product so it sits mid-frame under captions
-       (screenshot showed lid stuck under ticker with empty lower 2/3). */
-    const portrait = (camera.aspect || 1) < 0.9;
-    const yLookBias = state.radius * (portrait ? 0.72 : 0.12);
-
     camera.position.set(
       cx + Math.sin(yaw) * dolly,
-      cy + elev + (portrait ? state.radius * 0.15 : 0),
+      cy + elev,
       cz + Math.cos(yaw) * dolly
     );
+    const portrait = (camera.aspect || 1) < 0.9;
+    const yNudge = portrait ? state.radius * 0.45 : 0; /* sit under captions, not glued to top */
     camera.lookAt(
       cx,
-      cy + yLookBias - state.radius * (0.02 + 0.06 * flowE + 0.06 * fillE),
+      cy + yNudge - state.radius * (0.03 + 0.12 * flowE + 0.14 * fillE),
       cz
     );
     /* Gentle dutch that eases in/out with flow */
