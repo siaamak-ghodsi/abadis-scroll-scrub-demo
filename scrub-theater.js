@@ -1,9 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V13 organic scrub
- * Dark mint stage (default) or light whist skin via data-theme="light"; continuous suction tube → bag fill.
- * Narrative beats: intro → explode → rejoin → stream → fill/empty medical blood.
+ * Abadis Product Theater — WHIST-BRAND-V21 clinical scrub
+ * Dark mint stage (default) or light whist skin via data-theme="light".
+ * Narrative beats: intro → explode → rejoin → clinical teal stream.
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
- * V13: always-on translucent PE liner + viscous free-surface blood (not candy cylinder).
+ * V21: no bag fill volume; teal suction stream only; premium camera.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -14,29 +14,28 @@ const PARTS_URL = './abadis-scrub-parts.glb';
 const HDR_URL = './env/surgery_1k.hdr';
 const HDR_FALLBACK = './env/studio_small_09_1k.hdr';
 
-/* Cinematic separation — OR film */
-const LID_UP = 0.42;
-const BODY_DOWN = 0.48;
-const X_SPLIT = 0.18;
-const LID_TILT_X = THREE.MathUtils.degToRad(22);
-const LID_TILT_Z = THREE.MathUtils.degToRad(-14);
+/* Cinematic separation — stronger readable explode, soft settle */
+const LID_UP = 0.52;
+const BODY_DOWN = 0.58;
+const X_SPLIT = 0.24;
+const LID_TILT_X = THREE.MathUtils.degToRad(26);
+const LID_TILT_Z = THREE.MathUtils.degToRad(-16);
 
-/* Camera: wide yaw, soft dutch, deep dolly */
-const CAM_YAW0 = THREE.MathUtils.degToRad(58);
-const CAM_YAW1 = THREE.MathUtils.degToRad(-52);
-const DOLLY_IN = 0.34;
-const FLOW_DOLLY = 0.28;
-const FLOW_TILT = 0.2;
-const FILL_PUSH = 0.32;
-const DUTCH_MAX = THREE.MathUtils.degToRad(4.2);
-const INTRO_FAR = 0.32;
+/* Camera: soft yaw/dolly arcs — no extreme pullback */
+const CAM_YAW0 = THREE.MathUtils.degToRad(48);
+const CAM_YAW1 = THREE.MathUtils.degToRad(-42);
+const DOLLY_IN = 0.26;
+const FLOW_DOLLY = 0.22;
+const FLOW_TILT = 0.14;
+const DUTCH_MAX = THREE.MathUtils.degToRad(3.2);
+const INTRO_FAR = 0.22;
 
 const STREAM_TUBULAR_SEGS = 64;
 const STREAM_RADIAL_SEGS = 10;
 
-/* Lid leads body by ~60ms of progress at typical scrub speed */
-const LID_LEAD = 0.018;
-const BODY_LAG = 0.012;
+/* Lid leads body — staggered cinematic open/close */
+const LID_LEAD = 0.022;
+const BODY_LAG = 0.016;
 
 const canvas = document.getElementById('abadis-scrub-canvas');
 const stageEl = document.getElementById('abadis-scrub');
@@ -51,12 +50,12 @@ const captionEls = Array.from(
     Number(b.getAttribute('data-caption'))
 );
 
-/* Longer exclusive bands — cinematic, less frantic */
+/* Beats: intro → explode → rejoin → stream */
 const CAPTION_RANGES = [
-  { start: 0.0, end: 0.17 },
-  { start: 0.13, end: 0.40 },
-  { start: 0.36, end: 0.48 },
-  { start: 0.38, end: 0.90 }, /* پر و خالی شدن — blood fill/hold/drain */
+  { start: 0.0, end: 0.16 },   /* intro */
+  { start: 0.12, end: 0.42 },  /* explode */
+  { start: 0.38, end: 0.58 },  /* rejoin */
+  { start: 0.52, end: 0.92 },  /* clinical stream */
 ];
 
 if (!canvas || !stageEl) {
@@ -155,10 +154,10 @@ function boot() {
 
   /* Spring presets — heavy object following the finger */
   const SPRING = organicScrub
-    ? { omega: 9.5, zeta: 0.88 } /* slight overshoot then soft settle */
+    ? { omega: 7.8, zeta: 0.92 } /* heavier, softer settle — less snappy */
     : softScrub
-      ? { omega: 5.2, zeta: 1.05 }
-      : { omega: 16.0, zeta: 1.0 }; /* snappy critically damped */
+      ? { omega: 5.0, zeta: 1.08 }
+      : { omega: 14.0, zeta: 1.0 }; /* snappy critically damped */
 
   const state = {
     ready: false,
@@ -183,18 +182,6 @@ function boot() {
     streamIndexCount: 0,
     streamHiIndexCount: 0,
     portRing: null,
-    liquid: null,
-    liquidSurface: null,
-    liquidFoam: null,
-    liquidBubbles: null,
-    liquidBaseY: 0,
-    liquidFullH: 0.1,
-    liquidRadius: 0.05,
-    bloodTarget: 0,
-    bloodDisplay: 0,
-    bloodVel: 0,
-    bloodDraining: false,
-    bloodFilling: false,
     bodyShellMats: [], /* always-on milky PE liner mats */
     keyLight: key,
     rimLight: rim,
@@ -230,15 +217,15 @@ function boot() {
       : (Math.sqrt(1 - Math.pow(-2 * t + 2, 2)) + 1) / 2;
   }
 
-  /** Anticipatory dip then rise — slight pull-back before explode */
+  /** Anticipatory dip then rise — soft pull-back before explode */
   function easeAnticipatory(t) {
     t = THREE.MathUtils.clamp(t, 0, 1);
-    if (t < 0.12) {
-      const u = t / 0.12;
-      return -0.06 * Math.sin(u * Math.PI); /* tiny reverse dip */
+    if (t < 0.16) {
+      const u = t / 0.16;
+      return -0.045 * Math.sin(u * Math.PI);
     }
-    const u = (t - 0.12) / 0.88;
-    return easeInOutQuint(u);
+    const u = (t - 0.16) / 0.84;
+    return easeInOutCirc(u);
   }
 
   function smoothstep(edge0, edge1, x) {
@@ -348,8 +335,7 @@ function boot() {
     const cached = [];
     body.traverse((o) => {
       if (!o.isMesh || !o.material) return;
-      if (o === state.liquid || o === state.liquidSurface || o === state.liquidFoam) return;
-      if (o.name && /liquid|blood|surface|foam|bubble/i.test(o.name)) return;
+      if (o.name && /liquid|surface|foam|bubble/i.test(o.name)) return;
       const mats = Array.isArray(o.material) ? o.material : [o.material];
       const next = [];
       for (const m of mats) {
@@ -437,38 +423,37 @@ function boot() {
   /**
    * Phase-aware camera with eased yaw/dolly arcs + handheld noise.
    */
-  function placeCamera(t, sep, flowE, fillE, introE, handheldAmp) {
-    const lookBias = flowE * 0.55 + fillE * 0.75;
-    /* Smoother yaw: circ ease through explode, hold through rejoin */
+  function placeCamera(t, sep, flowE, introE, handheldAmp) {
+    /* Soft look bias from stream only */
+    const lookBias = flowE * 0.48;
+    /* Yaw arc through explode, ease back through rejoin/stream */
     const yawRaw =
-      smoothstep(0.08, 0.36, t) * (1 - 0.32 * smoothstep(0.36, 0.5, t));
+      smoothstep(0.06, 0.40, t) * (1 - 0.28 * smoothstep(0.42, 0.62, t));
     const yawDrive = easeInOutCirc(yawRaw);
     const yaw = THREE.MathUtils.lerp(CAM_YAW0, CAM_YAW1, yawDrive);
 
     const introFar = INTRO_FAR * (1 - introE);
-    /* Soft dolly arc — less linear */
-    const dollyEase = easeInOutQuint(sep) * 0.35 + easeInOutCirc(lookBias) * FLOW_DOLLY + easeOutCubic(fillE) * FILL_PUSH;
-    const dolly =
-      state.fitDist * (1 + introFar - DOLLY_IN * dollyEase);
+    /* Soft dolly — sep + stream, never extreme pullback */
+    const dollyEase =
+      easeInOutQuint(sep) * 0.42 + easeInOutCirc(lookBias) * FLOW_DOLLY;
+    const dolly = state.fitDist * (1 + introFar - DOLLY_IN * dollyEase);
 
     const elev =
       state.radius *
       ((lightTheme ? 0.28 : 0.2) -
-        0.03 * sep -
+        0.05 * sep -
         FLOW_TILT * lookBias -
-        0.22 * fillE -
-        0.04 * (1 - introE));
+        0.03 * (1 - introE));
 
     const et = clock.getElapsedTime();
     const hx = state.handheld.x * handheldAmp;
     const hy = state.handheld.y * handheldAmp;
-    const hz = state.handheld.z * handheldAmp * 0.6;
+    const hz = state.handheld.z * handheldAmp * 0.55;
 
     const cx = state.center.x + hx;
     const cy =
       state.center.y +
-      state.radius *
-        ((lightTheme ? 0.18 : 0.07) - 0.12 * lookBias - 0.1 * fillE) +
+      state.radius * ((lightTheme ? 0.18 : 0.07) - 0.08 * lookBias - 0.04 * sep) +
       hy;
     const cz = state.center.z + hz;
 
@@ -478,19 +463,17 @@ function boot() {
       cz + Math.cos(yaw) * dolly
     );
     const portrait = (camera.aspect || 1) < 0.9;
-    /* Mild only — large nudge shoved lid under header and hid the bag body */
     const yNudge = portrait ? state.radius * 0.12 : 0;
     camera.lookAt(
       cx,
-      cy + yNudge - state.radius * (0.03 + 0.12 * flowE + 0.14 * fillE),
+      cy + yNudge - state.radius * (0.03 + 0.1 * flowE + 0.04 * sep),
       cz
     );
-    /* Gentle dutch that eases in/out with flow */
+    /* Gentle dutch with stream beat */
     const dutchShape = Math.sin(easeInOutQuint(flowE) * Math.PI);
-    const dutchAmp = dutchShape * (1 - fillE * 0.9) * 0.7;
+    const dutchAmp = dutchShape * 0.65;
     camera.rotation.z += DUTCH_MAX * dutchAmp;
-    /* Micro handheld roll when nearly still */
-    camera.rotation.z += Math.sin(et * 0.7) * 0.004 * handheldAmp;
+    camera.rotation.z += Math.sin(et * 0.7) * 0.0035 * handheldAmp;
   }
 
   async function loadEnvironment() {
@@ -599,16 +582,16 @@ function boot() {
     const mat = new THREE.MeshPhysicalMaterial({
       color: 0x0a8a8c,
       emissive: 0x2ec4c6,
-      emissiveIntensity: 0.32,
+      emissiveIntensity: 0.28,
       transparent: true,
       opacity: 0,
-      roughness: 0.18,
-      metalness: 0.06,
-      transmission: 0.28,
-      thickness: 0.025,
+      roughness: 0.16,
+      metalness: 0.04,
+      transmission: 0.36,
+      thickness: 0.022,
       ior: 1.33,
-      clearcoat: 0.45,
-      clearcoatRoughness: 0.2,
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.18,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
@@ -680,194 +663,13 @@ function boot() {
     state.portRing = ring;
   }
 
-  function createLiquidFill(body) {
-    const box = new THREE.Box3().setFromObject(body);
-    const size = new THREE.Vector3();
-    const center = new THREE.Vector3();
-    box.getSize(size);
-    box.getCenter(center);
-
-    /* Interior fit: ~48% of body xz, almost full usable cavity height */
-    const radius = Math.min(size.x, size.z) * 0.48;
-    const height = size.y * 0.88;
-    const radialSegs = 64;
-    const heightSegs = 8;
-
-    body.updateWorldMatrix(true, false);
-    const inv = new THREE.Matrix4().copy(body.matrixWorld).invert();
-    const localBottom = new THREE.Vector3(
-      center.x,
-      box.min.y + size.y * 0.04,
-      center.z
-    ).applyMatrix4(inv);
-    const localTopHint = new THREE.Vector3(
-      center.x,
-      box.min.y + size.y * 0.04 + height,
-      center.z
-    ).applyMatrix4(inv);
-    const localH = Math.abs(localTopHint.y - localBottom.y) || height;
-
-    /* Unscaled root so surface / foam / bubbles are not squash-scaled */
-    const root = new THREE.Group();
-    root.name = 'bloodRoot';
-    root.position.set(localBottom.x, localBottom.y, localBottom.z);
-    body.add(root);
-
-    const geo = new THREE.CylinderGeometry(
-      radius,
-      radius * 0.985,
-      1,
-      radialSegs,
-      heightSegs,
-      false
-    );
-    const mat = new THREE.MeshPhysicalMaterial({
-      color: 0x4a080e,
-      emissive: 0x1a0408,
-      emissiveIntensity: 0.05,
-      transparent: true,
-      opacity: 0,
-      roughness: 0.34,
-      metalness: 0,
-      clearcoat: 0.08,
-      clearcoatRoughness: 0.55,
-      depthWrite: true,
-      side: THREE.FrontSide,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.name = 'bloodVolume';
-    mesh.castShadow = false;
-    mesh.receiveShadow = false;
-    mesh.renderOrder = 4;
-    mesh.visible = false;
-    mesh.frustumCulled = false;
-    mesh.position.y = 0.01;
-    mesh.scale.set(1, 0.02, 1);
-    root.add(mesh);
-
-    /* Free surface disk — viscous waves + concave meniscus + clearcoat */
-    const surfSegs = 64;
-    const surfGeo = new THREE.CircleGeometry(radius * 0.995, surfSegs);
-    const surfBase = new Float32Array(surfGeo.attributes.position.array.length);
-    surfBase.set(surfGeo.attributes.position.array);
-    const surfMat = new THREE.MeshPhysicalMaterial({
-      color: 0x6a1018,
-      emissive: 0x2a060c,
-      emissiveIntensity: 0.06,
-      transparent: true,
-      opacity: 0,
-      roughness: 0.22,
-      metalness: 0,
-      clearcoat: 0.72,
-      clearcoatRoughness: 0.18,
-      envMapIntensity: 1.4,
-      side: THREE.DoubleSide,
-      depthWrite: true,
-    });
-    const surface = new THREE.Mesh(surfGeo, surfMat);
-    surface.name = 'bloodSurface';
-    surface.rotation.x = -Math.PI / 2;
-    surface.renderOrder = 5;
-    surface.visible = false;
-    surface.frustumCulled = false;
-    surface.userData.basePos = surfBase;
-    surface.userData.radius = radius;
-    root.add(surface);
-
-    /* Thin foam ring — cream-pink, mid-fill only */
-    const foamGeo = new THREE.TorusGeometry(radius * 0.92, radius * 0.028, 8, 48);
-    const foamMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe8c4c8,
-      emissive: 0x3a1818,
-      emissiveIntensity: 0.04,
-      transparent: true,
-      opacity: 0,
-      roughness: 0.55,
-      metalness: 0,
-      clearcoat: 0.2,
-      clearcoatRoughness: 0.5,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    });
-    const foam = new THREE.Mesh(foamGeo, foamMat);
-    foam.name = 'bloodFoam';
-    foam.rotation.x = Math.PI / 2;
-    foam.renderOrder = 6;
-    foam.visible = false;
-    foam.frustumCulled = false;
-    root.add(foam);
-
-    /* 12 micro bubbles — rise only while filling */
-    const bubbleGroup = new THREE.Group();
-    bubbleGroup.name = 'bloodBubbles';
-    const bubbles = [];
-    for (let i = 0; i < 12; i++) {
-      const br = radius * (0.018 + Math.random() * 0.022);
-      const bGeo = new THREE.SphereGeometry(br, 8, 6);
-      const bMat = new THREE.MeshPhysicalMaterial({
-        color: 0xc48a90,
-        transparent: true,
-        opacity: 0.35,
-        roughness: 0.15,
-        metalness: 0,
-        clearcoat: 0.6,
-        clearcoatRoughness: 0.2,
-        depthWrite: false,
-      });
-      const b = new THREE.Mesh(bGeo, bMat);
-      b.userData.phase = Math.random() * Math.PI * 2;
-      b.userData.speed = 0.35 + Math.random() * 0.55;
-      b.userData.orbit = radius * (0.15 + Math.random() * 0.7);
-      b.userData.ang = Math.random() * Math.PI * 2;
-      b.userData.y01 = Math.random();
-      b.visible = false;
-      bubbleGroup.add(b);
-      bubbles.push(b);
-    }
-    root.add(bubbleGroup);
-    bubbleGroup.userData.list = bubbles;
-
-    state.liquid = mesh;
-    state.liquidSurface = surface;
-    state.liquidFoam = foam;
-    state.liquidBubbles = bubbleGroup;
-    state.liquidBaseY = 0; /* heights relative to root at liner bottom */
-    state.liquidFullH = localH;
-    state.liquidRadius = radius;
-    state.bloodTarget = 0;
-    state.bloodDisplay = 0;
-    state.bloodVel = 0;
-  }
-
-  /** Heavy-fluid critically damped spring toward bloodTarget */
-  function stepBloodSpring(dt) {
-    const omega = 4.6;
-    const zeta = 1.08;
-    const x = state.bloodDisplay;
-    const v = state.bloodVel;
-    const target = state.bloodTarget;
-    const accel = -2 * zeta * omega * v - omega * omega * (x - target);
-    let nv = v + accel * dt;
-    let nx = x + nv * dt;
-    if (nx < 0) {
-      nx = 0;
-      nv *= 0.2;
-    } else if (nx > 1) {
-      nx = 1;
-      nv *= 0.2;
-    }
-    state.bloodVel = nv;
-    state.bloodDisplay = nx;
-  }
-
-  function updateStream(flowE, bloodBlend) {
+  function updateStream(flowE) {
     const mesh = state.stream;
     const hi = state.streamHi;
     const ring = state.portRing;
     if (!mesh) return;
-    const blend = THREE.MathUtils.clamp(bloodBlend || 0, 0, 1);
 
-    if (flowE < 0.02) {
+    if (flowE < 0.015) {
       mesh.visible = false;
       mesh.material.opacity = 0;
       mesh.geometry.setDrawRange(0, 0);
@@ -885,7 +687,8 @@ function boot() {
     }
 
     mesh.visible = true;
-    const reveal = easeInOutQuint(THREE.MathUtils.clamp(flowE * 1.15, 0, 1));
+    /* Smooth grow/shrink along tube — softer than linear scrub */
+    const reveal = easeInOutCirc(THREE.MathUtils.clamp(flowE * 1.05, 0, 1));
     const count = Math.max(
       STREAM_RADIAL_SEGS * 3,
       Math.floor(state.streamIndexCount * reveal)
@@ -895,21 +698,17 @@ function boot() {
 
     const midBoost = Math.sin(Math.PI * THREE.MathUtils.clamp(flowE, 0, 1));
     mesh.material.opacity = THREE.MathUtils.clamp(
-      0.28 + flowE * 0.58 + midBoost * 0.2,
+      0.22 + flowE * 0.55 + midBoost * 0.22,
       0,
-      0.92
+      0.88
     );
-    mesh.material.emissiveIntensity = 0.18 + midBoost * 0.32 * (1 - blend * 0.55);
+    mesh.material.emissiveIntensity = 0.22 + midBoost * 0.38;
 
-    /* Narrative: stream shifts teal → venous crimson as fill begins */
-    const teal = new THREE.Color(0x0a8a8c);
-    const crimson = new THREE.Color(0x6a1018);
-    const tealE = new THREE.Color(0x2ec4c6);
-    const crimsonE = new THREE.Color(0x4a0810);
-    mesh.material.color.copy(teal).lerp(crimson, blend);
-    mesh.material.emissive.copy(tealE).lerp(crimsonE, blend);
+    /* Always teal/clear clinical suction */
+    mesh.material.color.setHex(0x0a8a8c);
+    mesh.material.emissive.setHex(0x2ec4c6);
     if ('transmission' in mesh.material) {
-      mesh.material.transmission = THREE.MathUtils.lerp(0.28, 0.08, blend);
+      mesh.material.transmission = 0.32;
     }
 
     if (hi) {
@@ -920,303 +719,141 @@ function boot() {
       );
       hi.geometry.setDrawRange(0, Math.floor(hiCount / 3) * 3);
       hi.material.opacity = THREE.MathUtils.clamp(
-        (0.12 + flowE * 0.42 + midBoost * 0.28) * (1 - blend * 0.35),
+        0.1 + flowE * 0.4 + midBoost * 0.26,
         0,
-        0.7
+        0.68
       );
-      const hiTeal = new THREE.Color(0x5ee8ea);
-      const hiBlood = new THREE.Color(0xa82838);
-      hi.material.color.copy(hiTeal).lerp(hiBlood, blend);
+      hi.material.color.setHex(0x5ee8ea);
     }
 
     if (ring) {
       ring.visible = true;
       const pulse =
-        smoothstep(0.02, 0.2, flowE) * (1 - smoothstep(0.5, 0.88, flowE));
-      const beat = 0.72 + 0.28 * Math.sin(clock.getElapsedTime() * 2.6);
-      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.55, 0, 0.7);
-      ring.material.emissiveIntensity = pulse * beat * (0.95 - blend * 0.35);
-      const s = 1 + pulse * 0.05 * beat;
+        smoothstep(0.02, 0.18, flowE) * (1 - smoothstep(0.72, 0.98, flowE));
+      const beat = 0.78 + 0.22 * Math.sin(clock.getElapsedTime() * 2.2);
+      ring.material.opacity = THREE.MathUtils.clamp(pulse * 0.5, 0, 0.65);
+      ring.material.emissiveIntensity = pulse * beat * 0.9;
+      const s = 1 + pulse * 0.045 * beat;
       ring.scale.set(s, s, s);
-      const rTeal = new THREE.Color(0x066163);
-      const rBlood = new THREE.Color(0x4a1018);
-      ring.material.color.copy(rTeal).lerp(rBlood, blend * 0.7);
-    }
-  }
-
-  /**
-   * Displayed blood height follows viscous spring (bloodDisplay).
-   * Free surface: meniscus + 2–3 harmonics; quieter when draining.
-   */
-  function updateLiquid(dt) {
-    const mesh = state.liquid;
-    const surface = state.liquidSurface;
-    const foam = state.liquidFoam;
-    const bubbleGroup = state.liquidBubbles;
-    if (!mesh) return;
-
-    const level = THREE.MathUtils.clamp(state.bloodDisplay, 0, 1);
-    const draining = state.bloodDraining;
-    const filling = state.bloodFilling;
-    const fullH = state.liquidFullH;
-    const r = state.liquidRadius || 0.05;
-
-    if (level < 0.012) {
-      mesh.visible = false;
-      mesh.material.opacity = 0;
-      if (surface) {
-        surface.visible = false;
-        surface.material.opacity = 0;
-      }
-      if (foam) {
-        foam.visible = false;
-        foam.material.opacity = 0;
-      }
-      if (bubbleGroup) {
-        for (const b of bubbleGroup.userData.list || []) b.visible = false;
-      }
-      return;
-    }
-
-    mesh.visible = true;
-    const et = clock.getElapsedTime();
-    const h = Math.max(0.004, fullH * level);
-    mesh.scale.set(1, h, 1);
-    mesh.position.y = h * 0.5;
-
-    const depthMix = THREE.MathUtils.clamp(level * 1.1, 0, 1);
-    mesh.material.color
-      .setHex(0x4a080e)
-      .lerp(new THREE.Color(0x7a1218), 0.35 + depthMix * 0.25);
-    mesh.material.opacity = THREE.MathUtils.clamp(0.94 + level * 0.05, 0.92, 0.99);
-    mesh.material.emissiveIntensity = 0.045 + level * 0.02;
-    mesh.material.roughness = 0.32 + (draining ? 0.06 : 0);
-    mesh.material.depthWrite = true;
-    mesh.renderOrder = 4;
-
-    const ampScale = draining ? 0.32 : filling ? 1.0 : 0.55;
-    const waveAmp = r * 0.015 * ampScale;
-
-    if (surface) {
-      surface.visible = true;
-      surface.position.set(0, h + waveAmp * 0.15, 0);
-      const base = surface.userData.basePos;
-      const pos = surface.geometry.attributes.position;
-      if (base && pos) {
-        const whirl = draining ? 0.6 : 0;
-        for (let i = 0; i < pos.count; i++) {
-          const ix = i * 3;
-          const bx = base[ix];
-          const by = base[ix + 1];
-          const bz = base[ix + 2];
-          const ang = Math.atan2(by, bx);
-          const rr = Math.sqrt(bx * bx + by * by) || 0.0001;
-          const rN = THREE.MathUtils.clamp(
-            rr / (surface.userData.radius || r),
-            0,
-            1
-          );
-          /* Concave meniscus: rim climbs wall */
-          const meniscus = rN * rN * waveAmp * 1.4 - waveAmp * 0.38;
-          const h1 = Math.sin(ang * 2.0 + et * 1.12) * waveAmp * 0.85;
-          const h2 = Math.sin(ang * 3.0 - et * 1.58 + 0.4) * waveAmp * 0.42;
-          const h3 = Math.sin(ang * 5.0 + et * 0.82) * waveAmp * 0.2;
-          const whirlDisp =
-            whirl * waveAmp * 0.45 * rN * Math.sin(ang - et * 2.15);
-          pos.array[ix] = bx;
-          pos.array[ix + 1] = by;
-          pos.array[ix + 2] = bz + meniscus + h1 + h2 + h3 + whirlDisp;
-        }
-        pos.needsUpdate = true;
-        surface.geometry.computeVertexNormals();
-      }
-      surface.material.opacity = THREE.MathUtils.clamp(
-        0.88 + level * 0.1,
-        0.85,
-        0.98
-      );
-      surface.material.clearcoat = draining ? 0.42 : 0.72;
-      surface.material.color
-        .setHex(0x5a0c14)
-        .lerp(new THREE.Color(0x8a1820), 0.4);
-      surface.material.emissiveIntensity = 0.05;
-      surface.renderOrder = 5;
-    }
-
-    if (foam) {
-      const foamWin = filling
-        ? smoothstep(0.18, 0.45, level) * (1 - smoothstep(0.72, 0.92, level))
-        : 0;
-      if (foamWin > 0.02) {
-        foam.visible = true;
-        foam.position.set(0, h + r * 0.01, 0);
-        foam.material.opacity = foamWin * 0.28;
-        const fs = 1 + Math.sin(et * 1.4) * 0.012;
-        foam.scale.set(fs, fs, fs);
-      } else {
-        foam.visible = false;
-        foam.material.opacity = 0;
-      }
-    }
-
-    if (bubbleGroup && bubbleGroup.userData.list) {
-      const list = bubbleGroup.userData.list;
-      const showB = filling && level > 0.08 && level < 0.95;
-      const step = (dt || state.lastDt || 1 / 60);
-      for (let i = 0; i < list.length; i++) {
-        const b = list[i];
-        if (!showB) {
-          b.visible = false;
-          continue;
-        }
-        b.visible = true;
-        const ud = b.userData;
-        ud.y01 = (ud.y01 + step * ud.speed * 0.55) % 1;
-        const y = ud.y01 * h * 0.92 + h * 0.04;
-        const ang = ud.ang + et * 0.35 + ud.phase * 0.1;
-        const orbit = ud.orbit * (0.85 + 0.15 * Math.sin(et + ud.phase));
-        b.position.set(Math.cos(ang) * orbit, y, Math.sin(ang) * orbit);
-        const nearTop = smoothstep(0.75, 1, ud.y01);
-        const nearBot = 1 - smoothstep(0, 0.12, ud.y01);
-        b.material.opacity =
-          0.4 * nearBot * (1 - nearTop) * smoothstep(0.08, 0.25, level);
-        b.scale.setScalar(0.7 + 0.4 * (1 - nearTop));
-      }
+      ring.material.color.setHex(0x066163);
     }
   }
 
   function applyTheatre(t, dt) {
     /*
-     * Intro  0–0.12  : locked, scale-in / dolly from farther
-     * Explode 0.12–0.38: sep + lid tilt (anticipatory), yaw swing
-     * Rejoin 0.38–0.55: sep→0 with soft settle + micro-wobble
-     * Stream 0.38–0.58: look into port; overlaps early fill
-     * Blood  fill 0.40–0.58 · hold 0.58–0.64 · drain 0.64–0.86
+     * Intro   0–0.12 : locked, soft scale-in / gentle dolly
+     * Explode 0.10–0.44: sep + lid tilt (anticipatory), soft yaw
+     * Rejoin  0.40–0.58: sep→0 with soft settle + micro-wobble
+     * Stream  0.52–0.92: teal clinical suction tube → bag
      */
-    const introE = easeOutCubic(smoothstep(0.0, 0.09, t));
+    const introE = easeOutCubic(smoothstep(0.0, 0.10, t));
 
-    /* Stagger: lid leads body by LID_LEAD of progress */
     const tLid = THREE.MathUtils.clamp(t + LID_LEAD, 0, 1);
     const tBody = THREE.MathUtils.clamp(t - BODY_LAG, 0, 1);
 
+    /* Wider explode window + circ ease — less snappy */
     const openLid = organicScrub
-      ? easeAnticipatory(smoothstep(0.07, 0.34, tLid))
-      : easeInOutQuint(smoothstep(0.08, 0.34, tLid));
+      ? easeAnticipatory(smoothstep(0.08, 0.40, tLid))
+      : easeInOutQuint(smoothstep(0.09, 0.38, tLid));
     const openBody = organicScrub
-      ? easeInOutQuint(smoothstep(0.09, 0.36, tBody))
-      : easeInOutQuint(smoothstep(0.09, 0.35, tBody));
-    const rejoinLid = easeInOutCirc(smoothstep(0.34, 0.5, tLid));
-    const rejoinBody = easeInOutCirc(smoothstep(0.35, 0.52, tBody));
+      ? easeInOutCirc(smoothstep(0.10, 0.42, tBody))
+      : easeInOutQuint(smoothstep(0.10, 0.40, tBody));
+    const rejoinLid = easeInOutCirc(smoothstep(0.40, 0.58, tLid));
+    const rejoinBody = easeInOutCirc(smoothstep(0.42, 0.60, tBody));
 
     const sepLid = Math.max(0, openLid * (1 - rejoinLid));
     const sepBody = Math.max(0, openBody * (1 - rejoinBody));
     const sep = Math.max(sepLid, sepBody);
 
-    /* Stream overlaps start of fill briefly, then fades as blood takes focus */
-    const flowE = easeInOutQuint(smoothstep(0.38, 0.56, t)) * (1 - 0.75 * smoothstep(0.52, 0.7, t));
-    /*
-     * Blood target from scroll — displayed height follows viscous spring.
-     * fill 0.40–0.58 · hold 0.58–0.64 · drain 0.64–0.86
-     */
-    const fillUp = easeInOutCirc(smoothstep(0.4, 0.58, t));
-    const drain = easeInOutQuint(smoothstep(0.64, 0.86, t));
-    const bloodTarget = Math.max(0, fillUp * (1 - drain));
-    state.bloodTarget = bloodTarget;
-    state.bloodFilling = fillUp > 0.02 && drain < 0.02 && bloodTarget > state.bloodDisplay - 0.002;
-    state.bloodDraining = drain > 0.02;
-    stepBloodSpring(dt);
-    const fillE = state.bloodDisplay; /* camera/light follow living blood column */
-    const bloodBlend = THREE.MathUtils.clamp(
-      smoothstep(0.42, 0.55, t) * (1 - smoothstep(0.7, 0.88, t)),
-      0,
-      1
-    );
+    /* Stream grows after rejoin begins; soft fade at end — teal only */
+    const flowE =
+      easeInOutCirc(smoothstep(0.50, 0.68, t)) *
+      (1 - 0.85 * smoothstep(0.82, 0.96, t));
 
-    /* Track peak separation → fuel decaying micro-wobble after explode */
     if (sep > state.peakSep) state.peakSep = sep;
     if (sep < state.peakSep * 0.85 && state.peakSep > 0.35) {
-      state.wobbleAmp = Math.max(state.wobbleAmp, state.peakSep * 0.55);
+      state.wobbleAmp = Math.max(state.wobbleAmp, state.peakSep * 0.5);
     }
-    if (sep < 0.05) state.peakSep *= 0.992;
-    state.wobbleAmp *= Math.exp(-2.8 * dt); /* decay ~0.35s half-life */
+    if (sep < 0.05) state.peakSep *= 0.994;
+    state.wobbleAmp *= Math.exp(-2.4 * dt);
 
     const et = clock.getElapsedTime();
     const wobble =
       state.wobbleAmp *
-      Math.sin(et * 11.5) *
-      Math.exp(-state.wobbleAmp * 0.8);
+      Math.sin(et * 10.2) *
+      Math.exp(-state.wobbleAmp * 0.75);
 
     if (state.lid) {
-      const sL = sepLid + wobble * 0.35;
+      const sL = sepLid + wobble * 0.32;
       state.lid.position.set(
         state.lidBase.x - X_SPLIT * sL,
         state.lidBase.y + LID_UP * sL,
         state.lidBase.z
       );
       state.lid.rotation.copy(state.lidBaseRot);
-      state.lid.rotation.x += LID_TILT_X * sL + wobble * 0.08;
-      state.lid.rotation.z += LID_TILT_Z * sL + wobble * 0.05;
+      state.lid.rotation.x += LID_TILT_X * sL + wobble * 0.07;
+      state.lid.rotation.z += LID_TILT_Z * sL + wobble * 0.045;
     }
     if (state.body) {
-      const sB = sepBody - wobble * 0.2;
+      const sB = sepBody - wobble * 0.18;
       state.body.position.set(
         state.bodyBase.x + X_SPLIT * Math.max(0, sB),
         state.bodyBase.y - BODY_DOWN * Math.max(0, sB),
         state.bodyBase.z
       );
       state.body.rotation.copy(state.bodyBaseRot);
-      state.body.rotation.z += wobble * -0.03;
+      state.body.rotation.z += wobble * -0.028;
     }
 
-    const introScale = 0.92 + 0.08 * introE;
-    const fillScale = 1 + 0.05 * fillE;
-    const s = introScale * fillScale;
-    product.scale.set(s, s, s);
+    const introScale = 0.93 + 0.07 * introE;
+    product.scale.set(introScale, introScale, introScale);
 
-    /* Soft breathing idle when scroll nearly still + assembled */
     const still = 1 - THREE.MathUtils.clamp(state.scrollSpeed * 28, 0, 1);
     const breathAmp =
-      (1 - sep) * (1 - flowE * 0.45) * (0.35 + 0.65 * still);
+      (1 - sep) * (1 - flowE * 0.4) * (0.35 + 0.65 * still);
     const breath =
-      breathAmp * Math.sin(et * 1.05) * (organicScrub ? 0.0075 : 0.006);
+      breathAmp * Math.sin(et * 1.05) * (organicScrub ? 0.007 : 0.0055);
     product.position.y = (lightTheme ? 0.025 : 0) + breath;
 
-    /* Handheld noise — damps when scrolling fast */
     const handTarget = still * (organicScrub ? 1 : 0.45);
-    const n1 = Math.sin(et * 0.93) * 0.0045 + Math.sin(et * 1.71) * 0.0022;
-    const n2 = Math.cos(et * 1.17) * 0.0038 + Math.sin(et * 2.05) * 0.0016;
-    const n3 = Math.sin(et * 0.61 + 1.2) * 0.003;
-    state.handheld.x += (n1 * handTarget - state.handheld.x) * Math.min(1, dt * 4);
-    state.handheld.y += (n2 * handTarget - state.handheld.y) * Math.min(1, dt * 4);
-    state.handheld.z += (n3 * handTarget - state.handheld.z) * Math.min(1, dt * 4);
+    const n1 = Math.sin(et * 0.93) * 0.004 + Math.sin(et * 1.71) * 0.002;
+    const n2 = Math.cos(et * 1.17) * 0.0034 + Math.sin(et * 2.05) * 0.0014;
+    const n3 = Math.sin(et * 0.61 + 1.2) * 0.0026;
+    state.handheld.x += (n1 * handTarget - state.handheld.x) * Math.min(1, dt * 3.6);
+    state.handheld.y += (n2 * handTarget - state.handheld.y) * Math.min(1, dt * 3.6);
+    state.handheld.z += (n3 * handTarget - state.handheld.z) * Math.min(1, dt * 3.6);
 
-    placeCamera(t, sep, flowE, fillE, introE, handTarget);
-    updateStream(flowE, bloodBlend);
-    updateLiquid(dt);
+    placeCamera(t, sep, flowE, introE, handTarget);
+    updateStream(flowE);
 
-    /* Soft light breathe tied to phase — not disco */
-    const lightBreath = 1 + 0.04 * Math.sin(et * 0.85) * still;
+    const lightBreath = 1 + 0.035 * Math.sin(et * 0.85) * still;
     if (state.keyLight) {
       const target = lightTheme
-        ? 1.45 + flowE * 0.18 + fillE * 0.22
-        : 1.15 + flowE * 0.4 + fillE * 0.5;
-      state.keyLight.intensity =
-        THREE.MathUtils.lerp(state.keyLight.intensity, target * lightBreath, Math.min(1, dt * 3));
+        ? 1.45 + flowE * 0.16 + sep * 0.08
+        : 1.2 + flowE * 0.32 + sep * 0.18;
+      state.keyLight.intensity = THREE.MathUtils.lerp(
+        state.keyLight.intensity,
+        target * lightBreath,
+        Math.min(1, dt * 2.8)
+      );
     }
     if (state.rimLight) {
       const target = lightTheme
-        ? 0.75 + flowE * 0.18 + fillE * 0.16
-        : 0.95 + flowE * 0.5 + fillE * 0.35;
-      state.rimLight.intensity =
-        THREE.MathUtils.lerp(state.rimLight.intensity, target * lightBreath, Math.min(1, dt * 3));
+        ? 0.75 + flowE * 0.16 + sep * 0.08
+        : 0.95 + flowE * 0.42 + sep * 0.22;
+      state.rimLight.intensity = THREE.MathUtils.lerp(
+        state.rimLight.intensity,
+        target * lightBreath,
+        Math.min(1, dt * 2.8)
+      );
     }
     const expoTarget = lightTheme
-      ? 1.28 + flowE * 0.06 + fillE * 0.08
-      : 1.0 + flowE * 0.12 + fillE * 0.16;
+      ? 1.28 + flowE * 0.05 + sep * 0.03
+      : 1.05 + flowE * 0.1 + sep * 0.06;
     renderer.toneMappingExposure = THREE.MathUtils.lerp(
       renderer.toneMappingExposure,
       expoTarget,
-      Math.min(1, dt * 2.5)
+      Math.min(1, dt * 2.4)
     );
 
     if (progressFill) progressFill.style.width = Math.round(t * 100) + '%';
@@ -1256,7 +893,6 @@ function boot() {
       sizeCanvas();
       fitCamera(new THREE.Box3().setFromObject(product));
       createClinicalStream(lid, body);
-      createLiquidFill(body);
       state.ready = true;
       if (loadingEl) loadingEl.classList.add('hide');
       applyTheatre(0, 1 / 60);
