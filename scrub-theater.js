@@ -1,8 +1,9 @@
 /**
- * Abadis Product Theater — WHIST-BRAND-V30
+ * Abadis Product Theater — WHIST-BRAND-V31
  * Dark mint stage (default) or light whist skin via data-theme="light".
  * Narrative beats: intro → explode → rejoin → assembled settle (no suction tube).
  * Scrub modes: data-scrub="organic" | "soft" | "snappy"
+ * V31: buttery rotate — smoothed follow + inertia coast; quieter idle while drag.
  * V30: finger/mouse drag rotate (hybrid touch) + lid brand teal #066163.
  * V27: kill end-phase clinical straw/stream into port; quiet assemble end.
  * V25: tight scrub (بدون گیر) — critical damp, no endDamp/catch-up lag.
@@ -972,16 +973,28 @@ function boot() {
 
   window.addEventListener('resize', refitIfReady);
 
-  /* —— V30: hybrid pointer rotate (mouse + one-finger) ——
+  /* —— V31: hybrid pointer rotate (smoothed follow + inertia) ——
    * Mouse left-drag always rotates. Touch: after ~8px, if mostly
    * horizontal (|dx| > |dy| * 0.85) capture + rotate; else let page scroll.
+   * Pointer deltas drive targetYaw/Pitch; displayed angles exp-lerp (~12 Hz).
+   * On release: coast with exponential friction (~0.5–0.8s), then soft pitch home.
    */
   let userYaw = 0;
   let userPitch = 0;
+  let targetYaw = 0;
+  let targetPitch = 0;
+  let velYaw = 0;
+  let velPitch = 0;
   const PITCH_MAX = 0.35;
   const DRAG_SENS = 0.005;
   const DRAG_THRESH = 8;
   const HORIZ_RATIO = 0.85;
+  /* Exp follow ~10–14 Hz — buttery, not laggy */
+  const FOLLOW_HZ = 12;
+  /* Coast friction: ~e^(-5*t) → ~5% in ~0.6s */
+  const FRICTION_YAW = 5.0;
+  const FRICTION_PITCH = 6.2;
+  const VEL_EPS = 0.018;
   const drag = {
     active: false,
     rotateMode: false,
@@ -991,6 +1004,7 @@ function boot() {
     startY: 0,
     lastX: 0,
     lastY: 0,
+    lastT: 0,
   };
 
   function endDrag(e) {
@@ -1001,6 +1015,12 @@ function boot() {
       } catch (_) {
         /* already released */
       }
+    }
+    /* Seed inertia from recent angular velocity (already EMA'd while dragging) */
+    if (drag.rotateMode) {
+      /* Keep velYaw / velPitch; sync targets so coast starts continuous */
+      targetYaw = userYaw;
+      targetPitch = userPitch;
     }
     drag.active = false;
     drag.rotateMode = false;
@@ -1016,6 +1036,12 @@ function boot() {
       drag.pointerId = e.pointerId;
       drag.startX = drag.lastX = e.clientX;
       drag.startY = drag.lastY = e.clientY;
+      drag.lastT = performance.now();
+      /* Absorb residual coast into current pose so grab feels sticky */
+      targetYaw = userYaw;
+      targetPitch = userPitch;
+      velYaw = 0;
+      velPitch = 0;
       if (e.pointerType === 'mouse') {
         /* Desktop: left-button drag always rotates; wheel still scrolls */
         drag.rotateMode = true;
@@ -1058,16 +1084,27 @@ function boot() {
       }
       if (!drag.rotateMode) return;
       e.preventDefault();
+      const now = performance.now();
+      const frameDt = Math.max(0.001, (now - drag.lastT) / 1000);
+      drag.lastT = now;
       const dx = x - drag.lastX;
       const dy = y - drag.lastY;
       drag.lastX = x;
       drag.lastY = y;
-      userYaw += dx * DRAG_SENS;
-      userPitch = THREE.MathUtils.clamp(
-        userPitch + dy * DRAG_SENS,
+      const dYaw = dx * DRAG_SENS;
+      const dPitch = dy * DRAG_SENS;
+      targetYaw += dYaw;
+      targetPitch = THREE.MathUtils.clamp(
+        targetPitch + dPitch,
         -PITCH_MAX,
         PITCH_MAX
       );
+      /* EMA angular velocity for release inertia */
+      const instYaw = dYaw / frameDt;
+      const instPitch = dPitch / frameDt;
+      const blend = 1 - Math.exp(-18 * frameDt);
+      velYaw += (instYaw - velYaw) * blend;
+      velPitch += (instPitch - velPitch) * blend;
     },
     { passive: false }
   );
@@ -1076,6 +1113,48 @@ function boot() {
   canvas.addEventListener('pointercancel', endDrag, { passive: true });
   canvas.addEventListener('lostpointercapture', endDrag, { passive: true });
 
+  function stepUserOrbit(dt) {
+    const rotating = drag.rotateMode;
+    const coasting =
+      !rotating && (Math.abs(velYaw) > VEL_EPS || Math.abs(velPitch) > VEL_EPS);
+
+    if (rotating) {
+      /* Critically-feel exp follow toward pointer targets */
+      const a = 1 - Math.exp(-FOLLOW_HZ * dt);
+      userYaw += (targetYaw - userYaw) * a;
+      userPitch += (targetPitch - userPitch) * a;
+    } else if (coasting) {
+      userYaw += velYaw * dt;
+      userPitch = THREE.MathUtils.clamp(
+        userPitch + velPitch * dt,
+        -PITCH_MAX,
+        PITCH_MAX
+      );
+      velYaw *= Math.exp(-FRICTION_YAW * dt);
+      velPitch *= Math.exp(-FRICTION_PITCH * dt);
+      if (Math.abs(velYaw) < VEL_EPS) velYaw = 0;
+      if (Math.abs(velPitch) < VEL_EPS) velPitch = 0;
+      /* Soft pitch clamp near edges while coasting */
+      if (userPitch > PITCH_MAX * 0.92) {
+        velPitch = Math.min(velPitch, 0);
+      } else if (userPitch < -PITCH_MAX * 0.92) {
+        velPitch = Math.max(velPitch, 0);
+      }
+      targetYaw = userYaw;
+      targetPitch = userPitch;
+    } else {
+      /* Idle after coast: soft-return pitch only; keep yaw */
+      velYaw = 0;
+      velPitch = 0;
+      targetPitch += (0 - targetPitch) * (1 - Math.exp(-1.5 * dt));
+      userPitch += (targetPitch - userPitch) * (1 - Math.exp(-FOLLOW_HZ * dt));
+      if (Math.abs(userPitch) < 0.0004) {
+        userPitch = 0;
+        targetPitch = 0;
+      }
+      targetYaw = userYaw;
+    }
+  }
 
   function applyFrame(dt) {
     let nextTarget = scrubProgress();
@@ -1111,16 +1190,19 @@ function boot() {
     if (!state.ready) return;
     applyTheatre(state.smoothT, dt);
 
-    /* V25: quieter idle float — ~40% prior amplitude */
+    stepUserOrbit(dt);
+
+    /* V25: quieter idle float — ~40% prior amplitude.
+     * V31: further reduce while dragging/coasting so orbit feels clean. */
     const idle = 1 - Math.min(1, state.smoothT * 1.6);
     const still = 1 - THREE.MathUtils.clamp(state.scrollSpeed * 28, 0, 1);
     const et = clock.getElapsedTime();
-    const idleAmp = idle * (0.4 + 0.6 * still) * 0.4;
-    /* Soft-return pitch only when not actively rotating; keep yaw */
-    if (!drag.rotateMode) {
-      userPitch += (0 - userPitch) * (1 - Math.exp(-1.6 * dt));
-      if (Math.abs(userPitch) < 0.0004) userPitch = 0;
-    }
+    const orbitBusy =
+      drag.rotateMode ||
+      Math.abs(velYaw) > VEL_EPS ||
+      Math.abs(velPitch) > VEL_EPS;
+    const idleMul = orbitBusy ? 0.22 : 1;
+    const idleAmp = idle * (0.4 + 0.6 * still) * 0.4 * idleMul;
     /* userYaw / userPitch layered on top of idle float */
     product.rotation.set(
       Math.sin(et * 0.48) * 0.022 * idleAmp + userPitch,
