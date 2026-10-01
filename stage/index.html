@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>کیسه ساکشن آبادیس — Stage</title>
+<script type="importmap">
+{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}
+</script>
+<style>
+@font-face{font-family:"Kalameh";src:url("./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Kalameh";src:url("./fonts/kalameh/KalamehWeb-FaNum-Medium.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Kalameh";src:url("./fonts/kalameh/KalamehWeb-FaNum-SemiBold.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Kalameh";src:url("./fonts/kalameh/KalamehWeb-FaNum-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Kalameh";src:url("./fonts/kalameh/KalamehWeb-FaNum-ExtraBold.woff2") format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Kalameh";src:url("./fonts/kalameh/KalamehWeb-FaNum-Black.woff2") format("woff2");font-weight:900;font-display:swap}
+
+:root{
+  --bg:#09090f;
+  --panel:#12121a;
+  --line:rgba(255,255,255,0.08);
+  --text:#f4f2ff;
+  --dim:rgba(200,195,230,0.5);
+  --a:#a78bfa;
+  --a2:#7c3aed;
+  --rose:#fb7185;
+  --font:"Kalameh",Tahoma,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden}
+
+/* LEFT RAIL */
+.rail{
+  position:fixed;top:0;right:0;bottom:0;width:72px;z-index:50;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 0;gap:8px;
+  border-left:1px solid var(--line);
+  background:rgba(9,9,15,0.85);backdrop-filter:blur(16px);
+}
+.rail .mark{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-weight:900;font-size:0.85rem;letter-spacing:0.2em;
+  color:var(--a);margin-bottom:auto;padding:12px 0;
+}
+.rail a{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--dim);text-decoration:none;font-size:0.7rem;font-weight:700;
+  border:1px solid transparent;transition:all .25s;
+}
+.rail a:hover,.rail a.on{
+  color:#fff;border-color:rgba(167,139,250,0.4);
+  background:rgba(167,139,250,0.12);
+}
+@media(max-width:800px){
+  .rail{width:100%;height:56px;top:auto;bottom:0;right:0;left:0;flex-direction:row;
+    border-left:none;border-top:1px solid var(--line);padding:0 12px;justify-content:space-around}
+  .rail .mark{display:none}
+  body{padding-bottom:56px}
+}
+
+/* SNAP SECTIONS */
+.stage{margin-left:0;margin-right:72px}
+@media(max-width:800px){.stage{margin-right:0}}
+
+.panel{
+  min-height:100vh;
+  display:grid;
+  align-items:center;
+  padding:48px 40px;
+  position:relative;
+  border-bottom:1px solid var(--line);
+}
+@media(max-width:800px){.panel{padding:32px 18px;min-height:auto;padding-block:64px}}
+
+/* PANEL 01 — TYPO + VIDEO STRIP */
+.p1{grid-template-columns:1.2fr 0.8fr;gap:40px}
+@media(max-width:900px){.p1{grid-template-columns:1fr}}
+.p1 .eyebrow{
+  font-size:0.75rem;font-weight:700;letter-spacing:0.18em;
+  color:var(--a);margin-bottom:16px;
+}
+.p1 h1{
+  font-size:clamp(2.8rem,7vw,5.2rem);font-weight:900;line-height:1.05;
+  letter-spacing:-0.04em;margin-bottom:20px;
+}
+.p1 h1 i{font-style:normal;color:var(--rose)}
+.p1 .lead{font-size:1.1rem;color:var(--dim);max-width:420px;margin-bottom:28px}
+.p1 .actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;padding:12px 24px;border-radius:999px;
+  font-family:inherit;font-weight:800;font-size:0.9rem;border:none;cursor:pointer;
+  transition:transform .25s,box-shadow .25s;
+}
+.btn-fill{background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12}
+.btn-fill:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,58,237,0.4)}
+.btn-line{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn-line:hover{border-color:var(--a);color:var(--a)}
+
+.video-frame{
+  position:relative;border-radius:24px;overflow:hidden;
+  aspect-ratio:3/4;max-height:70vh;border:1px solid var(--line);
+  background:#000;
+}
+.video-frame video{width:100%;height:100%;object-fit:cover;opacity:0.85}
+.video-frame .cap{
+  position:absolute;bottom:0;left:0;right:0;padding:20px;
+  background:linear-gradient(transparent,rgba(0,0,0,0.85));
+  font-size:0.8rem;color:var(--dim);
+}
+
+/* PANEL 02 — 3D CENTER STAGE */
+.p2{
+  grid-template-columns:1fr;
+  text-align:center;
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 55%, rgba(124,58,237,0.15), transparent 70%),
+    var(--bg);
+}
+.p2 .stage-label{
+  font-size:0.75rem;font-weight:700;letter-spacing:0.2em;color:var(--dim);margin-bottom:8px;
+}
+.p2 h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:900;margin-bottom:8px}
+.p2 .hint{color:var(--dim);font-size:0.9rem;margin-bottom:24px}
+
+.orbit-wrap{
+  width:min(480px,90vw);height:min(480px,90vw);
+  margin:0 auto;position:relative;
+  border-radius:50%;
+  border:1px dashed rgba(167,139,250,0.25);
+}
+.orbit-wrap::before{
+  content:"";position:absolute;inset:12%;border-radius:50%;
+  border:1px solid rgba(251,113,133,0.15);
+  animation:spin 20s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orbit-canvas{
+  position:absolute;inset:8%;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%, #1a1528, #09090f 70%);
+}
+.orbit-canvas canvas{width:100%!important;height:100%!important;display:block;cursor:grab;touch-action:none}
+.orbit-canvas canvas:active{cursor:grabbing}
+.orbit-load{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--dim);font-size:0.85rem;z-index:2;
+}
+.orbit-load.hide{opacity:0;pointer-events:none;transition:opacity .4s}
+
+.float-tag{
+  position:absolute;padding:8px 14px;border-radius:999px;
+  background:rgba(18,18,26,0.9);border:1px solid var(--line);
+  font-size:0.75rem;font-weight:700;white-space:nowrap;
+  backdrop-filter:blur(10px);
+  animation:bob 4s ease-in-out infinite;
+}
+.float-tag.t1{top:8%;right:-4%;animation-delay:0s;color:var(--a)}
+.float-tag.t2{bottom:18%;left:-6%;animation-delay:1s;color:var(--rose)}
+.float-tag.t3{top:40%;left:-12%;animation-delay:.5s;color:var(--dim)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(max-width:600px){.float-tag{display:none}}
+
+/* PANEL 03 — HORIZONTAL STRIP */
+.p3{display:block;padding-block:80px}
+.p3 .head{margin-bottom:28px;padding-inline:8px}
+.p3 h2{font-size:1.8rem;font-weight:900;margin-bottom:6px}
+.p3 .sub{color:var(--dim)}
+
+.h-scroll{
+  display:flex;gap:16px;overflow-x:auto;padding:12px 8px 28px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+}
+.h-scroll::-webkit-scrollbar{height:4px}
+.h-scroll::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.4);border-radius:4px}
+
+.h-card{
+  flex:0 0 min(300px,80vw);scroll-snap-align:start;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:20px;padding:28px 22px;
+  transition:border-color .3s, transform .3s;
+  position:relative;overflow:hidden;
+}
+.h-card:hover{border-color:rgba(167,139,250,0.45);transform:translateY(-4px)}
+.h-card .n{
+  font-size:3rem;font-weight:900;line-height:1;
+  color:transparent;-webkit-text-stroke:1px rgba(167,139,250,0.35);
+  margin-bottom:12px;
+}
+.h-card h3{font-size:1.15rem;font-weight:800;margin-bottom:8px}
+.h-card p{font-size:0.9rem;color:var(--dim)}
+.h-card .bar{
+  position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--a),var(--rose));
+  transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease);
+}
+.h-card:hover .bar{transform:scaleX(1)}
+
+/* PANEL 04 — BIG NUMBERS + TABLE */
+.p4{grid-template-columns:1fr 1fr;gap:48px}
+@media(max-width:900px){.p4{grid-template-columns:1fr}}
+.big-nums{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.big{
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:28px 20px;text-align:center;
+  transition:transform .3s,border-color .3s;
+}
+.big:hover{transform:scale(1.03);border-color:rgba(167,139,250,0.35)}
+.big strong{
+  display:block;font-size:clamp(2rem,4vw,2.8rem);font-weight:900;
+  background:linear-gradient(135deg,var(--a),var(--rose));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.big span{font-size:0.82rem;color:var(--dim);font-weight:600}
+
+.codes-side h2{font-size:1.5rem;font-weight:900;margin-bottom:8px}
+.codes-side p{color:var(--dim);margin-bottom:16px;font-size:0.95rem}
+table{width:100%;border-collapse:collapse;font-size:0.84rem}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th{color:var(--dim);font-weight:600;font-size:0.75rem}
+.yes{color:var(--a);font-weight:900}
+
+/* PANEL 05 — USAGE CHIPS + CTA */
+.p5{text-align:center}
+.p5 h2{font-size:1.8rem;font-weight:900;margin-bottom:12px}
+.chips{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  max-width:640px;margin:0 auto 40px;
+}
+.chip{
+  padding:12px 20px;border-radius:999px;font-weight:700;font-size:0.88rem;
+  border:1px solid var(--line);background:var(--panel);color:var(--text);
+  cursor:pointer;transition:all .25s;
+}
+.chip:hover,.chip.on{
+  background:rgba(167,139,250,0.15);border-color:var(--a);color:#fff;
+  transform:translateY(-3px);
+}
+.cta-block{
+  display:inline-block;padding:40px 48px;border-radius:28px;
+  border:1px solid var(--line);background:var(--panel);
+  max-width:480px;
+}
+.cta-block h3{font-size:1.3rem;font-weight:900;margin-bottom:8px}
+.cta-block p{color:var(--dim);margin-bottom:20px;font-size:0.95rem}
+
+footer{
+  text-align:center;padding:24px;color:var(--dim);font-size:0.75rem;
+  margin-right:72px;border-top:1px solid var(--line);
+}
+@media(max-width:800px){footer{margin-right:0}}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<aside class="rail" aria-label="ناوبری">
+  <div class="mark">ABADIS</div>
+  <a href="#p1" class="on" data-nav>۰۱</a>
+  <a href="#p2" data-nav>۰۲</a>
+  <a href="#p3" data-nav>۰۳</a>
+  <a href="#p4" data-nav>۰۴</a>
+  <a href="#p5" data-nav>۰۵</a>
+</aside>
+
+<main class="stage">
+
+  <!-- 01 INTRO -->
+  <section class="panel p1" id="p1">
+    <div>
+      <div class="eyebrow">مخازن طبی آبادیس</div>
+      <h1>کیسه<br>ساکشن<br><i>۲ لیتری</i></h1>
+      <p class="lead">یکبار مصرف، فیلتر هیدروفوبیک، پودر ژل‌کننده — برای ICU، اتاق عمل و اورژانس.</p>
+      <div class="actions">
+        <a class="btn btn-fill" href="#p2">مشاهده مدل</a>
+        <a class="btn btn-line" href="#p4">جدول کدها</a>
+      </div>
+    </div>
+    <div class="video-frame">
+      <video autoplay muted loop playsinline id="heroVid">
+        <source src="./media/hospital-hero.mp4" type="video/mp4" />
+      </video>
+      <div class="cap">پس‌زمینه بصری · محصول واقعی در پنل بعد</div>
+    </div>
+  </section>
+
+  <!-- 02 3D STAGE -->
+  <section class="panel p2" id="p2">
+    <div style="width:100%">
+      <div class="stage-label">۰۲ — استیج محصول</div>
+      <h2>بچرخان · نزدیک شو</h2>
+      <p class="hint">مدل واقعی GLB — درگ با موس یا لمس</p>
+      <div class="orbit-wrap">
+        <span class="float-tag t1">فیلتر هیدروفوبیک</span>
+        <span class="float-tag t2">پودر ژل‌کننده</span>
+        <span class="float-tag t3">۲ → ۸ لیتر سری</span>
+        <div class="orbit-canvas">
+          <div class="orbit-load" id="viewerLoading">بارگذاری…</div>
+          <canvas id="productCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 HORIZONTAL FEATURES -->
+  <section class="panel p3" id="p3">
+    <div class="head">
+      <h2>۰۳ — چرا آبادیس</h2>
+      <p class="sub">افقی ورق بزن</p>
+    </div>
+    <div class="h-scroll">
+      <article class="h-card">
+        <div class="n">۰۱</div>
+        <h3>پودر ژل‌کننده</h3>
+        <p>مایعات به ژل تبدیل می‌شوند؛ حمل ایمن‌تر و ریسک نشت کمتر.</p>
+        <div class="bar"></div>
+      </article>
+      <article class="h-card">
+        <div class="n">۰۲</div>
+        <h3>فیلتر هیدروفوبیک</h3>
+        <p>جلوگیری از سرریز و حفاظت از سیستم ساکشن مرکزی.</p>
+        <div class="bar"></div>
+      </article>
+      <article class="h-card">
+        <div class="n">۰۳</div>
+        <h3>سازگاری کامل</h3>
+        <p>پرتابل و سانترال — بدون آداپتور خاص.</p>
+        <div class="bar"></div>
+      </article>
+      <article class="h-card">
+        <div class="n">۰۴</div>
+        <h3>یکبار مصرف</h3>
+        <p>کنترل عفونت؛ بدون شست‌وشو و بار کمتر برای پرسنل.</p>
+        <div class="bar"></div>
+      </article>
+      <article class="h-card">
+        <div class="n">۰۵</div>
+        <h3>سری روی پایه</h3>
+        <p>تا ۸ لیتر یک‌ردیفه و ۱۶ لیتر دو‌ردیفه روی یک پایه.</p>
+        <div class="bar"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 04 SPECS -->
+  <section class="panel p4" id="p4">
+    <div>
+      <div class="eyebrow" style="color:var(--a);font-size:0.75rem;font-weight:700;letter-spacing:0.15em;margin-bottom:12px">۰۴ — ابعاد</div>
+      <div class="big-nums">
+        <div class="big"><strong>۲ L</strong><span>حجم تکی</span></div>
+        <div class="big"><strong>۸ L</strong><span>سری یک‌ردیفه</span></div>
+        <div class="big"><strong>۱۱</strong><span>cm قطر</span></div>
+        <div class="big"><strong>۲۴.۵</strong><span>cm ارتفاع</span></div>
+      </div>
+    </div>
+    <div class="codes-side">
+      <h2>کدهای ۲ لیتری</h2>
+      <p>۴۵ عدد در کارتن · ۵۷.۵ × ۴۲.۵ × ۴۴ cm</p>
+      <table>
+        <thead><tr><th>کد</th><th>فیلتر</th><th>پودر</th></tr></thead>
+        <tbody>
+          <tr><td>۰۴۰۱۱۱۲</td><td>هیدروفوبیک</td><td class="yes">✓</td></tr>
+          <tr><td>۰۴۰۱۱۰۲</td><td>—</td><td class="yes">✓</td></tr>
+          <tr><td>۰۴۰۱۰۱۲</td><td>هیدروفوبیک</td><td>—</td></tr>
+          <tr><td>۰۴۰۱۱۳۲</td><td>مکانیکی</td><td class="yes">✓</td></tr>
+          <tr><td>۰۴۰۱۱۱۲</td><td>CIF</td><td class="yes">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 05 USAGE -->
+  <section class="panel p5" id="p5">
+    <h2>۰۵ — موارد مصرف</h2>
+    <div class="chips">
+      <button type="button" class="chip">ریه و آندوسکوپی</button>
+      <button type="button" class="chip">گوارش</button>
+      <button type="button" class="chip">CCU / ICU</button>
+      <button type="button" class="chip">NICU / PICU</button>
+      <button type="button" class="chip">عفونی</button>
+      <button type="button" class="chip">اورژانس</button>
+      <button type="button" class="chip">بخش مردان</button>
+      <button type="button" class="chip">بخش زنان</button>
+      <button type="button" class="chip">ECT</button>
+      <button type="button" class="chip">اتاق عمل</button>
+    </div>
+    <div class="cta-block">
+      <h3>سفارش برای مرکز شما</h3>
+      <p>نمونه، قیمت و نصب — تیم فروش آبادیس</p>
+      <button class="btn btn-fill" type="button">تماس با فروش</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>آبادیس Stage · ایده جدید · بدون سبز · فونت کلمه · مدل ۳بعدی</footer>
+
+<script>
+const panels=[...document.querySelectorAll('.panel')];
+const navs=[...document.querySelectorAll('[data-nav]')];
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const id=e.target.id;
+    navs.forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#'+id));
+  });
+},{threshold:0.45});
+panels.forEach(p=>io.observe(p));
+
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>c.classList.toggle('on'));
+});
+
+const v=document.getElementById('heroVid');
+if(v){v.play().catch(()=>{});document.addEventListener('touchstart',()=>v.play().catch(()=>{}),{once:true})}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas=document.getElementById('productCanvas');
+const loading=document.getElementById('viewerLoading');
+if(canvas){
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.3;
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(32,1,0.01,100);
+  camera.position.set(0.4,0.22,0.85);
+
+  const controls=new OrbitControls(camera,canvas);
+  controls.enableDamping=true;controls.dampingFactor=0.07;
+  controls.enablePan=false;controls.minDistance=0.4;controls.maxDistance=1.7;
+  controls.autoRotate=true;controls.autoRotateSpeed=1.1;
+  controls.target.set(0,0.03,0);
+
+  scene.add(new THREE.AmbientLight(0xc4b5fd,0.45));
+  const key=new THREE.DirectionalLight(0xffffff,1.35);key.position.set(2,3,2);scene.add(key);
+  const fill=new THREE.DirectionalLight(0xa78bfa,0.5);fill.position.set(-2,1,-1);scene.add(fill);
+  const rim=new THREE.DirectionalLight(0xfb7185,0.3);rim.position.set(0,-1,-2);scene.add(rim);
+
+  function resize(){
+    const box=canvas.parentElement.getBoundingClientRect();
+    const w=box.width||300,h=box.height||300;
+    renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+  }
+  resize();window.addEventListener('resize',resize);
+  controls.addEventListener('start',()=>{controls.autoRotate=false});
+  let idle;controls.addEventListener('end',()=>{clearTimeout(idle);idle=setTimeout(()=>{controls.autoRotate=true},3000)});
+
+  new GLTFLoader().load('./abadis-scrub-parts.glb',gltf=>{
+    const root=gltf.scene;
+    const box=new THREE.Box3().setFromObject(root);
+    const size=box.getSize(new THREE.Vector3());
+    const center=box.getCenter(new THREE.Vector3());
+    root.position.sub(center);
+    root.scale.setScalar(0.52/Math.max(size.x,size.y,size.z,1));
+    root.position.y+=0.02;
+    scene.add(root);
+    loading?.classList.add('hide');
+  },undefined,()=>{if(loading)loading.textContent='خطا'});
+
+  (function tick(){controls.update();renderer.render(scene,camera);requestAnimationFrame(tick)})();
+}
+</script>
+</body>
+</html>
