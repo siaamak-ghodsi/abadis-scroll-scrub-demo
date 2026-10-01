@@ -3,7 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>کیسه ساکشن آبادیس — Stage</title>
+<title>کیسه ساکشن آبادیس — مخازن طبی آبادیس</title>
+<meta name="description" content="کیسه ساکشن یکبار مصرف آبادیس در حجم‌های ۱، ۲ و ۳ لیتری؛ دارای پودر ژل‌کننده، فیلتر هیدروفوبیک و سیستم حفاظت از ساکشن مرکزی، سازگار با کلیه دستگاه‌های ساکشن." />
+<meta name="theme-color" content="#09090f" />
+<link rel="canonical" href="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/stage/" />
+<link rel="icon" href="./favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
+<link rel="apple-touch-icon" href="./img/apple-touch-icon.png" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="fa_IR" />
+<meta property="og:site_name" content="مخازن طبی آبادیس" />
+<meta property="og:title" content="کیسه ساکشن یکبار مصرف آبادیس" />
+<meta property="og:description" content="یک، دو و سه لیتری — با پودر ژل‌کننده، فیلتر هیدروفوبیک و سازگاری کامل با دستگاه‌های ساکشن بیمارستانی" />
+<meta property="og:url" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/stage/" />
+<meta property="og:image" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/stage/img/og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/stage/img/og-image.jpg" />
+<link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Black.woff2" as="font" type="font/woff2" crossorigin />
 <script type="importmap">
 {"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}
 </script>
@@ -105,6 +124,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   background:#000;
 }
 .video-frame video{width:100%;height:100%;object-fit:cover;opacity:0.85}
+/* p1: the video is a soft full-bleed background */
+.p1{isolation:isolate;overflow:hidden}
+.p1 .video-frame{position:absolute;inset:0;z-index:-1;border-radius:0;border:none;aspect-ratio:auto;max-height:none;background:var(--bg)}
+.p1 .video-frame video{display:block;opacity:0.5;filter:saturate(0.85)}
+.p1 .video-frame::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to left,rgba(9,9,15,0.9) 0%,rgba(9,9,15,0.62) 45%,rgba(9,9,15,0.38) 100%),
+             linear-gradient(180deg,rgba(9,9,15,0.35) 0%,transparent 28%,transparent 72%,var(--bg) 100%)}
+.p1 h1,.p1 .lead{text-shadow:0 2px 20px rgba(0,0,0,0.5)}
+.p1 .lead{color:rgba(232,228,250,0.82)}
+@media(max-width:900px){
+  .p1{min-height:88vh;min-height:88svh}
+  .p1 .video-frame::after{background:linear-gradient(180deg,rgba(9,9,15,0.45) 0%,rgba(9,9,15,0.62) 40%,rgba(9,9,15,0.7) 75%,var(--bg) 100%)}
+}
 .video-frame .cap{
   position:absolute;bottom:0;left:0;right:0;padding:20px;
   background:linear-gradient(transparent,rgba(0,0,0,0.85));
@@ -251,6 +283,175 @@ footer{
 }
 @media(max-width:800px){footer{margin-right:0}}
 
+:root{--spring:cubic-bezier(.34,1.4,.64,1)}
+.glass{background:var(--panel);border:1px solid var(--line)}
+.p6,.p7{display:block;padding-block:80px}
+.p6 .head,.p7 .head{margin-bottom:24px;padding-inline:8px}
+.p6 h2,.p7 h2{font-size:1.8rem;font-weight:900;margin-bottom:6px}
+.p6 .sub,.p7 .sub{color:var(--dim);max-width:640px}
+.p7 #packaging{margin-top:56px}
+.p6 .intro-text{margin-bottom:24px}
+.size-detail{margin-bottom:24px}
+.size-block .table-wrap{margin-top:18px;border-radius:16px;overflow-x:auto}
+.panel>*{min-width:0}
+.codes-side .table-wrap{overflow-x:auto;max-width:100%}
+.table-wrap table{min-width:520px}
+.irc{direction:ltr}
+.rail a[aria-label]{font-size:0.62rem}
+.cta-sub{margin-top:16px;font-size:0.85rem;color:var(--dim)}
+.cta-sub a{color:var(--text);font-weight:700}
+.chip{text-decoration:none;display:inline-block}
+.btn{text-decoration:none}
+.orbit-canvas{touch-action:pan-y}
+/* ===== additions: product info in the glass style ===== */
+.glass-soft{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:18px}
+.stage a:not(.btn):not(.tag):not(.gal-main):not([data-gallery]){color:var(--a)}
+.intro-text{border-radius:28px;padding:28px 26px}
+.intro-text p{color:rgba(222,218,245,0.82);margin-bottom:12px}
+.intro-text p:last-child{margin-bottom:0}
+
+/* 3D viewer (trackball, from the product page) */
+.orbit-canvas{
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  background:radial-gradient(circle at 50% 46%,rgba(237,233,254,0.16),rgba(167,139,250,0.05) 48%,transparent 72%),var(--panel);
+}
+.orbit-canvas canvas{touch-action:pan-y;outline:none}
+.orbit-canvas .pv-canvas{position:relative;z-index:1;opacity:0;transition:opacity .5s ease}
+.orbit-canvas.pv-ready .pv-canvas{opacity:1}
+.pv-grab{position:absolute;z-index:2;touch-action:none;cursor:grab}
+.orbit-canvas.pv-grabbing,.orbit-canvas.pv-grabbing .pv-grab,.orbit-canvas.pv-grabbing canvas{cursor:grabbing}
+.pv-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;padding:6%}
+.orbit-canvas.pv-failed .pv-fallback{display:block}
+.orbit-canvas.pv-failed .pv-canvas,.orbit-canvas.pv-failed .pv-hint,.orbit-canvas.pv-failed .pv-grab{display:none}
+.orbit-hint{z-index:3;transition:opacity .6s ease}
+.pv-hint--gone{opacity:0}
+
+/* size cards → details */
+.size-more{position:relative;display:inline-block;margin-top:14px;font-size:0.84rem;font-weight:700;text-decoration:none}
+.size-more:hover{text-decoration:underline}
+
+/* size detail blocks */
+.size-detail{padding-top:20px;padding-bottom:20px}
+.size-block{border-radius:32px;padding:30px 28px}
+@media(max-width:600px){.size-block{padding:22px 16px;border-radius:24px}}
+.size-block h3{font-size:clamp(1.25rem,2.6vw,1.6rem);font-weight:900;margin-bottom:6px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.size-block h3 .badge{font-size:0.8rem;font-weight:800;padding:4px 12px;border-radius:999px;color:#041012;background:linear-gradient(135deg,var(--a),#c4b5fd)}
+.size-block .meta{color:rgba(222,218,245,0.8);font-size:0.95rem;margin-bottom:20px}
+.size-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px;align-items:start}
+@media(max-width:800px){.size-grid{grid-template-columns:1fr;gap:18px}}
+.size-media{display:flex;flex-direction:column;gap:10px}
+.gal-main{display:block;border-radius:22px;overflow:hidden;aspect-ratio:1;
+  background:radial-gradient(circle at 50% 42%,rgba(245,243,255,0.3),rgba(237,233,254,0.08) 62%,rgba(255,255,255,0.03));
+  border:1px solid var(--line)}
+.gal-main img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .5s var(--ease)}
+.gal-main:hover img{transform:scale(1.04)}
+.gal-thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.gal-thumbs a{display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;background:rgba(255,255,255,0.06);border:1px solid var(--line);outline-offset:2px}
+.gal-thumbs img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s var(--ease)}
+.gal-thumbs a:hover img{transform:scale(1.08)}
+.size-info .note{color:rgba(222,218,245,0.8);font-size:0.94rem;margin-bottom:10px}
+.size-info .note strong{color:var(--text)}
+.size-info a,.sterile a{font-weight:700}
+.dims{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.dims span{white-space:nowrap;padding:7px 14px;border-radius:999px;font-size:0.84rem;font-weight:700;
+  background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.28);color:var(--text)}
+.sterile{padding:18px 20px;margin:20px 0 4px}
+.sterile h4{font-size:1.02rem;font-weight:800;color:var(--a);margin-bottom:6px}
+.sterile p{color:rgba(222,218,245,0.82);font-size:0.93rem;margin-bottom:4px}
+.sterile p strong{color:var(--text)}
+.sterile ul{padding-right:20px;color:rgba(222,218,245,0.82);font-size:0.93rem}
+.uses-h{font-size:0.95rem;font-weight:800;margin:24px 0 10px}
+.uses{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.use{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 8px;text-align:center;
+  font-size:0.82rem;font-weight:700;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:8px;justify-content:center;
+  transition:transform .3s var(--spring),border-color .3s}
+.use:hover{transform:translateY(-4px);border-color:rgba(167,139,250,0.4)}
+.use-ic{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:grid;place-items:center;box-shadow:0 0 18px rgba(167,139,250,0.25)}
+.use-ic img{width:30px;height:30px}
+.use--text{min-height:60px;background:rgba(167,139,250,0.1)}
+
+/* codes */
+.codes-h{font-size:1.02rem;font-weight:800;margin:26px 0 10px;color:var(--a)}
+.codes-h:first-of-type{margin-top:0}
+.irc{font-variant-numeric:tabular-nums;text-align:right}
+td img.lid{display:block;width:44px;height:18px;border-radius:4px;box-shadow:0 0 0 1px rgba(255,255,255,0.18)}
+
+/* filters */
+.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+@media(max-width:900px){.filters{grid-template-columns:1fr}}
+.filter-card{border-radius:26px;overflow:hidden;display:flex;flex-direction:column}
+.filter-media{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(255,255,255,0.08)}
+.filter-media.one{grid-template-columns:1fr}
+.filter-media a{display:block;aspect-ratio:1;overflow:hidden;background:#f5f3ff}
+.filter-media.one a{aspect-ratio:2/1}
+.filter-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s var(--ease)}
+.filter-media.one img{object-fit:contain}
+.filter-media a:hover img{transform:scale(1.05)}
+.filter-body{padding:20px 20px 22px}
+.filter-body h3{font-size:1.08rem;font-weight:900;color:var(--a);margin-bottom:8px}
+.filter-body p{color:rgba(222,218,245,0.8);font-size:0.9rem;margin-bottom:8px;text-align:justify}
+.filter-body h4{font-size:0.9rem;font-weight:800;margin:12px 0 4px}
+.filter-body ul{padding-right:18px;color:rgba(222,218,245,0.8);font-size:0.88rem}
+.filter-code{margin-top:14px;display:inline-flex;gap:8px;background:rgba(167,139,250,0.14);border:1px solid rgba(167,139,250,0.3);color:var(--text);padding:6px 12px;border-radius:999px;font-size:0.84rem;font-weight:700}
+.more-link{display:inline-block;margin-top:18px;font-weight:800}
+
+/* packaging + documents */
+.carton{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.carton{grid-template-columns:1fr}}
+.carton div{border-radius:18px;padding:16px 18px;font-size:0.92rem}
+.carton strong{color:var(--a)}
+.doc-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.stage .doc-links a{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:10px 18px;border-radius:999px;
+  font-weight:700;font-size:0.88rem;text-decoration:none;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:transform .3s var(--spring),background .25s,border-color .25s}
+.stage .doc-links a:hover{transform:translateY(-3px);background:rgba(167,139,250,0.2);border-color:var(--a)}
+
+/* tags as links */
+.tag{text-decoration:none;display:inline-block}
+
+/* CTA */
+.cta-actions{position:relative;z-index:1;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta .cta-sub{margin:18px 0 0;font-size:0.9rem}
+.cta .cta-sub a{color:var(--text);font-weight:700}
+
+/* contact footer */
+footer.site-footer{text-align:right;padding:20px 20px 28px;font-size:0.9rem;color:var(--dim)}
+.foot-card{max-width:1100px;margin:0 auto;border-radius:32px;padding:32px 28px;display:grid;grid-template-columns:1.1fr 1.4fr 1fr;gap:32px}
+@media(max-width:800px){.foot-card{grid-template-columns:1fr;gap:22px;padding:24px 18px;border-radius:24px}}
+.foot-brand strong{display:block;color:var(--a);font-size:1.3rem;font-weight:900}
+.foot-brand span{display:block;color:#c4b5fd;margin-top:4px}
+.foot-links{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-top:16px}
+.site-footer h3{color:var(--text);font-size:0.95rem;font-weight:800;margin-bottom:10px}
+.site-footer dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
+.site-footer dt{color:var(--dim);font-weight:600;white-space:nowrap}
+.site-footer dd{color:#e4e1f5;min-width:0;overflow-wrap:anywhere}
+.site-footer a{color:#e4e1f5;text-decoration:none;border-bottom:1px dotted rgba(196,181,253,.45)}
+.site-footer a:hover{color:var(--a)}
+.site-footer p{color:#e4e1f5;margin-bottom:10px}
+.foot-copy{max-width:1100px;margin:22px auto 0;font-size:0.8rem;color:var(--dim);text-align:center}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:500;background:rgba(8,8,16,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;touch-action:pan-y pinch-zoom}
+.lb.open{display:flex}
+.lb figure{margin:0;max-width:min(92vw,1200px);max-height:86vh;display:flex;flex-direction:column;align-items:center;gap:10px}
+.lb img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:18px;background:#f5f3ff}
+.lb figcaption{color:#ddd8f5;font-size:0.9rem;text-align:center}
+.lb button{position:absolute;background:var(--panel);border:1px solid var(--line);color:#fff;width:48px;height:48px;border-radius:50%;font-size:1.5rem;cursor:pointer;font-family:inherit;display:grid;place-items:center;backdrop-filter:blur(10px)}
+.lb button:hover{background:rgba(167,139,250,.35)}
+.lb .lb-close{top:16px;left:16px}
+.lb .lb-prev{right:16px;top:50%;transform:translateY(-50%)}
+.lb .lb-next{left:16px;top:50%;transform:translateY(-50%)}
+.lb .lb-count{position:absolute;top:26px;right:24px;color:#b8b3d6;font-size:.85rem}
+@media(max-width:600px){.lb .lb-prev,.lb .lb-next{top:auto;bottom:18px;transform:none}}
+body.lb-lock{overflow:hidden}
+section[id],footer[id]{scroll-margin-top:84px}
+.table-wrap th,.table-wrap td{white-space:nowrap}
+.table-wrap{margin-bottom:6px;-webkit-overflow-scrolling:touch}
+
+footer.site-footer{margin-right:72px;border-top:none}
+@media(max-width:800px){footer.site-footer{margin-right:0}}
+.orbit-canvas .pv-fallback{padding:12%}
+
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -265,6 +466,9 @@ footer{
   <a href="#p3" data-nav>۰۳</a>
   <a href="#p4" data-nav>۰۴</a>
   <a href="#p5" data-nav>۰۵</a>
+  <a href="#p6" data-nav>۰۶</a>
+  <a href="#p7" data-nav>۰۷</a>
+  <a href="#contact" aria-label="تماس">تماس</a>
 </aside>
 
 <main class="stage">
@@ -281,10 +485,10 @@ footer{
       </div>
     </div>
     <div class="video-frame">
-      <video autoplay muted loop playsinline id="heroVid">
-        <source src="./media/hospital-hero.mp4" type="video/mp4" />
+      <video autoplay muted loop playsinline preload="auto" poster="./media/hero-poster.jpg" id="heroVid" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1">
+        <source src="./media/hero-mobile.mp4" type="video/mp4" media="(max-width: 800px)" />
+        <source src="./media/hero-1080.mp4" type="video/mp4" />
       </video>
-      <div class="cap">پس‌زمینه بصری · محصول واقعی در پنل بعد</div>
     </div>
   </section>
 
@@ -293,14 +497,15 @@ footer{
     <div style="width:100%">
       <div class="stage-label">۰۲ — استیج محصول</div>
       <h2>بچرخان · نزدیک شو</h2>
-      <p class="hint">مدل واقعی GLB — درگ با موس یا لمس</p>
+      <p class="hint">مدل واقعی — درگ با موس یا لمس، در همه جهت‌ها</p>
       <div class="orbit-wrap">
         <span class="float-tag t1">فیلتر هیدروفوبیک</span>
         <span class="float-tag t2">پودر ژل‌کننده</span>
         <span class="float-tag t3">۲ → ۸ لیتر سری</span>
-        <div class="orbit-canvas">
-          <div class="orbit-load" id="viewerLoading">بارگذاری…</div>
-          <canvas id="productCanvas"></canvas>
+        <div class="orbit-canvas" id="productViewer">
+          <img class="pv-fallback" src="./img/product-still.webp" width="800" height="800" alt="کیسه ساکشن ۲ لیتری آبادیس با درب فیروزه‌ای" loading="lazy" decoding="async" />
+          <div class="orbit-load pv-loading" id="viewerLoading">بارگذاری…</div>
+          <canvas id="productCanvas" class="pv-canvas" aria-label="مدل سه‌بعدی کیسه ساکشن ۲ لیتری؛ برای چرخاندن بکشید"></canvas>
         </div>
       </div>
     </div>
@@ -360,16 +565,18 @@ footer{
     <div class="codes-side">
       <h2>کدهای ۲ لیتری</h2>
       <p>۴۵ عدد در کارتن · ۵۷.۵ × ۴۲.۵ × ۴۴ cm</p>
-      <table>
-        <thead><tr><th>کد</th><th>فیلتر</th><th>پودر</th></tr></thead>
-        <tbody>
-          <tr><td>۰۴۰۱۱۱۲</td><td>هیدروفوبیک</td><td class="yes">✓</td></tr>
-          <tr><td>۰۴۰۱۱۰۲</td><td>—</td><td class="yes">✓</td></tr>
-          <tr><td>۰۴۰۱۰۱۲</td><td>هیدروفوبیک</td><td>—</td></tr>
-          <tr><td>۰۴۰۱۱۳۲</td><td>مکانیکی</td><td class="yes">✓</td></tr>
-          <tr><td>۰۴۰۱۱۱۲</td><td>CIF</td><td class="yes">✓</td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+          <table>
+            <thead><tr><th>کد محصول</th><th>IRC</th><th>سایز</th><th>نوع فیلتر</th><th>پودر</th><th>رنگ درب</th></tr></thead>
+            <tbody>
+<tr><td>۰۴۰۱۱۱۲</td><td dir="ltr" class="irc">9647935197253589</td><td>دو لیتری</td><td>هیدروفوبیک</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۰۲</td><td dir="ltr" class="irc">5826314295044204</td><td>دو لیتری</td><td class="no">×</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-yellow.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب زرد" title="زرد"></td></tr>
+<tr><td>۰۴۰۱۰۱۲</td><td dir="ltr" class="irc">4383099410749165</td><td>دو لیتری</td><td>هیدروفوبیک</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۳۲</td><td dir="ltr" class="irc">4111380328256244</td><td>دو لیتری</td><td>مکانیکی</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-red.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب قرمز" title="قرمز"></td></tr>
+<tr><td>۰۴۰۱۱۱۲</td><td dir="ltr" class="irc">9647935197253589</td><td>دو لیتری</td><td>CIF</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-yellow.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب زرد" title="زرد"></td></tr>
+            </tbody>
+          </table>
+        </div>
     </div>
   </section>
 
@@ -377,27 +584,352 @@ footer{
   <section class="panel p5" id="p5">
     <h2>۰۵ — موارد مصرف</h2>
     <div class="chips">
-      <button type="button" class="chip">ریه و آندوسکوپی</button>
-      <button type="button" class="chip">گوارش</button>
-      <button type="button" class="chip">CCU / ICU</button>
-      <button type="button" class="chip">NICU / PICU</button>
-      <button type="button" class="chip">عفونی</button>
-      <button type="button" class="chip">اورژانس</button>
-      <button type="button" class="chip">بخش مردان</button>
-      <button type="button" class="chip">بخش زنان</button>
-      <button type="button" class="chip">ECT</button>
-      <button type="button" class="chip">اتاق عمل</button>
+      <a class="chip" href="#s2">ریه و آندوسکوپی</a>
+      <a class="chip" href="#s2">گوارش</a>
+      <a class="chip" href="#s2">CCU / ICU</a>
+      <a class="chip" href="#s2">NICU / PICU</a>
+      <a class="chip" href="#s2">عفونی</a>
+      <a class="chip" href="#s2">اورژانس</a>
+      <a class="chip" href="#s2">بخش مردان</a>
+      <a class="chip" href="#s2">بخش زنان</a>
+      <a class="chip" href="#s2">ECT</a>
+      <a class="chip" href="#s3">اتاق عمل</a>
     </div>
     <div class="cta-block">
       <h3>سفارش برای مرکز شما</h3>
       <p>نمونه، قیمت و نصب — تیم فروش آبادیس</p>
-      <button class="btn btn-fill" type="button">تماس با فروش</button>
+      <div class="cta-actions">
+        <a class="btn btn-fill" href="tel:+982192001017">تماس با فروش</a>
+        <a class="btn btn-line" href="https://wa.me/989100145809?text=%D8%B3%D9%84%D8%A7%D9%85%D8%8C%20%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%20%D9%86%D9%85%D9%88%D9%86%D9%87%20%DA%A9%DB%8C%D8%B3%D9%87%20%D8%B3%D8%A7%DA%A9%D8%B4%D9%86%20%D8%A2%D8%A8%D8%A7%D8%AF%DB%8C%D8%B3%20%D8%B1%D8%A7%20%D8%AF%D8%A7%D8%B1%D9%85." target="_blank" rel="noopener">درخواست نمونه</a>
+      </div>
+      <p class="cta-sub">مرکز تماس: <a href="tel:+982192001017" dir="ltr">021-92001017</a> · <a href="https://abadis-med.com/ارتباط-با-ما/" target="_blank" rel="noopener">صفحه ارتباط با ما</a></p>
     </div>
+  </section>
+
+  <!-- 06 PRODUCTS -->
+  <section class="panel p6" id="p6">
+    <div class="head">
+      <h2>۰۶ — کیسه ساکشن یکبار مصرف</h2>
+      <p class="sub">تولید شرکت دانش‌بنیان مخازن طبی آبادیس برای کنترل عفونت و ایمنی جریان کار در مراکز درمانی</p>
+    </div>
+    <div class="intro-text glass">
+        <p>کیسه‌های ساکشن آبادیس در حجم‌های یک، دو و سه لیتری تولید می‌شوند و دارای سه نوع فیلتراسیون هیدروفوبیک، دوئال و مکانیکی هستند.</p>
+        <p>ویژگی‌های مشترک: پودر ژل‌کننده، جلوگیری از سرریز مایعات، سازگاری با کلیه دستگاه‌های ساکشن، سیستم حفاظت از ساکشن مرکزی.</p>
+        <p>قابل نصب به‌صورت تکی و سری روی پایه ثابت (دیواری) و پرتابل — نصب و خدمات پس از فروش رایگان.</p>
+      </div>
+    <div class="size-detail" id="s1">
+      <div class="size-block glass">
+        <h3>کیسه ساکشن ۱ لیتری <span class="badge">۱ L</span></h3>
+        <p class="meta">مناسب بخش‌های اورژانس سبک، آمبولانس، دندانپزشکی، چشم و کودکان</p>
+        <div class="size-grid">
+        <div class="size-media">
+          <a class="gal-main" href="./img/p/p1-main.webp" data-gallery="s1" data-w="900" data-h="900" aria-label="نمایش بزرگ‌تر: کیسه ساکشن ۱ لیتری آبادیس">
+            <img src="./img/p/p1-main.webp" width="900" height="900" loading="lazy" decoding="async" alt="کیسه ساکشن ۱ لیتری آبادیس">
+          </a>
+          <div class="gal-thumbs">
+            <a href="./img/p/p1-g1.webp" data-gallery="s1" data-w="1543" data-h="1600" aria-label="نمایش بزرگ‌تر: نمای نزدیک از داخل درب کیسه ساکشن ۱ لیتری"><img src="./img/p/p1-g1-t.webp" width="463" height="480" loading="lazy" decoding="async" alt="نمای نزدیک از داخل درب کیسه ساکشن ۱ لیتری"></a>
+            <a href="./img/p/p1-g2.webp" data-gallery="s1" data-w="1600" data-h="1067" aria-label="نمایش بزرگ‌تر: درب و فیلتر کیسه ساکشن ۱ لیتری از نمای جانبی"><img src="./img/p/p1-g2-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="درب و فیلتر کیسه ساکشن ۱ لیتری از نمای جانبی"></a>
+            <a href="./img/p/p1-g3.webp" data-gallery="s1" data-w="1600" data-h="1067" aria-label="نمایش بزرگ‌تر: کیسه ساکشن ۱ لیتری آبادیس در کنار مخزن مدرج"><img src="./img/p/p1-g3-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="کیسه ساکشن ۱ لیتری آبادیس در کنار مخزن مدرج"></a>
+            <a href="./img/p/p1-g4.webp" data-gallery="s1" data-w="1600" data-h="1067" aria-label="نمایش بزرگ‌تر: سه کیسه ساکشن ۱ لیتری با شلنگ‌های اتصال"><img src="./img/p/p1-g4-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="سه کیسه ساکشن ۱ لیتری با شلنگ‌های اتصال"></a>
+            <a href="./img/p/p1-g5.webp" data-gallery="s1" data-w="1254" data-h="1254" aria-label="نمایش بزرگ‌تر: ابعاد کیسه ساکشن ۱ لیتری: قطر ۱۱ و ارتفاع ۱۵٫۵ سانتی‌متر"><img src="./img/p/p1-g5-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="ابعاد کیسه ساکشن ۱ لیتری: قطر ۱۱ و ارتفاع ۱۵٫۵ سانتی‌متر"></a>
+          </div>
+        </div>
+        <div class="size-info">
+        <p class="note"><strong>حجم ساکشن:</strong> یک لیتر</p>
+        <div class="dims">
+          <span>قطر: ۱۱ cm</span>
+          <span>ارتفاع: ۱۵.۵ cm</span>
+          <span>کارتن: ۴۵ عدد</span>
+          <span>ابعاد کارتن: ۵۷.۵ × ۴۲.۵ × ۴۴</span>
+        </div>
+        <p class="note">مشخصات: پودر ژل‌کننده، فیلتر هیدروفوبیک، سازگار با کلیه دستگاه‌های ساکشن، حفاظت از ساکشن مرکزی</p>
+        <p class="note">انواع فیلترهای کیسه‌های نهایی: فیلترهای استفاده‌شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد: <a href="#p7">فیلترها</a></p>
+        <p class="note">برای مشاهده نحوه استفاده از کیسه ساکشن ها به این <a href="https://abadis-med.com/راهنمای-نصب/راهنمای-استفاده-کاربر-نهایی/" target="_blank" rel="noopener">صفحه</a> مراجعه نمایید.</p>
+        </div>
+        </div>
+        <div class="table-wrap glass">
+          <table>
+            <thead><tr><th>کد محصول</th><th>IRC</th><th>سایز</th><th>نوع فیلتر</th><th>پودر</th><th>رنگ درب</th></tr></thead>
+            <tbody>
+<tr><td>۰۴۰۱۱۱۱</td><td dir="ltr" class="irc">6952056777153306</td><td>یک لیتری</td><td>هیدروفوبیک</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۰۱۱</td><td dir="ltr" class="irc">7817505042353929</td><td>یک لیتری</td><td>هیدروفوبیک</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4 class="uses-h">موارد مصرف</h4>
+        <div class="uses">
+          <div class="use"><span class="use-ic"><img src="./img/use/ambulance.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>آمبولانس</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/infectious.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>عفونی</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/dentistry.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>دندانپزشکی</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/eye.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>چشم</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/children.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>کودکان</div>
+        </div>
+      </div>
+    </div>
+    <!-- 2L -->
+    <div class="size-detail" id="s2">
+      <div class="size-block glass">
+        <h3>کیسه ساکشن ۲ لیتری <span class="badge">۲ L</span></h3>
+        <p class="meta">حجم ساکشن: ۲ لیتر تکی · تا ۸ لیتر سری یک‌ردیفه · تا ۱۶ لیتر سری دو‌ردیفه روی یک پایه</p>
+        <div class="size-grid">
+        <div class="size-media">
+          <a class="gal-main" href="./img/p/p2-main.webp" data-gallery="s2" data-w="900" data-h="900" aria-label="نمایش بزرگ‌تر: کیسه ساکشن ۲ لیتری آبادیس">
+            <img src="./img/p/p2-main.webp" width="900" height="900" loading="lazy" decoding="async" alt="کیسه ساکشن ۲ لیتری آبادیس">
+          </a>
+          <div class="gal-thumbs">
+            <a href="./img/p/p2-g1.webp" data-gallery="s2" data-w="1030" data-h="687" aria-label="نمایش بزرگ‌تر: درب و فیلتر کیسه ساکشن ۲ لیتری از نمای جانبی"><img src="./img/p/p2-g1-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="درب و فیلتر کیسه ساکشن ۲ لیتری از نمای جانبی"></a>
+            <a href="./img/p/p2-g2.webp" data-gallery="s2" data-w="1030" data-h="1030" aria-label="نمایش بزرگ‌تر: کیسه ساکشن ۲ لیتری آبادیس داخل مخزن مدرج با شلنگ"><img src="./img/p/p2-g2-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="کیسه ساکشن ۲ لیتری آبادیس داخل مخزن مدرج با شلنگ"></a>
+            <a href="./img/p/p2-g3.webp" data-gallery="s2" data-w="1030" data-h="687" aria-label="نمایش بزرگ‌تر: اتصال شلنگ‌ها به درب کیسه ساکشن ۲ لیتری"><img src="./img/p/p2-g3-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="اتصال شلنگ‌ها به درب کیسه ساکشن ۲ لیتری"></a>
+            <a href="./img/p/p2-g4.webp" data-gallery="s2" data-w="1254" data-h="1254" aria-label="نمایش بزرگ‌تر: ابعاد کیسه ساکشن ۲ لیتری: قطر ۱۱ و ارتفاع ۲۴٫۵ سانتی‌متر"><img src="./img/p/p2-g4-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="ابعاد کیسه ساکشن ۲ لیتری: قطر ۱۱ و ارتفاع ۲۴٫۵ سانتی‌متر"></a>
+          </div>
+        </div>
+        <div class="size-info">
+        <div class="dims">
+          <span>قطر: ۱۱ cm</span>
+          <span>ارتفاع: ۲۴.۵ cm</span>
+          <span>کارتن: ۴۵ عدد</span>
+          <span>ابعاد کارتن: ۵۷.۵ × ۴۲.۵ × ۴۴</span>
+        </div>
+        <p class="note">مشخصات: پودر ژل‌کننده، فیلتر هیدروفوبیک (جلوگیری از سرریز)، سازگار با کلیه دستگاه‌های ساکشن، سیستم حفاظت از ساکشن مرکزی</p>
+        <p class="note">انواع فیلترهای کیسه‌های نهایی: فیلترهای استفاده‌شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد: <a href="#p7">فیلترها</a></p>
+        <p class="note">برای مشاهده نحوه استفاده از کیسه ساکشن ها به این <a href="https://abadis-med.com/راهنمای-نصب/راهنمای-استفاده-کاربر-نهایی/" target="_blank" rel="noopener">صفحه</a> مراجعه نمایید.</p>
+        </div>
+        </div>
+        <div class="table-wrap glass">
+          <table>
+            <thead><tr><th>کد محصول</th><th>IRC</th><th>سایز</th><th>نوع فیلتر</th><th>پودر</th><th>رنگ درب</th></tr></thead>
+            <tbody>
+<tr><td>۰۴۰۱۱۱۲</td><td dir="ltr" class="irc">9647935197253589</td><td>دو لیتری</td><td>هیدروفوبیک</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۰۲</td><td dir="ltr" class="irc">5826314295044204</td><td>دو لیتری</td><td class="no">×</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-yellow.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب زرد" title="زرد"></td></tr>
+<tr><td>۰۴۰۱۰۱۲</td><td dir="ltr" class="irc">4383099410749165</td><td>دو لیتری</td><td>هیدروفوبیک</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۳۲</td><td dir="ltr" class="irc">4111380328256244</td><td>دو لیتری</td><td>مکانیکی</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-red.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب قرمز" title="قرمز"></td></tr>
+<tr><td>۰۴۰۱۱۱۲</td><td dir="ltr" class="irc">9647935197253589</td><td>دو لیتری</td><td>CIF</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-yellow.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب زرد" title="زرد"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4 class="uses-h">موارد مصرف</h4>
+        <div class="uses">
+          <div class="use"><span class="use-ic"><img src="./img/use/lung.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>ریه و آندوسکوپی</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/gi.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>گوارش</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/icu.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>CCU / ICU</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/infectious.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>عفونی</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/men.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>بخش مردان</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/women.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>بخش زنان</div>
+          <div class="use use--text">NICU / PICU</div>
+          <div class="use use--text">اورژانس</div>
+          <div class="use use--text">ECT</div>
+        </div>
+      </div>
+    </div>
+    <!-- 3L -->
+    <div class="size-detail" id="s3">
+      <div class="size-block glass">
+        <h3>کیسه ساکشن ۳ لیتری <span class="badge">۳ L</span></h3>
+        <p class="meta">مناسب بخش جراحی و عمل‌های طولانی با حجم مایع بالاتر</p>
+        <div class="size-grid">
+        <div class="size-media">
+          <a class="gal-main" href="./img/p/p3-main.webp" data-gallery="s3" data-w="561" data-h="900" aria-label="نمایش بزرگ‌تر: کیسه ساکشن ۳ لیتری آبادیس">
+            <img src="./img/p/p3-main.webp" width="561" height="900" loading="lazy" decoding="async" alt="کیسه ساکشن ۳ لیتری آبادیس">
+          </a>
+          <div class="gal-thumbs">
+            <a href="./img/p/p3-g1.webp" data-gallery="s3" data-w="687" data-h="1030" aria-label="نمایش بزرگ‌تر: کیسه ساکشن ۳ لیتری آبادیس در کنار مخزن مدرج"><img src="./img/p/p3-g1-t.webp" width="320" height="480" loading="lazy" decoding="async" alt="کیسه ساکشن ۳ لیتری آبادیس در کنار مخزن مدرج"></a>
+            <a href="./img/p/p3-g2.webp" data-gallery="s3" data-w="1030" data-h="687" aria-label="نمایش بزرگ‌تر: درب کیسه ساکشن ۳ لیتری در کنار مخزن"><img src="./img/p/p3-g2-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="درب کیسه ساکشن ۳ لیتری در کنار مخزن"></a>
+            <a href="./img/p/p3-g3.webp" data-gallery="s3" data-w="1030" data-h="579" aria-label="نمایش بزرگ‌تر: نمای درب و مخزن مدرج ۳ لیتری"><img src="./img/p/p3-g3-t.webp" width="480" height="270" loading="lazy" decoding="async" alt="نمای درب و مخزن مدرج ۳ لیتری"></a>
+            <a href="./img/p/p3-g4.webp" data-gallery="s3" data-w="1030" data-h="687" aria-label="نمایش بزرگ‌تر: مخزن مدرج و کیسه ساکشن ۳ لیتری از نمای افقی"><img src="./img/p/p3-g4-t.webp" width="480" height="320" loading="lazy" decoding="async" alt="مخزن مدرج و کیسه ساکشن ۳ لیتری از نمای افقی"></a>
+            <a href="./img/p/p3-g5.webp" data-gallery="s3" data-w="1254" data-h="1254" aria-label="نمایش بزرگ‌تر: ابعاد کیسه ساکشن ۳ لیتری: قطر ۱۱ و ارتفاع ۳۹ سانتی‌متر"><img src="./img/p/p3-g5-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="ابعاد کیسه ساکشن ۳ لیتری: قطر ۱۱ و ارتفاع ۳۹ سانتی‌متر"></a>
+          </div>
+        </div>
+        <div class="size-info">
+        <p class="note"><strong>حجم ساکشن:</strong> ۳ لیتر در حالت تکی، تا ۱۲ لیتر در حالت سری یک ردیفه بر روی پایه</p>
+        <p class="note">مشخصات: دارای پودر ژل‌کننده، فیلتر هیدروفوبیک(جلوگیری از سر ریز مایعات)، سازگار با کلیه دستگاه‌های ساکشن، دارای سیستم حفاظت از ساکشن مرکزی</p>
+        <div class="dims">
+          <span>قطر: ۱۱ cm</span>
+          <span>ارتفاع: ۳۹ cm</span>
+          <span>سایز: سه لیتری</span>
+          <span>کارتن: ۴۵ عدد</span>
+          <span>ابعاد کارتن: ۴۹ × ۴۹ × ۴۹</span>
+        </div>
+        <p class="note">انواع فیلترهای کیسه‌های نهایی: فیلترهای استفاده‌شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد: <a href="#p7">فیلترها</a></p>
+        <p class="note">برای مشاهده نحوه استفاده از کیسه ساکشن ها به این <a href="https://abadis-med.com/راهنمای-نصب/راهنمای-استفاده-کاربر-نهایی/" target="_blank" rel="noopener">صفحه</a> مراجعه نمایید.</p>
+        </div>
+        </div>
+        <div class="sterile glass-soft">
+          <h4>کیسه ساکشن استریل:</h4>
+          <p>کیسه ساکشن استریل آبادیس مناسب برای عمل‌های لیپوساکشن و سایر عمل‌های جراحی حساس است.</p>
+          <p><strong>مزایا:</strong></p>
+          <ul>
+            <li>قابلیت نمونه برداری ایمن از مایعات جمع آوری شده.</li>
+            <li>مکش قوی و بالا.</li>
+            <li>تولید شده در کلین روم 100,000 مطابق با الزامات تجهیزات پزشکی.</li>
+            <li>استریل و آماده استفاده در اتاق عمل.</li>
+          </ul>
+        </div>
+        <div class="table-wrap glass">
+          <table>
+            <thead><tr><th>کد محصول</th><th>IRC</th><th>سایز</th><th>نوع فیلتر</th><th>پودر</th><th>استریل</th><th>رنگ درب</th></tr></thead>
+            <tbody>
+<tr><td>۰۴۰۱۱۱۳</td><td dir="ltr" class="irc">6579214989949869</td><td>سه لیتری</td><td>هیدروفوبیک</td><td class="yes">✓</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۰۳</td><td dir="ltr" class="irc">3226257467113524</td><td>سه لیتری</td><td class="no">×</td><td class="yes">✓</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-yellow.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب زرد" title="زرد"></td></tr>
+<tr><td>۰۴۰۱۰۱۳</td><td dir="ltr" class="irc">7600653363719319</td><td>سه لیتری</td><td>هیدروفوبیک</td><td class="no">×</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۲۳</td><td dir="ltr" class="irc">7600653363719319</td><td>سه لیتری</td><td>Dual</td><td class="yes">✓</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۳۳</td><td dir="ltr" class="irc">2707894365287680</td><td>سه لیتری</td><td>مکانیکی</td><td class="yes">✓</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-red.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب قرمز" title="قرمز"></td></tr>
+<tr><td>۰۴۰۱۲۱۳</td><td dir="ltr" class="irc">9787915172873298</td><td>سه لیتری</td><td>هیدروفوبیک</td><td class="yes">✓</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۱۳-۲</td><td dir="ltr" class="irc">_</td><td>سه لیتری</td><td>هیدروفوبیک</td><td class="yes">✓</td><td class="yes">✓</td><td><img class="lid" src="./img/p/lid-teal.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب فیروزه‌ای" title="فیروزه‌ای"></td></tr>
+<tr><td>۰۴۰۱۱۱۳</td><td dir="ltr" class="irc">6579214989949869</td><td>سه لیتری</td><td>CIF</td><td class="yes">✓</td><td class="no">×</td><td><img class="lid" src="./img/p/lid-yellow.webp" width="50" height="20" loading="lazy" decoding="async" alt="رنگ درب زرد" title="زرد"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4 class="uses-h">موارد مصرف</h4>
+        <div class="uses">
+          <div class="use"><span class="use-ic"><img src="./img/use/infectious.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>عفونی</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/surgery.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>اتاق عمل</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/cardio.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>قلب و عروق</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/men.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>بخش مردان</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/women.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>بخش زنان</div>
+          <div class="use"><span class="use-ic"><img src="./img/use/surgery.webp" width="100" height="100" loading="lazy" decoding="async" alt=""></span>عمل لیپوساکشن</div>
+          <div class="use use--text">جراحی</div>
+          <div class="use use--text">گوارش</div>
+          <div class="use use--text">ICU</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 FILTERS + PACKAGING -->
+  <section class="panel p7" id="p7">
+    <div class="head">
+      <h2>۰۷ — فیلترها</h2>
+      <p class="sub">فیلترهای استفاده‌شده در کیسه‌های آبادیس در ۳ نوع تولید می‌شود که موجب جلوگیری از سرریز مایعات می‌گردد.</p>
+    </div>
+    <div class="filters">
+        <article class="filter-card glass">
+          <div class="filter-media">
+            <a href="./img/filters/anti-1.webp" data-gallery="filters" data-w="1030" data-h="1030" aria-label="نمایش بزرگ‌تر: فیلتر آنتی باکتریال"><img src="./img/filters/anti-1-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="فیلتر آنتی باکتریال آبادیس"></a>
+            <a href="./img/filters/anti-2.webp" data-gallery="filters" data-w="1100" data-h="1100" aria-label="نمایش بزرگ‌تر: ابعاد فیلتر آنتی باکتریال"><img src="./img/filters/anti-2-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="ابعاد فیلتر آنتی باکتریال"></a>
+          </div>
+          <div class="filter-body">
+            <h3>فیلتر آنتی باکتریال</h3>
+            <p>فيلتر آنتی باکتریال بین مسیر شلنگ ساکشن تا مخزن قرار می‌گیرد و از خروج ميکروارگانيزم‌ها، میکروب‌ها و باکتری‌ها به طرف منبع ساکشن جلوگيري مي‌کند و بدين ترتيب محيط به ميکروارگانيزم‌هاي خطرناک داخل مايعات ساکشن آلوده نمي‌شود. همچنین این فیلتر توانايي فيلتراسيون ميکروارگانيزم‌ها تا ۰.۰۳ ميکرون را داراست. اين ويژگي از انتشار عفونت‌هاي خطرناک در بخش مراقبت ويژه يا اتاق جراحي جلوگيري مي‌کند و ريسک ابتلاي بيمار را به عفونت‌های بیمارستانی تا حد زيادي کاهش مي‌دهد. جهت جلوگیری از انتقال عفونت باید بعد از ترخیص بیمار فیلتر تعویض گردد.</p>
+            <h4>کاربردها:</h4>
+            <ul>
+              <li>قابل استفاده بر روی انواع ساکشن پرتابل و بیمارستانی می‌باشد.</li>
+              <li>از این فیلتر برای محافظت بیمار در برابر باکتری ها و آلودگی ها استفاده می‌شود.</li>
+            </ul>
+            <h4>مزایا:</h4>
+            <ul>
+              <li>سبب جلوگیری از انتشار میکروارگانیزم‌ها به محیط اطراف می‌گردد.</li>
+              <li>دارای قابلیت فیلتراسیون میکروب‌ها و باکتری ها تا ٪۹۹.۹۹ می‌باشد.</li>
+              <li>قابلیت رویت و تعویض راحت فیلتر را دارد.</li>
+            </ul>
+            <h4>طول عمر فیلتر آنتی باکتریال:</h4>
+            <ul>
+              <li>زمانی که کاغذ درون فیلتر آنتی باکتریال تغییر رنگ دهد باید فیلتر تعویض گردد و در صورتی که هر ۶ ماه فیلتر تعویض شود بهترین عملکرد را خواهیم داشت.</li>
+            </ul>
+            <span class="filter-code">کد کالا: <b>040501</b></span>
+          </div>
+        </article>
+        <article class="filter-card glass">
+          <div class="filter-media">
+            <a href="./img/filters/stop-1.webp" data-gallery="filters" data-w="1030" data-h="1030" aria-label="نمایش بزرگ‌تر: فیلتر قطع کننده جریان"><img src="./img/filters/stop-1-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="فیلتر قطع کننده جریان (مسدود شونده) آبادیس"></a>
+            <a href="./img/filters/stop-2.webp" data-gallery="filters" data-w="1100" data-h="1100" aria-label="نمایش بزرگ‌تر: ابعاد فیلتر قطع کننده جریان"><img src="./img/filters/stop-2-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="ابعاد فیلتر قطع کننده جریان"></a>
+          </div>
+          <div class="filter-body">
+            <h3>فیلتر قطع کننده جریان (مسدود شونده)</h3>
+            <p>کیسه‌های ساکشن یکبار مصرف دارای یک فیلتر برای جلوگیری از سرریز شدن مایعات ساکشن شده است این فیلترها مکانیزم مهمی برای جلوگیری از انتشار مایعات آلوده است که از موادی با جنس آبگریز یا هیدروفوبیک ساخته شده که با رسیدن مایعات به سطح فیلتر عمل ساکشن را قطع می‌کند و مانع از آسیب زدن به دستگاه ساکشن می‌شود.</p>
+            <p>فیلتر داخلی از فیلترهای تولید شده متخلخل آبادیس است و جنس قاب فیلتر قطع کننده جریان (مسدود شونده) از پلی کربنات می‌باشد.</p>
+            <h4>کاربردها:</h4>
+            <ul>
+              <li>قابل استفاده در انواع ساکشن پرتابل و بیمارستانی می‌باشد.</li>
+              <li>جهت جلوگیری از سرریز شدن مایعات ساکشن شده استفاده می‌گردد.</li>
+              <li>جهت جلوگیری از انتشار مایعات آلوده و عفونی استفاده می‌شود.</li>
+            </ul>
+            <h4>مزایا:</h4>
+            <ul>
+              <li>مانع از خروج گازهای سمی در الکتروسرجری و دود الکتروکوتر می‌گردد.</li>
+              <li>سبب جلوگیری از خرابی دستگاه ساکشن و افزایش طول عمر دستگاه ساکشن می‌شود.</li>
+            </ul>
+            <h4>طول عمر فیلتر قطع کننده جریان (مسدود شونده):</h4>
+            <ul>
+              <li>زمانی که مایعات به سطح فیلتر نفوذ کنند یا افت فشار ساکشن رخ دهد باید فیلتر تعویض گردد و بهتر است برای عملکرد صحیح هر ماه فیلتر قطع کننده جریان تعویض شود.</li>
+            </ul>
+            <span class="filter-code">کد کالا: <b>۰۴۰۵۰۲</b></span>
+          </div>
+        </article>
+        <article class="filter-card glass">
+          <div class="filter-media one">
+            <a href="./img/filters/porous-1.webp" data-gallery="filters" data-w="1024" data-h="1024" aria-label="نمایش بزرگ‌تر: فیلتر متخلخل"><img src="./img/filters/porous-1-t.webp" width="480" height="480" loading="lazy" decoding="async" alt="فیلترهای متخلخل سفید آبادیس"></a>
+          </div>
+          <div class="filter-body">
+            <h3>فیلتر متخلخل</h3>
+            <p>فیلترهای متخلخل به طور گسترده در تجهیزات پزشکی و آزمایشگاهی مورد استفاده قرار می‌گیرند؛ و جنس این فیلترها از پلی اتیلن سنگین (UHMW-PE) می‌باشد.</p>
+            <p>فیلترهای متخلخل به محض مرطوب شدن منافذ آن‌ها توسط دانه‌های پلیمری متورم شده و بسته می‌شود و از خروج مایعات جلوگیری می‌نماید.</p>
+            <h4>ویژگی های فیلتر متخلخل:</h4>
+            <ul>
+              <li>فیلتراسیون بالا و پایدار</li>
+              <li>عملکرد سریع</li>
+              <li>فیلترکننده باکتری‌ها تا 99.99%</li>
+            </ul>
+            <span class="filter-code">کد کالا: <b>011103</b></span>
+          </div>
+        </article>
+      </div>
+    <a class="more-link" href="https://abadis-med.com/محصولات/فیلترها/" target="_blank" rel="noopener">مشاهده فیلترها در سایت آبادیس ←</a>
+    <div class="head" id="packaging">
+      <h2>بسته‌بندی و باربری</h2>
+      <p class="sub">در هر کارتن کیسه‌های ساکشن یکبار مصرف برای هر سه سایز معمولاً ۴۵ عدد است (فیلتر مکانیکی: ۳۰ عدد در کارتن)</p>
+      <div class="carton">
+        <div class="glass"><strong>۱ و ۲ لیتری:</strong> کارتن ۵۷.۵ × ۴۲.۵ × ۴۴ cm</div>
+        <div class="glass"><strong>۳ لیتری:</strong> کارتن ۴۹ × ۴۹ × ۴۹ cm</div>
+      </div>
+    </div>
+    <div class="doc-links">
+        <a href="https://abadis-med.com/wp-content/uploads/2022/12/suction-bag-catalog-Fa.pdf" target="_blank" rel="noopener">کاتالوگ کیسه ساکشن (PDF)</a>
+        <a href="https://abadis-med.com/راهنمای-نصب/راهنمای-استفاده-کاربر-نهایی/" target="_blank" rel="noopener">راهنمای استفاده کاربر نهایی</a>
+        <a href="https://abadis-med.com/محصولات/کیسه-ساکشن/" target="_blank" rel="noopener">صفحه محصول در سایت آبادیس</a>
+      </div>
   </section>
 
 </main>
 
-<footer>آبادیس Stage · ایده جدید · بدون سبز · فونت کلمه · مدل ۳بعدی</footer>
+<footer class="site-footer" id="contact">
+    <div class="foot-inner foot-card glass">
+      <div class="foot-brand">
+        <strong>مخازن طبی آبادیس</strong>
+        <span>با ما در ارتباط باشید...</span>
+        <div class="foot-links">
+          <a href="https://abadis-med.com/ارتباط-با-ما/" target="_blank" rel="noopener">صفحه ارتباط با ما</a>
+          <a href="https://abadis-med.com/" target="_blank" rel="noopener">abadis-med.com</a>
+        </div>
+      </div>
+      <div>
+        <h3>تماس</h3>
+        <dl>
+          <dt>مرکز تماس:</dt><dd><a href="tel:+982192001017" dir="ltr">02192001017</a></dd>
+          <dt>تلفن تماس:</dt><dd><a href="tel:+982122671845" dir="ltr">02122671845</a> | <a href="tel:+982122205502" dir="ltr">02122205502</a><br><a href="tel:+982122215503" dir="ltr">02122215503</a> | <a href="tel:+982122218910" dir="ltr">02122218910</a></dd>
+          <dt>فکس:</dt><dd><span dir="ltr">02141425555</span> | داخلی 28544</dd>
+          <dt>پست الکترونیک:</dt><dd><a href="mailto:info@abadis-med.com">info@abadis-med.com</a></dd>
+          <dt>واتس‌اپ:</dt><dd><a href="https://wa.me/989100145809" target="_blank" rel="noopener" dir="ltr">+989100145809</a></dd>
+        </dl>
+      </div>
+      <div>
+        <h3>نشانی</h3>
+        <p><b>نشانی دفتر مرکزی:</b><br>ایران، تهران، قیطریه، خیابان اندرزگو، پلاک 104، واحد2</p>
+        <p><b>نشانی کارخانه:</b><br>ایران،تهران،شهرک صنعتی شمس آباد، بلوار گلستان، کوچه گلشن ۱۹،پلاک۱۷</p>
+      </div>
+    </div>
+    <div class="foot-copy">مخازن طبی آبادیس · کیسه ساکشن یکبار مصرف</div>
+  </footer>
+
+<div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="گالری تصاویر" hidden>
+    <span class="lb-count" id="lbCount"></span>
+    <button class="lb-close" type="button" aria-label="بستن">×</button>
+    <button class="lb-prev" type="button" aria-label="تصویر قبلی">›</button>
+    <figure>
+      <img id="lbImg" alt="" />
+      <figcaption id="lbCap"></figcaption>
+    </figure>
+    <button class="lb-next" type="button" aria-label="تصویر بعدی">‹</button>
+  </div>
 
 <script>
 const panels=[...document.querySelectorAll('.panel')];
@@ -411,65 +943,90 @@ const io=new IntersectionObserver(entries=>{
 },{threshold:0.45});
 panels.forEach(p=>io.observe(p));
 
-document.querySelectorAll('.chip').forEach(c=>{
-  c.addEventListener('click',()=>c.classList.toggle('on'));
-});
 
 const v=document.getElementById('heroVid');
-if(v){v.play().catch(()=>{});document.addEventListener('touchstart',()=>v.play().catch(()=>{}),{once:true})}
+if(v){
+  v.muted=true;
+  const tryPlay=()=>{if(v.paused){const p=v.play();if(p&&p.catch)p.catch(()=>{})}};
+  tryPlay();
+  v.addEventListener('canplay',tryPlay,{once:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)tryPlay()});
+  ['touchstart','pointerdown','scroll'].forEach(t=>window.addEventListener(t,tryPlay,{once:true,passive:true}));
+  new IntersectionObserver(en=>{en.forEach(x=>{if(x.isIntersecting)tryPlay();else v.pause()})}).observe(v);
+}
+/* lightbox gallery (click / keyboard / swipe) */
+    (() => {
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lbImg');
+      const cap = document.getElementById('lbCap');
+      const cnt = document.getElementById('lbCount');
+      let items = [], idx = 0, lastFocus = null;
+      function show(i) {
+        idx = (i + items.length) % items.length;
+        const a = items[idx];
+        const alt = (a.querySelector('img') || {}).alt || '';
+        img.src = a.getAttribute('href');
+        img.alt = alt;
+        cap.textContent = alt;
+        cnt.textContent = (idx + 1).toLocaleString('fa-IR') + ' / ' + items.length.toLocaleString('fa-IR');
+        const one = items.length < 2;
+        lb.querySelector('.lb-prev').hidden = one;
+        lb.querySelector('.lb-next').hidden = one;
+      }
+      function open(a) {
+        items = [...document.querySelectorAll('[data-gallery="' + a.dataset.gallery + '"]')];
+        lastFocus = document.activeElement;
+        lb.hidden = false;
+        lb.classList.add('open');
+        document.body.classList.add('lb-lock');
+        show(items.indexOf(a));
+        lb.querySelector('.lb-close').focus();
+      }
+      function close() {
+        lb.classList.remove('open');
+        lb.hidden = true;
+        document.body.classList.remove('lb-lock');
+        img.removeAttribute('src');
+        if (lastFocus) lastFocus.focus();
+      }
+      document.querySelectorAll('[data-gallery]').forEach((a) =>
+        a.addEventListener('click', (e) => { e.preventDefault(); open(a); }));
+      lb.querySelector('.lb-close').addEventListener('click', close);
+      lb.querySelector('.lb-prev').addEventListener('click', () => show(idx - 1));
+      lb.querySelector('.lb-next').addEventListener('click', () => show(idx + 1));
+      lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+      document.addEventListener('keydown', (e) => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowRight') show(idx - 1);
+        else if (e.key === 'ArrowLeft') show(idx + 1);
+      });
+      let sx = null, sy = 0;
+      lb.addEventListener('touchstart', (e) => { if (e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } }, { passive: true });
+      lb.addEventListener('touchend', (e) => {
+        if (sx == null) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        sx = null;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) show(idx + (dx > 0 ? 1 : -1)); /* RTL: swipe right = next */
+      });
+    })();
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}});
+});
 </script>
 
 <script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-const canvas=document.getElementById('productCanvas');
-const loading=document.getElementById('viewerLoading');
-if(canvas){
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
-  renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.3;
-
-  const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(32,1,0.01,100);
-  camera.position.set(0.4,0.22,0.85);
-
-  const controls=new OrbitControls(camera,canvas);
-  controls.enableDamping=true;controls.dampingFactor=0.07;
-  controls.enablePan=false;controls.minDistance=0.4;controls.maxDistance=1.7;
-  controls.autoRotate=true;controls.autoRotateSpeed=1.1;
-  controls.target.set(0,0.03,0);
-
-  scene.add(new THREE.AmbientLight(0xc4b5fd,0.45));
-  const key=new THREE.DirectionalLight(0xffffff,1.35);key.position.set(2,3,2);scene.add(key);
-  const fill=new THREE.DirectionalLight(0xa78bfa,0.5);fill.position.set(-2,1,-1);scene.add(fill);
-  const rim=new THREE.DirectionalLight(0xfb7185,0.3);rim.position.set(0,-1,-2);scene.add(rim);
-
-  function resize(){
-    const box=canvas.parentElement.getBoundingClientRect();
-    const w=box.width||300,h=box.height||300;
-    renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+const host=document.getElementById('productViewer');
+function webglOK(){try{const c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')))}catch(_){return false}}
+function fallback(){host.classList.add('pv-failed');document.getElementById('viewerLoading')?.classList.add('hide')}
+if(host){
+  if(!webglOK()) fallback();
+  else{
+    let started=false;
+    const start=()=>{if(started)return;started=true;import('./js/product-viewer.js').then(m=>m.initProductViewer(host)).catch(e=>{console.warn(e);fallback()})};
+    const obs=new IntersectionObserver(en=>{if(en.some(x=>x.isIntersecting)){obs.disconnect();start()}},{rootMargin:'600px 0px'});
+    obs.observe(host);
   }
-  resize();window.addEventListener('resize',resize);
-  controls.addEventListener('start',()=>{controls.autoRotate=false});
-  let idle;controls.addEventListener('end',()=>{clearTimeout(idle);idle=setTimeout(()=>{controls.autoRotate=true},3000)});
-
-  new GLTFLoader().load('./abadis-scrub-parts.glb',gltf=>{
-    const root=gltf.scene;
-    const box=new THREE.Box3().setFromObject(root);
-    const size=box.getSize(new THREE.Vector3());
-    const center=box.getCenter(new THREE.Vector3());
-    root.position.sub(center);
-    root.scale.setScalar(0.52/Math.max(size.x,size.y,size.z,1));
-    root.position.y+=0.02;
-    scene.add(root);
-    loading?.classList.add('hide');
-  },undefined,()=>{if(loading)loading.textContent='خطا'});
-
-  (function tick(){controls.update();renderer.render(scene,camera);requestAnimationFrame(tick)})();
 }
 </script>
 </body>
