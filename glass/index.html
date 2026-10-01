@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/glass/img/og-image.jpg" />
 <link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Black.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="./media/hero-poster.jpg" as="image" />
+<link rel="preload" href="./media/hero-poster.jpg?v=7584601" as="image" />
 <script type="importmap">
 {"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}
 </script>
@@ -626,7 +626,7 @@ section[id],footer[id]{scroll-margin-top:84px}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
   .hero-video video{display:none}
-  .hero-video{background:url("./media/hero-poster.jpg") center/cover;filter:brightness(0.68)}
+  .hero-video{background:url("./media/hero-poster.jpg?v=7584601") center/cover;filter:brightness(0.68)}
 }
 </style>
 </head>
@@ -649,9 +649,9 @@ section[id],footer[id]{scroll-margin-top:84px}
 
 <section class="hero" id="top">
   <div class="hero-video">
-    <video autoplay muted loop playsinline preload="auto" poster="./media/hero-poster.jpg" id="heroVid" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1">
-      <source src="./media/hero-mobile.mp4" type="video/mp4" media="(max-width: 800px)" />
-      <source src="./media/hero-1080.mp4" type="video/mp4" />
+    <video autoplay muted loop playsinline preload="auto" poster="./media/hero-poster.jpg?v=7584601" id="heroVid" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1">
+      <source src="./media/hero-mobile.mp4?v=7584601" type="video/mp4" media="(max-width: 800px)" />
+      <source src="./media/hero-1080.mp4?v=7584601" type="video/mp4" />
     </video>
   </div>
   <div class="hero-veil"></div>
