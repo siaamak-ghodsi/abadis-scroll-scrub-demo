@@ -100,13 +100,14 @@
       pointer-events: none;
       background:
         #f7fbfb
-        url("img/zagros/zagros-mountain.jpg") center 58% / cover no-repeat;
+        url("img/zagros/zagros-koh.jpg") center 62% / 118% auto no-repeat;
+      background-color: #f7fbfb;
     }
     .hero-art .seedlings {
       position: absolute;
       left: 0; right: 0;
       /* plain horizon ~40% up from bottom of painting */
-      bottom: clamp(18%, 34vh, 42%);
+      bottom: clamp(16%, 30vh, 38%);
       height: 0;
     }
     .hero-art .seedling {
@@ -440,6 +441,14 @@
     @media (max-width: 600px) { .lb .lb-prev, .lb .lb-next { top: auto; bottom: 18px; transform: none; } }
     body.lb-lock { overflow: hidden; }
 
+    @media (max-width: 720px) {
+      .hero-art {
+        background-size: 145% auto;
+        background-position: center 55%;
+      }
+      .hero-art .seedlings { bottom: clamp(14%, 26vh, 34%); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .hero-art .seedling,
       .hero-art .seedling-grow {
@@ -469,29 +478,15 @@
   <section class="hero" aria-label="پویش نجات زاگرس">
     <div class="hero-art" aria-hidden="true">
       <div class="seedlings">
-        <div class="seedling" style="--x:7%; --w:78px; --y:-2px; --grow-delay:0.35s; --sway:8.2s; --sway-delay:2.9s">
+        <!-- a few animated overlays over painted grove — staggered grow + light wind -->
+        <div class="seedling" style="--x:14%; --w:70px; --y:4px; --grow-delay:0.6s; --sway:8.4s; --sway-delay:3.1s">
           <span class="seedling-grow"><img src="img/zagros/seedling-1.png" alt="" width="104" height="148" decoding="async"></span>
         </div>
-        <div class="seedling" style="--x:18%; --w:64px; --y:6px; --grow-delay:1.6s; --sway:7.1s; --sway-delay:4.1s">
-          <span class="seedling-grow"><img src="img/zagros/seedling-2.png" alt="" width="86" height="198" decoding="async"></span>
-        </div>
-        <div class="seedling" style="--x:31%; --w:96px; --y:-4px; --grow-delay:0.9s; --sway:9s; --sway-delay:3.4s">
+        <div class="seedling" style="--x:48%; --w:92px; --y:-2px; --grow-delay:2.2s; --sway:7.2s; --sway-delay:4.6s">
           <span class="seedling-grow"><img src="img/zagros/seedling-3.png" alt="" width="106" height="248" decoding="async"></span>
         </div>
-        <div class="seedling" style="--x:44%; --w:70px; --y:10px; --grow-delay:2.8s; --sway:6.8s; --sway-delay:5.3s">
-          <span class="seedling-grow"><img src="img/zagros/seedling-4.png" alt="" width="120" height="172" decoding="async"></span>
-        </div>
-        <div class="seedling late" style="--x:57%; --w:58px; --y:4px; --grow-delay:5.4s; --sway:8.6s; --sway-delay:8.2s">
-          <span class="seedling-grow"><img src="img/zagros/seedling-6.png" alt="" width="63" height="160" decoding="async"></span>
-        </div>
-        <div class="seedling" style="--x:69%; --w:88px; --y:-6px; --grow-delay:1.25s; --sway:7.6s; --sway-delay:3.7s">
+        <div class="seedling late" style="--x:78%; --w:76px; --y:8px; --grow-delay:5.8s; --sway:9.1s; --sway-delay:8.5s">
           <span class="seedling-grow"><img src="img/zagros/seedling-7.png" alt="" width="72" height="205" decoding="async"></span>
-        </div>
-        <div class="seedling late" style="--x:82%; --w:74px; --y:8px; --grow-delay:6.8s; --sway:9.4s; --sway-delay:9.6s">
-          <span class="seedling-grow"><img src="img/zagros/seedling-1.png" alt="" width="104" height="148" decoding="async" style="transform:scaleX(-1)"></span>
-        </div>
-        <div class="seedling" style="--x:91%; --w:52px; --y:2px; --grow-delay:3.5s; --sway:6.4s; --sway-delay:5.9s">
-          <span class="seedling-grow"><img src="img/zagros/seedling-2.png" alt="" width="86" height="198" decoding="async"></span>
         </div>
       </div>
     </div>
