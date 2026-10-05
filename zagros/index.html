@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>پویش نجات زاگرس · کاشت نهال بلوط | آبادیس</title>
+  <meta name="description" content="پویش نجات زاگرس؛ مسئولیت اجتماعی مخازن طبی آبادیس برای کاشت نهال بلوط ایرانی (Quercus brantii) در ارتفاعات زاگرس." />
+  <meta name="theme-color" content="#e8f3f3" />
+  <link rel="canonical" href="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/zagros/" />
+  <meta property="og:title" content="پویش نجات زاگرس · آبادیس" />
+  <meta property="og:description" content="کاشت نهال بلوط در ارتفاعات زاگرس؛ مسئولیت اجتماعی آبادیس." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/zagros/img/zagros-hero.jpg" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
+  <link rel="apple-touch-icon" href="./img/apple-touch-icon.png" />
+  <link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Black.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="./img/zagros-hero.jpg" as="image" />
+  <style>
+    @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+    @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+    @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+    @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+    @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-Black.woff2") format("woff2"); font-weight: 900; font-display: swap; }
+
+    :root {
+      --teal: #066163;
+      --teal-mid: #05686b;
+      --teal-dark: #0b2e32;
+      --accent: #2ec4c6;
+      --mint: #e8f3f3;
+      --ink: #0a2e32;
+      --muted: #5a7578;
+      --bg: #f4f8f8;
+      --font: "Kalameh", Tahoma, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      line-height: 1.75;
+      background: var(--bg);
+    }
+    a { color: var(--teal); }
+    img { max-width: 100%; display: block; }
+
+    /* ---- header ---- */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      transition: background .35s, backdrop-filter .35s, box-shadow .35s;
+    }
+    .header.scrolled {
+      background: rgba(11, 46, 50, 0.94);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 24px rgba(11,46,50,0.14);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--teal);
+    }
+    .logo img { height: 36px; width: auto; }
+    .logo-text { font-weight: 800; font-size: 1.05rem; line-height: 1.2; }
+    .logo-text span { display: block; font-size: 0.68rem; font-weight: 500; color: var(--muted); }
+    .header.scrolled .logo-text { color: #2ec4c6; }
+    .header.scrolled .logo-text span { color: rgba(168,213,214,0.75); }
+    .nav { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .nav a {
+      color: var(--ink); font-size: 0.86rem; font-weight: 500;
+      text-decoration: none; transition: color .2s;
+    }
+    .nav a:hover { color: var(--teal); }
+    .header.scrolled .nav a { color: rgba(255,255,255,0.88); }
+    .header.scrolled .nav a:hover { color: #2ec4c6; }
+    .header-cta {
+      background: var(--teal); color: #fff !important;
+      padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 0.82rem;
+    }
+    .header.scrolled .header-cta { background: #2ec4c6; color: #0b2e32 !important; }
+
+    /* ---- hero ---- */
+    .hero {
+      position: relative;
+      min-height: min(92vh, 920px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 110px 24px 72px;
+      overflow: hidden;
+      background: var(--mint);
+    }
+    .hero-art {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hero-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 58%;
+      transform: scale(1.02);
+      animation: heroDrift 28s ease-in-out infinite alternate;
+    }
+    @keyframes heroDrift {
+      from { transform: scale(1.02) translateY(0); }
+      to   { transform: scale(1.06) translateY(-1.2%); }
+    }
+    .hero-veil {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(248,252,252,0.72) 0%, rgba(248,252,252,0.28) 38%, rgba(248,252,252,0.05) 58%, rgba(11,46,50,0.18) 100%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      width: min(920px, 100%);
+      text-align: center;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(232,243,243,0.92);
+      color: var(--teal);
+      border: 1px solid rgba(6,97,99,0.14);
+      padding: 8px 16px; border-radius: 999px;
+      font-size: 0.84rem; font-weight: 700;
+      margin-bottom: 18px;
+      backdrop-filter: blur(8px);
+    }
+    .badge::before {
+      content: "";
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(46,196,198,0.22);
+    }
+    .hero h1 {
+      font-size: clamp(1.85rem, 4.6vw, 3rem);
+      font-weight: 900;
+      color: var(--teal-dark);
+      line-height: 1.35;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+    .hero-lead {
+      font-size: clamp(0.98rem, 2vw, 1.12rem);
+      color: var(--muted);
+      max-width: 38rem;
+      margin: 0 auto 28px;
+      font-weight: 500;
+    }
+    .hero-actions {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 20px; border-radius: 12px;
+      font-weight: 700; font-size: 0.92rem;
+      text-decoration: none; transition: transform .15s, background .2s, color .2s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--teal); color: #fff; }
+    .btn-primary:hover { background: #055355; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.72);
+      color: var(--teal);
+      border: 1px solid rgba(6,97,99,0.16);
+      backdrop-filter: blur(6px);
+    }
+    .btn-ghost:hover { background: #fff; }
+
+    /* ---- stats ---- */
+    .stats {
+      margin-top: -42px;
+      position: relative; z-index: 3;
+      padding: 0 24px 8px;
+    }
+    .stats-grid {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: 0 18px 50px rgba(11,46,50,0.10);
+      border: 1px solid rgba(6,97,99,0.06);
+    }
+    .stat {
+      text-align: center;
+      padding: 22px 14px;
+      border-radius: 14px;
+    }
+    .stat:hover { background: var(--mint); }
+    .stat strong {
+      display: block;
+      font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+      font-weight: 900;
+      color: var(--teal);
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .stat span {
+      display: block;
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* ---- sections ---- */
+    .section {
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 64px 24px 8px;
+    }
+    .section h2 {
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      font-weight: 900;
+      color: var(--teal-dark);
+      margin-bottom: 16px;
+    }
+    .section p {
+      color: #2f4e51;
+      font-size: 1.02rem;
+      margin-bottom: 14px;
+    }
+    .section .note {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .card-row {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid rgba(6,97,99,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(11,46,50,0.04);
+    }
+    .card h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--teal);
+      margin-bottom: 10px;
+    }
+    .card p { margin-bottom: 10px; font-size: 0.96rem; }
+    .card .latin {
+      direction: ltr;
+      unicode-bidi: isolate;
+      font-weight: 700;
+      color: var(--teal-dark);
+      font-size: 0.92rem;
+    }
+    .pill-list {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 8px;
+    }
+    .pill {
+      background: var(--mint);
+      color: var(--teal);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .timeline {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .tl-item {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 14px;
+      align-items: start;
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px 18px;
+      border: 1px solid rgba(6,97,99,0.07);
+    }
+    .tl-item time {
+      font-weight: 800;
+      color: var(--teal);
+      font-size: 0.88rem;
+    }
+    .tl-item p { margin: 0; font-size: 0.94rem; color: #2f4e51; }
+
+    .cta-band {
+      margin: 56px 24px 0;
+      background: linear-gradient(135deg, #066163, #0b2e32);
+      color: #e8f3f3;
+      border-radius: 22px;
+      padding: 42px 28px;
+      text-align: center;
+      width: min(920px, calc(100% - 48px));
+      margin-inline: auto;
+    }
+    .cta-band h2 { color: #fff; font-size: 1.45rem; font-weight: 900; margin-bottom: 10px; }
+    .cta-band p { color: rgba(232,243,243,0.84); margin-bottom: 20px; max-width: 34rem; margin-inline: auto; }
+    .cta-band .btn-primary { background: #fff; color: var(--teal); }
+    .cta-band .btn-primary:hover { background: var(--mint); }
+    .cta-band .btn-ghost {
+      background: transparent; color: #fff;
+      border-color: rgba(255,255,255,0.28);
+    }
+    .cta-band .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    footer.site-footer {
+      margin-top: 56px;
+      background: #0b2e32;
+      color: #9fbcbe;
+      text-align: right;
+      padding: 56px 24px 26px;
+      font-size: 0.9rem;
+    }
+    .foot-inner {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 1.2fr 1.1fr;
+      gap: 28px;
+    }
+    .foot-brand strong { display: block; color: #e8f3f3; font-size: 1.05rem; margin-bottom: 6px; }
+    .site-footer h3 { color: #e8f3f3; font-size: 0.95rem; font-weight: 800; margin-bottom: 10px; }
+    .site-footer dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; }
+    .site-footer dt { color: #6f9194; font-weight: 600; white-space: nowrap; }
+    .site-footer dd { color: #d4e7e8; }
+    .site-footer a { color: #d4e7e8; text-decoration: none; border-bottom: 1px dotted rgba(168,213,214,.45); }
+    .site-footer a:hover { color: #2ec4c6; }
+    .site-footer p { color: #d4e7e8; margin-bottom: 10px; }
+    .foot-links { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .foot-copy {
+      width: min(980px, 100%);
+      margin: 28px auto 0;
+      padding-top: 18px;
+      border-top: 1px solid rgba(168,213,214,0.12);
+      color: #6f9194;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      .header { padding: 12px 16px; }
+      .nav { gap: 10px; }
+      .nav a:not(.header-cta) { display: none; }
+      .hero { min-height: 78vh; padding-top: 96px; }
+      .hero-art img { object-position: center 62%; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .card-row { grid-template-columns: 1fr; }
+      .tl-item { grid-template-columns: 1fr; gap: 4px; }
+      .foot-inner { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-art img { animation: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <a class="logo" href="./">
+      <img src="./img/abadis-logo.png" alt="آبادیس" />
+      <div class="logo-text">آبادیس<span>مسئولیت اجتماعی</span></div>
+    </a>
+    <nav class="nav" aria-label="منوی اصلی">
+      <a href="#about">درباره پویش</a>
+      <a href="#oak">بلوط زاگرس</a>
+      <a href="#timeline">مسیر</a>
+      <a class="header-cta" href="#contact">تماس</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-label="هیرو پویش نجات زاگرس">
+    <div class="hero-art" aria-hidden="true">
+      <img src="./img/zagros-hero.jpg" alt="" width="1600" height="900" decoding="async" fetchpriority="high" />
+    </div>
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="badge">پویش نجات زاگرس · کاشت نهال بلوط</div>
+      <h1>نجات زاگرس، مسئولیت اجتماعی آبادیس</h1>
+      <p class="hero-lead">
+        کاشت نهال بلوط در ارتفاعات زاگرس؛ گامی عملی برای حفظ، نگهداری و احیای جنگل‌های زاگرس، به یاد صنعت سلامت کشور.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://abadis-med.com/%D9%86%D8%AC%D8%A7%D8%AA-%D8%B2%D8%A7%DA%AF%D8%B1%D8%B3%D8%8C%D9%85%D8%B3%D8%A6%D9%88%D9%84%DB%8C%D8%AA-%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%DB%8C-%D8%A2%D8%A8%D8%A7%D8%AF%DB%8C%D8%B3/" target="_blank" rel="noopener">صفحه رسمی پویش</a>
+        <a class="btn btn-ghost" href="#stats">آمار کاشت</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" id="stats" aria-label="آمار پویش">
+    <div class="stats-grid">
+      <div class="stat">
+        <strong>۱٬۰۰۰</strong>
+        <span>نهال کاشته‌شده تا اردیبهشت ۱۴۰۳</span>
+      </div>
+      <div class="stat">
+        <strong>۴٬۰۰۰</strong>
+        <span>هدف کاشت تا پایان ۱۴۰۵</span>
+      </div>
+      <div class="stat">
+        <strong>+۴۰۰</strong>
+        <span>مرکز درمانی همراه آبادیس</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <h2>درباره پویش</h2>
+    <p>
+      همایش نجات زاگرس فرصتی است برای طرح یک راهکار عملیاتی ویژهٔ جنگل‌های زاگرس، در راستای حفظ و نگهداری، احیای جنگل‌های سوخته و جوان‌سازی جنگل‌های کهنسال. این راهکار از طریق کاشت هزاران نهال بلوط آغاز می‌شود.
+    </p>
+    <p>
+      آبادیس در مسیر مسئولیت اجتماعی خود، با همکاری شرکت ایده‌پردازان نواندیش فردا (Dpaper)، به‌ازای اعضای خانوادهٔ خود که بیش از ۴۰۰ مرکز درمانی است، کاشت بلوط را در روز درختکاری آغاز کرد و تا اردیبهشت ۱۴۰۳ این تعداد را به ۱٬۰۰۰ نهال رساند تا در ارتفاعات زاگرس مکانی به نام «آبادیس» و به یاد صنعت سلامت کشور ثبت شود.
+    </p>
+    <p class="note">
+      منبع: صفحهٔ رسمی «نجات زاگرس، مسئولیت اجتماعی آبادیس» در abadis-med.com
+    </p>
+
+    <div class="card-row">
+      <article class="card" id="oak">
+        <h3>بلوط ایرانی زاگرس</h3>
+        <p>
+          گونهٔ هدف این پویش، بلوط ایرانی است؛ درخت شاخص رویشگاه‌های زاگرس که نقش حیاتی در پایداری خاک، نگهداشت آب و هویت بوم‌شناختی این رشته‌کوه دارد.
+        </p>
+        <p class="latin">Quercus brantii</p>
+        <div class="pill-list">
+          <span class="pill">کاشت نهال بلوط</span>
+          <span class="pill">ارتفاعات زاگرس</span>
+          <span class="pill">مسئولیت اجتماعی</span>
+        </div>
+      </article>
+      <article class="card">
+        <h3>همراهی صنعت سلامت</h3>
+        <p>
+          برنامه‌ریزی این پروژه با نیت اتحاد در صنعت سلامت انجام شد؛ شعار آبادیس از بدو تأسیس همین بوده است: «ما به اندازه یک سرانگشت اثر می‌گذاریم، به شما، به طبیعت، به جهان.»
+        </p>
+        <p class="note">شناسنامهٔ نهال‌ها برای همراهان ارسال می‌شود.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="timeline">
+    <h2>مسیر پویش</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <time datetime="1402-12-15">۱۵ اسفند ۱۴۰۲</time>
+        <p>همایش نجات زاگرس همزمان با روز درختکاری، با حضور فعالان محیط‌زیست و متخصصان منابع طبیعی در مرکز همایش‌های بین‌المللی دانشگاه علم و فرهنگ برگزار شد.</p>
+      </div>
+      <div class="tl-item">
+        <time datetime="1403-02">اردیبهشت ۱۴۰۳</time>
+        <p>هدف رساندن شمار نهال‌ها از بیش از ۴۰۰ به ۱٬۰۰۰ اصله در ارتفاعات زاگرس و ثبت مکانی به نام آبادیس.</p>
+      </div>
+      <div class="tl-item">
+        <time datetime="1403-04-30">۳۰ تیر ۱۴۰۳</time>
+        <p>مجموعه آبادیس حامی کارزار درخواست نجات زاگرس است که توسط انجمن‌های دوستدار طبیعت آغاز شد؛ مدیران و پرسنل آبادیس این کارزار را امضا کردند.</p>
+      </div>
+      <div class="tl-item">
+        <time datetime="1405">تا پایان ۱۴۰۵</time>
+        <p>هدف برنامه: کاشت ۴٬۰۰۰ نهال بلوط در مسیر احیای زاگرس.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band" aria-label="ادامه در سایت آبادیس">
+    <h2>جزئیات بیشتر در سایت آبادیس</h2>
+    <p>متن کامل پویش، گزارش همایش و کارزار نجات زاگرس را در صفحهٔ رسمی مسئولیت اجتماعی آبادیس بخوانید.</p>
+    <div class="cta-actions">
+      <a class="btn btn-primary" href="https://abadis-med.com/%D9%86%D8%AC%D8%A7%D8%AA-%D8%B2%D8%A7%DA%AF%D8%B1%D8%B3%D8%8C%D9%85%D8%B3%D8%A6%D9%88%D9%84%DB%8C%D8%AA-%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%DB%8C-%D8%A2%D8%A8%D8%A7%D8%AF%DB%8C%D8%B3/" target="_blank" rel="noopener">مشاهده صفحه پویش</a>
+      <a class="btn btn-ghost" href="https://abadis-med.com/" target="_blank" rel="noopener">abadis-med.com</a>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="contact">
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <strong>مخازن طبی آبادیس</strong>
+        <span>با ما در ارتباط باشید...</span>
+        <div class="foot-links">
+          <a href="https://abadis-med.com/ارتباط-با-ما/" target="_blank" rel="noopener">صفحه ارتباط با ما</a>
+          <a href="https://abadis-med.com/" target="_blank" rel="noopener">abadis-med.com</a>
+          <a href="https://abadis-med.com/%D9%86%D8%AC%D8%A7%D8%AA-%D8%B2%D8%A7%DA%AF%D8%B1%D8%B3%D8%8C%D9%85%D8%B3%D8%A6%D9%88%D9%84%DB%8C%D8%AA-%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%DB%8C-%D8%A2%D8%A8%D8%A7%D8%AF%DB%8C%D8%B3/" target="_blank" rel="noopener">پویش نجات زاگرس</a>
+        </div>
+      </div>
+      <div>
+        <h3>تماس</h3>
+        <dl>
+          <dt>مرکز تماس:</dt><dd><a href="tel:+982192001017" dir="ltr">02192001017</a></dd>
+          <dt>تلفن تماس:</dt><dd><a href="tel:+982122671845" dir="ltr">02122671845</a> | <a href="tel:+982122205502" dir="ltr">02122205502</a><br><a href="tel:+982122215503" dir="ltr">02122215503</a> | <a href="tel:+982122218910" dir="ltr">02122218910</a></dd>
+          <dt>فکس:</dt><dd><span dir="ltr">02141425555</span> | داخلی 28544</dd>
+          <dt>پست الکترونیک:</dt><dd><a href="mailto:info@abadis-med.com">info@abadis-med.com</a></dd>
+          <dt>واتس‌اپ:</dt><dd><a href="https://wa.me/989100145809" target="_blank" rel="noopener" dir="ltr">+989100145809</a></dd>
+        </dl>
+      </div>
+      <div>
+        <h3>نشانی</h3>
+        <p><b>نشانی دفتر مرکزی:</b><br>ایران، تهران، قیطریه، خیابان اندرزگو، پلاک 104، واحد2</p>
+        <p><b>نشانی کارخانه:</b><br>ایران،تهران،شهرک صنعتی شمس آباد، بلوار گلستان، کوچه گلشن ۱۹،پلاک۱۷</p>
+      </div>
+    </div>
+    <div class="foot-copy">مخازن طبی آبادیس · پویش نجات زاگرس · کاشت نهال بلوط</div>
+  </footer>
+
+  <script>
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+  </script>
+</body>
+</html>
