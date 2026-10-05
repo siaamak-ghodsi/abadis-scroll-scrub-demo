@@ -93,22 +93,67 @@
       position: relative; min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      background: linear-gradient(180deg, #f7fbfb 0%, #eef6f6 50%, #e0efef 100%);
+      background: #f7fbfb;
     }
     .hero-art {
       position: absolute; inset: 0; z-index: 0;
       pointer-events: none;
+      background:
+        #f7fbfb
+        url("img/zagros/zagros-mountain.jpg") center 58% / cover no-repeat;
     }
-    .hero-art svg {
-      width: 100%; height: 100%;
+    .hero-art .seedlings {
+      position: absolute;
+      left: 0; right: 0;
+      /* plain horizon ~40% up from bottom of painting */
+      bottom: clamp(18%, 34vh, 42%);
+      height: 0;
+    }
+    .hero-art .seedling {
+      position: absolute;
+      left: var(--x, 10%);
+      bottom: var(--y, 0px);
+      width: var(--w, 72px);
+      transform-origin: 50% 100%;
+      /* gentle wind after rooted — natural, not slider-like */
+      animation: zagros-sway var(--sway, 7.5s) ease-in-out var(--sway-delay, 2.5s) infinite;
+      will-change: transform;
+    }
+    .hero-art .seedling-grow {
       display: block;
+      width: 100%;
+      transform-origin: 50% 100%;
+      transform: scaleY(0) scaleX(0.72);
+      opacity: 0;
+      animation: zagros-grow 2.6s cubic-bezier(.2,.8,.25,1) var(--grow-delay, 0s) forwards;
+      will-change: transform, opacity;
+    }
+    .hero-art .seedling img {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: saturate(0.92) contrast(0.96);
+    }
+    .hero-art .seedling.late .seedling-grow {
+      animation-duration: 3.1s;
+    }
+    @keyframes zagros-grow {
+      0%   { transform: scaleY(0) scaleX(0.7); opacity: 0; }
+      62%  { transform: scaleY(1.04) scaleX(1.01); opacity: 1; }
+      100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+    }
+    @keyframes zagros-sway {
+      0%, 100% { transform: rotate(-1.1deg) translateX(-1px); }
+      50%      { transform: rotate(1.25deg) translateX(1.5px); }
     }
     .hero-overlay {
       position: absolute; inset: 0; z-index: 1;
       pointer-events: none;
       background:
-        linear-gradient(180deg, rgba(247,251,251,0.55) 0%, rgba(247,251,251,0.15) 28%, transparent 48%),
-        linear-gradient(180deg, transparent 55%, rgba(232,243,243,0.55) 78%, rgba(244,248,248,0.98) 100%);
+        linear-gradient(180deg, rgba(247,251,251,0.5) 0%, rgba(247,251,251,0.12) 26%, transparent 46%),
+        linear-gradient(180deg, transparent 62%, rgba(236,246,245,0.35) 82%, rgba(244,248,248,0.92) 100%);
     }
     .hero-content {
       position: relative; z-index: 2;
@@ -148,27 +193,6 @@
       transition: transform .3s, box-shadow .3s;
     }
     .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(46,196,198,0.5); }
-
-    /* Zagros seedling sprout animation (Tak-Macaron cloud rhythm → trees) */
-    .hero-art .seedling {
-      transform-box: fill-box;
-      transform-origin: 50% 100%;
-      animation: zagros-sprout 9s ease-in-out infinite;
-      animation-delay: var(--d, 0s);
-      will-change: transform, opacity;
-    }
-    .hero-art .seedling.far { opacity: 0.55; }
-    @keyframes zagros-sprout {
-      0%   { transform: scaleY(0) scaleX(0.55); opacity: 0; }
-      10%  { transform: scaleY(1.08) scaleX(1.02); opacity: 1; }
-      14%  { transform: scaleY(1) scaleX(1); opacity: 1; }
-      22%  { transform: scaleY(1) scaleX(1) rotate(1.6deg); }
-      28%  { transform: scaleY(1) scaleX(1) rotate(-1.2deg); }
-      34%  { transform: scaleY(1) scaleX(1) rotate(0deg); }
-      72%  { transform: scaleY(1) scaleX(1); opacity: 1; }
-      88%  { transform: scaleY(0.92) scaleX(0.96); opacity: 0.35; }
-      100% { transform: scaleY(0) scaleX(0.55); opacity: 0; }
-    }
 
     .main { background: var(--bg); color: var(--ink); }
     .band { max-width: 1080px; margin: 0 auto; padding: 72px 24px; }
@@ -417,12 +441,12 @@
     body.lb-lock { overflow: hidden; }
 
     @media (prefers-reduced-motion: reduce) {
-      .hero-art .seedling {
+      .hero-art .seedling,
+      .hero-art .seedling-grow {
         animation: none !important;
         transform: none !important;
         opacity: 1 !important;
       }
-      .hero-art .seedling.far { opacity: 0.55 !important; }
     }
   </style>
 </head>
@@ -444,159 +468,32 @@
 
   <section class="hero" aria-label="پویش نجات زاگرس">
     <div class="hero-art" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-  <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fafcfc"/>
-      <stop offset="45%" stop-color="#f3fafa"/>
-      <stop offset="100%" stop-color="#e8f3f3"/>
-    </linearGradient>
-    <linearGradient id="farFill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#dce9e9" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#c5dcdc" stop-opacity="0.7"/>
-    </linearGradient>
-    <linearGradient id="midFill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#c8dedf" stop-opacity="0.5"/>
-      <stop offset="55%" stop-color="#9fc4c5" stop-opacity="0.62"/>
-      <stop offset="100%" stop-color="#7eb0b2" stop-opacity="0.75"/>
-    </linearGradient>
-    <linearGradient id="nearFill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#a8c9cb" stop-opacity="0.45"/>
-      <stop offset="40%" stop-color="#6fa3a5" stop-opacity="0.58"/>
-      <stop offset="100%" stop-color="#05686b" stop-opacity="0.42"/>
-    </linearGradient>
-    <linearGradient id="mintWash" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#dce395" stop-opacity="0"/>
-      <stop offset="35%" stop-color="#c5dcdc" stop-opacity="0.25"/>
-      <stop offset="100%" stop-color="#087673" stop-opacity="0.18"/>
-    </linearGradient>
-    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#e8f3f3" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#f4f8f8" stop-opacity="1"/>
-    </linearGradient>
-  </defs>
-
-  <rect width="1440" height="900" fill="url(#sky)"/>
-
-  <!-- soft atmospheric ellipses (static, Tak-like) -->
-  <ellipse cx="260" cy="150" rx="200" ry="48" fill="#dce9e9" opacity="0.28"/>
-  <ellipse cx="1050" cy="110" rx="240" ry="52" fill="#d5e4e4" opacity="0.22"/>
-  <ellipse cx="720" cy="190" rx="170" ry="38" fill="#e0eeee" opacity="0.2"/>
-
-  <!-- FAR Zagros peaks — pale wash + pencil outline -->
-  <path fill="url(#farFill)" stroke="#9aa5a8" stroke-width="1.15" stroke-linejoin="round" opacity="0.9"
-    d="M-80 540
-       C40 500 120 430 220 410
-       C300 395 350 440 430 425
-       C520 405 580 340 680 330
-       C780 320 840 380 940 370
-       C1040 360 1120 300 1220 315
-       C1320 330 1400 380 1520 430
-       L1520 900 L-80 900 Z"/>
-  <g fill="none" stroke="#818a91" stroke-width="0.85" opacity="0.35" stroke-linecap="round">
-    <path d="M220 410 C270 400 330 420 370 435"/>
-    <path d="M680 330 C740 340 800 365 850 380"/>
-    <path d="M1220 315 C1270 325 1320 350 1365 370"/>
-  </g>
-
-  <!-- MID range -->
-  <path fill="url(#midFill)" stroke="#6a7e82" stroke-width="1.2" stroke-linejoin="round"
-    d="M-100 610
-       C20 565 100 505 190 490
-       C280 474 350 530 450 515
-       C560 498 630 445 740 435
-       C860 422 940 480 1050 470
-       C1160 458 1260 410 1380 430
-       C1440 440 1500 470 1560 500
-       L1560 900 L-100 900 Z"/>
-  <g fill="none" stroke="#5a7578" stroke-width="0.95" opacity="0.32" stroke-linecap="round">
-    <path d="M190 490 C250 478 320 500 380 515"/>
-    <path d="M740 435 C810 445 880 470 940 485"/>
-    <path d="M1050 470 C1120 460 1190 445 1255 448"/>
-  </g>
-
-  <!-- NEAR foothills with soft mint wash (Tak lower-slope green → Abadis mint/teal) -->
-  <path fill="url(#nearFill)" stroke="#066163" stroke-width="1.3" stroke-linejoin="round"
-    d="M-120 700
-       C10 650 90 590 185 575
-       C290 558 370 620 480 605
-       C590 588 670 540 790 530
-       C920 518 1010 575 1130 565
-       C1240 555 1330 515 1480 545
-       C1520 555 1560 575 1600 600
-       L1600 900 L-120 900 Z"/>
-  <path fill="url(#mintWash)" opacity="0.85"
-    d="M-120 740
-       C80 700 200 660 340 655
-       C500 648 640 680 820 675
-       C1000 668 1180 640 1400 655
-       L1600 680 L1600 900 L-120 900 Z"/>
-  <g fill="none" stroke="#066163" stroke-width="1" opacity="0.28" stroke-linecap="round">
-    <path d="M185 575 C250 562 330 585 400 600"/>
-    <path d="M790 530 C860 538 930 560 990 575"/>
-    <path d="M1130 565 C1200 555 1270 540 1335 545"/>
-    <path d="M300 655 C420 645 540 660 660 670"/>
-    <path d="M900 640 C1020 630 1140 645 1260 660"/>
-  </g>
-
-  <rect y="760" width="1440" height="140" fill="url(#floor)"/>
-
-  <!-- Oak seedling symbols -->
-  <symbol id="oak" viewBox="0 0 24 40" overflow="visible">
-    <path d="M12 38 C11.5 28 11.8 20 12 14" fill="none" stroke="#066163" stroke-width="1.45" stroke-linecap="round"/>
-    <path d="M12 22 C6 20 3 15 5 11 C8 10 12 14 12 18" fill="#087673" fill-opacity="0.58" stroke="#066163" stroke-width="0.95" stroke-linejoin="round"/>
-    <path d="M12 20 C18 18 21 13 19 9 C16 8 12 12 12 16" fill="#0e7475" fill-opacity="0.52" stroke="#066163" stroke-width="0.95" stroke-linejoin="round"/>
-    <path d="M12 14 C10 8 12 4 12 4 C12 4 14 8 12 14" fill="#05686b" fill-opacity="0.7" stroke="#015F61" stroke-width="0.9" stroke-linejoin="round"/>
-    <ellipse cx="12" cy="38.5" rx="5" ry="1.2" fill="#818a91" opacity="0.22"/>
-  </symbol>
-  <symbol id="oak-sm" viewBox="0 0 20 32" overflow="visible">
-    <path d="M10 30 C9.6 22 9.8 16 10 11" fill="none" stroke="#066163" stroke-width="1.25" stroke-linecap="round"/>
-    <path d="M10 17 C5.5 15.5 3.5 12 5 9 C7.2 8.2 10 11 10 14" fill="#087673" fill-opacity="0.55" stroke="#066163" stroke-width="0.85"/>
-    <path d="M10 15 C14.5 13.5 16.5 10 15 7 C12.8 6.2 10 9 10 12" fill="#0e7475" fill-opacity="0.5" stroke="#066163" stroke-width="0.85"/>
-    <path d="M10 11 C8.5 6.5 10 3.5 10 3.5 C10 3.5 11.5 6.5 10 11" fill="#05686b" fill-opacity="0.65" stroke="#015F61" stroke-width="0.8"/>
-    <ellipse cx="10" cy="30.5" rx="4" ry="1" fill="#818a91" opacity="0.2"/>
-  </symbol>
-  <symbol id="oak-lg" viewBox="0 0 28 48" overflow="visible">
-    <path d="M14 46 C13.4 34 13.7 24 14 16" fill="none" stroke="#066163" stroke-width="1.6" stroke-linecap="round"/>
-    <path d="M14 26 C7 23 3 17 6 12 C10 11 14 16 14 21" fill="#087673" fill-opacity="0.58" stroke="#066163" stroke-width="1.05"/>
-    <path d="M14 24 C21 21 25 15 22 10 C18 9 14 14 14 19" fill="#0e7475" fill-opacity="0.52" stroke="#066163" stroke-width="1.05"/>
-    <path d="M14 22 C10 20 8 16 10 13 C12 12.5 14 15 14 18" fill="#05686b" fill-opacity="0.48" stroke="#066163" stroke-width="0.9"/>
-    <path d="M14 16 C12 9 14 4 14 4 C14 4 16 9 14 16" fill="#015F61" fill-opacity="0.58" stroke="#015F61" stroke-width="0.95"/>
-    <ellipse cx="14" cy="46.5" rx="6" ry="1.4" fill="#818a91" opacity="0.25"/>
-  </symbol>
-
-  <g class="seedlings">
-    <g class="seedling" style="--d:0.2s"><use href="#oak" x="145" y="545" width="24" height="40"/></g>
-    <g class="seedling" style="--d:1.1s"><use href="#oak-sm" x="190" y="575" width="18" height="30"/></g>
-    <g class="seedling" style="--d:2.4s"><use href="#oak" x="240" y="590" width="22" height="36"/></g>
-    <g class="seedling" style="--d:0.8s"><use href="#oak-sm" x="290" y="605" width="16" height="26"/></g>
-    <g class="seedling" style="--d:3.2s"><use href="#oak-lg" x="340" y="575" width="28" height="48"/></g>
-
-    <g class="seedling" style="--d:1.6s"><use href="#oak" x="430" y="560" width="24" height="40"/></g>
-    <g class="seedling" style="--d:0.4s"><use href="#oak-sm" x="485" y="540" width="18" height="30"/></g>
-    <g class="seedling" style="--d:2.8s"><use href="#oak" x="535" y="525" width="22" height="36"/></g>
-    <g class="seedling" style="--d:4.0s"><use href="#oak-sm" x="585" y="515" width="16" height="26"/></g>
-
-    <g class="seedling" style="--d:0.6s"><use href="#oak-lg" x="700" y="495" width="30" height="50"/></g>
-    <g class="seedling" style="--d:2.0s"><use href="#oak" x="760" y="520" width="24" height="40"/></g>
-    <g class="seedling" style="--d:3.6s"><use href="#oak-sm" x="815" y="540" width="18" height="30"/></g>
-    <g class="seedling" style="--d:1.3s"><use href="#oak" x="870" y="550" width="22" height="36"/></g>
-
-    <g class="seedling" style="--d:2.2s"><use href="#oak" x="980" y="530" width="24" height="40"/></g>
-    <g class="seedling" style="--d:0.9s"><use href="#oak-sm" x="1040" y="515" width="18" height="30"/></g>
-    <g class="seedling" style="--d:3.0s"><use href="#oak-lg" x="1100" y="500" width="28" height="48"/></g>
-    <g class="seedling" style="--d:1.8s"><use href="#oak" x="1170" y="520" width="22" height="36"/></g>
-    <g class="seedling" style="--d:4.2s"><use href="#oak-sm" x="1235" y="540" width="16" height="26"/></g>
-    <g class="seedling" style="--d:0.3s"><use href="#oak" x="1295" y="555" width="24" height="40"/></g>
-    <g class="seedling" style="--d:2.6s"><use href="#oak-sm" x="1355" y="575" width="18" height="30"/></g>
-
-    <g class="seedling far" style="--d:1.4s"><use href="#oak-sm" x="350" y="470" width="13" height="22"/></g>
-    <g class="seedling far" style="--d:3.4s"><use href="#oak-sm" x="650" y="410" width="13" height="22"/></g>
-    <g class="seedling far" style="--d:0.7s"><use href="#oak-sm" x="920" y="445" width="13" height="22"/></g>
-    <g class="seedling far" style="--d:2.1s"><use href="#oak-sm" x="1180" y="395" width="13" height="22"/></g>
-  </g>
-</svg>
-
+      <div class="seedlings">
+        <div class="seedling" style="--x:7%; --w:78px; --y:-2px; --grow-delay:0.35s; --sway:8.2s; --sway-delay:2.9s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-1.png" alt="" width="104" height="148" decoding="async"></span>
+        </div>
+        <div class="seedling" style="--x:18%; --w:64px; --y:6px; --grow-delay:1.6s; --sway:7.1s; --sway-delay:4.1s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-2.png" alt="" width="86" height="198" decoding="async"></span>
+        </div>
+        <div class="seedling" style="--x:31%; --w:96px; --y:-4px; --grow-delay:0.9s; --sway:9s; --sway-delay:3.4s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-3.png" alt="" width="106" height="248" decoding="async"></span>
+        </div>
+        <div class="seedling" style="--x:44%; --w:70px; --y:10px; --grow-delay:2.8s; --sway:6.8s; --sway-delay:5.3s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-4.png" alt="" width="120" height="172" decoding="async"></span>
+        </div>
+        <div class="seedling late" style="--x:57%; --w:58px; --y:4px; --grow-delay:5.4s; --sway:8.6s; --sway-delay:8.2s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-6.png" alt="" width="63" height="160" decoding="async"></span>
+        </div>
+        <div class="seedling" style="--x:69%; --w:88px; --y:-6px; --grow-delay:1.25s; --sway:7.6s; --sway-delay:3.7s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-7.png" alt="" width="72" height="205" decoding="async"></span>
+        </div>
+        <div class="seedling late" style="--x:82%; --w:74px; --y:8px; --grow-delay:6.8s; --sway:9.4s; --sway-delay:9.6s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-1.png" alt="" width="104" height="148" decoding="async" style="transform:scaleX(-1)"></span>
+        </div>
+        <div class="seedling" style="--x:91%; --w:52px; --y:2px; --grow-delay:3.5s; --sway:6.4s; --sway-delay:5.9s">
+          <span class="seedling-grow"><img src="img/zagros/seedling-2.png" alt="" width="86" height="198" decoding="async"></span>
+        </div>
+      </div>
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
