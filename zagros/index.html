@@ -82,7 +82,7 @@
     }
     .header.scrolled .header-cta { background: #2ec4c6; color: #0b2e32 !important; }
 
-    /* ---- hero (Tak Macaron painted koh + soft seedlings) ---- */
+    /* ---- hero (Tak Macaron painted koh) ---- */
     .hero {
       position: relative;
       min-height: min(92vh, 920px);
@@ -103,50 +103,6 @@
         #f7fbfb
         url("./img/zagros-koh.jpg") center 62% / 118% auto no-repeat;
       background-color: #f7fbfb;
-    }
-    .hero-art .seedlings {
-      position: absolute;
-      left: 0; right: 0;
-      bottom: clamp(16%, 30vh, 38%);
-      height: 0;
-    }
-    .hero-art .seedling {
-      position: absolute;
-      left: var(--x, 10%);
-      bottom: var(--y, 0px);
-      width: var(--w, 72px);
-      transform-origin: 50% 100%;
-      animation: zagros-sway var(--sway, 7.5s) ease-in-out var(--sway-delay, 2.5s) infinite;
-      will-change: transform;
-    }
-    .hero-art .seedling-grow {
-      display: block;
-      width: 100%;
-      transform-origin: 50% 100%;
-      transform: scaleY(0) scaleX(0.72);
-      opacity: 0;
-      animation: zagros-grow 2.6s cubic-bezier(.2,.8,.25,1) var(--grow-delay, 0s) forwards;
-      will-change: transform, opacity;
-    }
-    .hero-art .seedling img {
-      display: block;
-      width: 100%;
-      height: auto;
-      user-select: none;
-      -webkit-user-drag: none;
-      filter: saturate(0.92) contrast(0.96);
-    }
-    .hero-art .seedling.late .seedling-grow {
-      animation-duration: 3.1s;
-    }
-    @keyframes zagros-grow {
-      0%   { transform: scaleY(0) scaleX(0.7); opacity: 0; }
-      62%  { transform: scaleY(1.04) scaleX(1.01); opacity: 1; }
-      100% { transform: scaleY(1) scaleX(1); opacity: 1; }
-    }
-    @keyframes zagros-sway {
-      0%, 100% { transform: rotate(-1.1deg) translateX(-1px); }
-      50%      { transform: rotate(1.25deg) translateX(1.5px); }
     }
     .hero-veil {
       position: absolute; inset: 0; z-index: 1;
@@ -396,19 +352,12 @@
         background-size: 145% auto;
         background-position: center 55%;
       }
-      .hero-art .seedlings { bottom: clamp(14%, 26vh, 34%); }
       .stats-grid { grid-template-columns: 1fr; }
       .card-row { grid-template-columns: 1fr; }
       .tl-item { grid-template-columns: 1fr; gap: 4px; }
       .foot-inner { grid-template-columns: 1fr; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hero-art .seedling,
-      .hero-art .seedling-grow {
-        animation: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-      }
       html { scroll-behavior: auto; }
     }
   </style>
@@ -428,19 +377,7 @@
   </header>
 
   <section class="hero" aria-label="هیرو پویش نجات زاگرس">
-    <div class="hero-art" aria-hidden="true">
-      <div class="seedlings">
-        <div class="seedling" style="--x:14%; --w:70px; --y:4px; --grow-delay:0.6s; --sway:8.4s; --sway-delay:3.1s">
-          <span class="seedling-grow"><img src="./img/zagros/seedling-1.png" alt="" width="104" height="148" decoding="async"></span>
-        </div>
-        <div class="seedling" style="--x:48%; --w:92px; --y:-2px; --grow-delay:2.2s; --sway:7.2s; --sway-delay:4.6s">
-          <span class="seedling-grow"><img src="./img/zagros/seedling-3.png" alt="" width="106" height="248" decoding="async"></span>
-        </div>
-        <div class="seedling late" style="--x:78%; --w:76px; --y:8px; --grow-delay:5.8s; --sway:9.1s; --sway-delay:8.5s">
-          <span class="seedling-grow"><img src="./img/zagros/seedling-7.png" alt="" width="72" height="205" decoding="async"></span>
-        </div>
-      </div>
-    </div>
+    <div class="hero-art" aria-hidden="true"></div>
     <div class="hero-veil" aria-hidden="true"></div>
     <div class="hero-inner">
       <div class="badge">پویش نجات زاگرس · کاشت نهال بلوط</div>
