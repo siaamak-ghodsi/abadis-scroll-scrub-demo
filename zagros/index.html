@@ -11,13 +11,13 @@
   <meta property="og:description" content="کاشت نهال بلوط در ارتفاعات زاگرس؛ مسئولیت اجتماعی آبادیس." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="fa_IR" />
-  <meta property="og:image" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/zagros/img/zagros-hero.jpg" />
+  <meta property="og:image" content="https://siaamak-ghodsi.github.io/abadis-scroll-scrub-demo/zagros/img/zagros-koh.jpg" />
   <link rel="icon" href="./favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" href="./img/apple-touch-icon.png" />
   <link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="./fonts/kalameh/KalamehWeb-FaNum-Black.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="./img/zagros-hero.jpg" as="image" />
+  <link rel="preload" href="./img/zagros-koh.jpg" as="image" />
   <style>
     @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "Kalameh"; src: url("./fonts/kalameh/KalamehWeb-FaNum-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
@@ -82,7 +82,7 @@
     }
     .header.scrolled .header-cta { background: #2ec4c6; color: #0b2e32 !important; }
 
-    /* ---- hero (Tak Macaron layering) ---- */
+    /* ---- hero (Tak Macaron painted koh + soft seedlings) ---- */
     .hero {
       position: relative;
       min-height: min(92vh, 920px);
@@ -91,7 +91,7 @@
       justify-content: center;
       padding: 110px 24px 88px;
       overflow: hidden;
-      background: #f9f9f9;
+      background: #f7fbfb;
     }
     .hero-art {
       position: absolute;
@@ -99,56 +99,61 @@
       z-index: 0;
       pointer-events: none;
       overflow: hidden;
+      background:
+        #f7fbfb
+        url("./img/zagros-koh.jpg") center 62% / 118% auto no-repeat;
+      background-color: #f7fbfb;
     }
-    .hero-koh {
+    .hero-art .seedlings {
       position: absolute;
-      left: 50%;
-      bottom: -2%;
-      width: 118%;
-      max-width: none;
-      height: auto;
-      transform: translateX(-50%);
-      object-fit: cover;
-      object-position: center bottom;
-      opacity: 0.98;
+      left: 0; right: 0;
+      bottom: clamp(16%, 30vh, 38%);
+      height: 0;
     }
-    .mist {
+    .hero-art .seedling {
       position: absolute;
-      bottom: 18%;
-      width: min(42vw, 520px);
-      height: auto;
-      opacity: 0.55;
+      left: var(--x, 10%);
+      bottom: var(--y, 0px);
+      width: var(--w, 72px);
+      transform-origin: 50% 100%;
+      animation: zagros-sway var(--sway, 7.5s) ease-in-out var(--sway-delay, 2.5s) infinite;
       will-change: transform;
-      filter: saturate(0.85);
     }
-    .mist-a {
-      left: -8%;
-      animation: mistDriftA 35s ease-in-out infinite alternate;
+    .hero-art .seedling-grow {
+      display: block;
+      width: 100%;
+      transform-origin: 50% 100%;
+      transform: scaleY(0) scaleX(0.72);
+      opacity: 0;
+      animation: zagros-grow 2.6s cubic-bezier(.2,.8,.25,1) var(--grow-delay, 0s) forwards;
+      will-change: transform, opacity;
     }
-    .mist-b {
-      right: -10%;
-      width: min(48vw, 620px);
-      bottom: 22%;
-      opacity: 0.48;
-      animation: mistDriftB 35s ease-in-out infinite alternate;
+    .hero-art .seedling img {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: saturate(0.92) contrast(0.96);
     }
-    @keyframes mistDriftA {
-      from { transform: translate3d(0, 0, 0); }
-      to   { transform: translate3d(42vw, -1.5vh, 0); }
+    .hero-art .seedling.late .seedling-grow {
+      animation-duration: 3.1s;
     }
-    @keyframes mistDriftB {
-      from { transform: translate3d(0, 0, 0); }
-      to   { transform: translate3d(-46vw, 1.2vh, 0); }
+    @keyframes zagros-grow {
+      0%   { transform: scaleY(0) scaleX(0.7); opacity: 0; }
+      62%  { transform: scaleY(1.04) scaleX(1.01); opacity: 1; }
+      100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+    }
+    @keyframes zagros-sway {
+      0%, 100% { transform: rotate(-1.1deg) translateX(-1px); }
+      50%      { transform: rotate(1.25deg) translateX(1.5px); }
     }
     .hero-veil {
       position: absolute; inset: 0; z-index: 1;
-      background:
-        linear-gradient(180deg,
-          rgba(249,249,249,0.55) 0%,
-          rgba(249,249,249,0.12) 34%,
-          rgba(249,249,249,0.0) 55%,
-          rgba(249,249,249,0.35) 100%);
       pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(247,251,251,0.5) 0%, rgba(247,251,251,0.12) 26%, transparent 46%),
+        linear-gradient(180deg, transparent 62%, rgba(236,246,245,0.35) 82%, rgba(244,248,248,0.92) 100%);
     }
     .hero-inner {
       position: relative; z-index: 2;
@@ -207,6 +212,7 @@
     .btn-ghost:hover { background: #fff; }
 
     .stats {
+
       margin-top: -42px;
       position: relative; z-index: 3;
       padding: 0 24px 8px;
@@ -386,15 +392,23 @@
       .nav { gap: 10px; }
       .nav a:not(.header-cta) { display: none; }
       .hero { min-height: 78vh; padding-top: 96px; }
-      .hero-koh { width: 145%; bottom: 0; }
-      .mist { bottom: 14%; opacity: 0.42; }
+      .hero-art {
+        background-size: 145% auto;
+        background-position: center 55%;
+      }
+      .hero-art .seedlings { bottom: clamp(14%, 26vh, 34%); }
       .stats-grid { grid-template-columns: 1fr; }
       .card-row { grid-template-columns: 1fr; }
       .tl-item { grid-template-columns: 1fr; gap: 4px; }
       .foot-inner { grid-template-columns: 1fr; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .mist-a, .mist-b { animation: none; }
+      .hero-art .seedling,
+      .hero-art .seedling-grow {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
       html { scroll-behavior: auto; }
     }
   </style>
@@ -415,9 +429,17 @@
 
   <section class="hero" aria-label="هیرو پویش نجات زاگرس">
     <div class="hero-art" aria-hidden="true">
-      <img class="hero-koh" src="./img/zagros-hero.jpg" alt="" width="1440" height="810" decoding="async" fetchpriority="high" />
-      <img class="mist mist-a" src="./img/mist-c1.png" alt="" width="335" height="105" decoding="async" />
-      <img class="mist mist-b" src="./img/mist-c2.png" alt="" width="471" height="128" decoding="async" />
+      <div class="seedlings">
+        <div class="seedling" style="--x:14%; --w:70px; --y:4px; --grow-delay:0.6s; --sway:8.4s; --sway-delay:3.1s">
+          <span class="seedling-grow"><img src="./img/zagros/seedling-1.png" alt="" width="104" height="148" decoding="async"></span>
+        </div>
+        <div class="seedling" style="--x:48%; --w:92px; --y:-2px; --grow-delay:2.2s; --sway:7.2s; --sway-delay:4.6s">
+          <span class="seedling-grow"><img src="./img/zagros/seedling-3.png" alt="" width="106" height="248" decoding="async"></span>
+        </div>
+        <div class="seedling late" style="--x:78%; --w:76px; --y:8px; --grow-delay:5.8s; --sway:9.1s; --sway-delay:8.5s">
+          <span class="seedling-grow"><img src="./img/zagros/seedling-7.png" alt="" width="72" height="205" decoding="async"></span>
+        </div>
+      </div>
     </div>
     <div class="hero-veil" aria-hidden="true"></div>
     <div class="hero-inner">
